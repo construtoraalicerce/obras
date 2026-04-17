@@ -122,7 +122,7 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
       <div class="form-grid">
         <div class="form-field"><label>Data</label><input type="date" id="r-data"></div>
         <div class="form-field"><label>Estaca início</label><input type="number" id="r-est" min="0" step="1" placeholder="Ex: 1"></div> <div class="form-field"><label>Estaca fim</label><input type="number" id="r-est-fim" min="0" step="1" placeholder="Ex: 10"></div>
-        <div class="form-field"><label>Serviço</label><select id="r-serv"><option value="">Carregando...</option></select></div>
+        <div class="form-field"><label>Serviço</label><select id="r-serv" onchange="atualizarInfoRegistro()"><option value="">Selecione...</option></select></div>
         <div class="form-field"><label>Nº de camadas executadas</label><input type="number" id="r-cam" min="1" value="1"></div>
       </div>
       <div class="form-grid full"><div class="form-field"><label>Observação (opcional)</label><input type="text" id="r-obs" placeholder="Ex: Chuva após 16h"></div></div>
@@ -506,7 +506,7 @@ function renderServicosObra(){
    EVENTS
    ================================================================= */
 function bindEvents(){
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');['dashboard','registrar','historico','projeto'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none'});if(b.dataset.tab==='historico')renderHistorico();if(b.dataset.tab==='projeto'){renderProjeto();renderServicosObra()}if(b.dataset.tab==='registrar')verificarPermissaoUI()}});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');['dashboard','registrar','historico','projeto'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none'});if(b.dataset.tab==='historico')renderHistorico();if(b.dataset.tab==='projeto'){renderProjeto();renderServicosObra()}if(b.dataset.tab==='registrar'){popularSelects();verificarPermissaoUI()}}});
   document.getElementById('obra-sel').onchange=function(ev){var id=parseInt(ev.target.value);APP.obraAtual=APP.obras.find(function(o){return o.Id===id});carregarDadosObra().then(function(){verificarPermissaoUI()})};
   document.getElementById('g-ini').onchange=renderGrafico; document.getElementById('g-fim').onchange=renderGrafico; document.getElementById('g-prev').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=Math.max(APP.obraAtual.EstacaInicial||0,ini-range);fim=ini+range;document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()}; document.getElementById('g-next').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=ini+range;fim=ini+range;if(fim>(APP.obraAtual.EstacaFinal||0))fim=APP.obraAtual.EstacaFinal||0;if(ini>fim)ini=Math.max(0,fim-range);document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()};
   document.getElementById('btn-debug').onclick=function(){debugVisible=!debugVisible;if(!debugVisible)document.getElementById('debug-area').innerHTML='';else renderDebug()};
