@@ -488,16 +488,6 @@ function atualizarInfoRegistro(){
     info.innerHTML='<strong>Estacas '+estIni+' a '+estFim+' — '+NOMES[sv]+':</strong> '+totalEst+' estacas'+(semProj>0?' ('+semProj+' sem projeto)':'')+'. O sistema registrará até '+camVal+' camada(s) em cada estaca, respeitando o limite do projeto e os pré-requisitos.';
   }
 }
-  info.className='info-box';if(isNaN(est)||!sv){info.textContent='Informe a estaca e o serviço.';return}
-  var n=camadasProj(est,sv),f=camadasExec(est,sv);
-  if(n===0){info.className='info-box block';info.innerHTML='<strong>Estaca '+est+':</strong> serviço '+NOMES[sv]+' não cadastrado nesta estaca. Cadastre na aba "Cadastro do projeto".';ci.disabled=true;return}
-  ci.disabled=false;ci.max=Math.max(0,n-f);
-  if(f>=n){info.className='info-box ready';info.innerHTML='<strong>Estaca '+est+':</strong> '+NOMES[sv]+' 100% concluída ('+n+'/'+n+').';ci.disabled=true;return}
-  var pre=preReqOK(sv,est);
-  if(!pre.ok){info.className='info-box block';info.innerHTML='<strong>Bloqueado:</strong> '+pre.falta+' não está 100% concluída na estaca '+est+'.';ci.disabled=true;return}
-  info.innerHTML='<strong>Estaca '+est+' — '+NOMES[sv]+':</strong> <strong>'+n+' camada(s)</strong> projetadas. Executadas: <strong>'+f+'</strong>. Restam: <strong>'+(n-f)+'</strong>.';
-  ci.value=Math.min(parseInt(ci.value)||1,n-f);
-}
 
 /* =================================================================
    SERVIÇOS DA OBRA (checkboxes)
