@@ -121,8 +121,8 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
       <div class="card-title">Registrar execução</div>
       <div class="form-grid">
         <div class="form-field"><label>Data</label><input type="date" id="r-data"></div>
-        <div class="form-field"><label>Estaca</label><input type="number" id="r-est" min="0" step="1" placeholder="Ex: 12"></div>
-        <div class="form-field"><label>Serviço</label><select id="r-serv"></select></div>
+        <div class="form-field"><label>Estaca início</label><input type="number" id="r-est" min="0" step="1" placeholder="Ex: 1"></div> <div class="form-field"><label>Estaca fim</label><input type="number" id="r-est-fim" min="0" step="1" placeholder="Ex: 10"></div>
+        <div class="form-field"><label>Serviço</label><select id="r-serv"><option value="">Carregando...</option></select></div>
         <div class="form-field"><label>Nº de camadas executadas</label><input type="number" id="r-cam" min="1" value="1"></div>
       </div>
       <div class="form-grid full"><div class="form-field"><label>Observação (opcional)</label><input type="text" id="r-obs" placeholder="Ex: Chuva após 16h"></div></div>
@@ -461,7 +461,33 @@ function renderProjeto(){
    INFO BOX REGISTRO
    ================================================================= */
 function atualizarInfoRegistro(){
-  var est=parseInt(document.getElementById('r-est').value),sv=document.getElementById('r-serv').value,info=document.getElementById('r-info'),ci=document.getElementById('r-cam');
+  var estIni=parseInt(document.getElementById('r-est').value);
+  var estFimEl=document.getElementById('r-est-fim');
+  var estFim=parseInt(estFimEl.value);
+  var sv=document.getElementById('r-serv').value;
+  var info=document.getElementById('r-info');
+  var ci=document.getElementById('r-cam');
+  info.className='info-box';
+  if(isNaN(estIni)||!sv){info.textContent='Informe a estaca e o serviço.';return}
+  if(isNaN(estFim))estFim=estIni;
+  if(estFim<estIni)estFim=estIni;
+  var totalEst=estFim-estIni+1;
+  var menorProj=Infinity,somaProj=0,somaExec=0,semProj=0;
+  for(var e=estIni;e<=estFim;e++){
+    var n=camadasProj(e,sv),f=camadasExec(e,sv);
+    if(n===0){semProj++;continue}
+    if(n<menorProj)menorProj=n;
+    somaProj+=n;somaExec+=f;
+  }
+  if(semProj===totalEst){info.className='info-box block';info.innerHTML='<strong>Estacas '+estIni+' a '+estFim+':</strong> '+NOMES[sv]+' não cadastrado nestas estacas.';ci.disabled=true;return}
+  ci.disabled=false;
+  var pre=preReqOK(sv,estIni);
+  if(!pre.ok){info.className='info-box block';info.innerHTML='<strong>Atenção:</strong> '+pre.falta+' não está 100% concluída em algumas estacas deste intervalo. O registro só será feito nas estacas onde o pré-requisito estiver OK.'}
+  else{
+    var camVal=parseInt(ci.value)||1;
+    info.innerHTML='<strong>Estacas '+estIni+' a '+estFim+' — '+NOMES[sv]+':</strong> '+totalEst+' estacas'+(semProj>0?' ('+semProj+' sem projeto)':'')+'. O sistema registrará até '+camVal+' camada(s) em cada estaca, respeitando o limite do projeto e os pré-requisitos.';
+  }
+}
   info.className='info-box';if(isNaN(est)||!sv){info.textContent='Informe a estaca e o serviço.';return}
   var n=camadasProj(est,sv),f=camadasExec(est,sv);
   if(n===0){info.className='info-box block';info.innerHTML='<strong>Estaca '+est+':</strong> serviço '+NOMES[sv]+' não cadastrado nesta estaca. Cadastre na aba "Cadastro do projeto".';ci.disabled=true;return}
@@ -494,7 +520,7 @@ function bindEvents(){
   document.getElementById('obra-sel').onchange=function(ev){var id=parseInt(ev.target.value);APP.obraAtual=APP.obras.find(function(o){return o.Id===id});carregarDadosObra().then(function(){verificarPermissaoUI()})};
   document.getElementById('g-ini').onchange=renderGrafico; document.getElementById('g-fim').onchange=renderGrafico; document.getElementById('g-prev').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=Math.max(APP.obraAtual.EstacaInicial||0,ini-range);fim=ini+range;document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()}; document.getElementById('g-next').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=ini+range;fim=ini+range;if(fim>(APP.obraAtual.EstacaFinal||0))fim=APP.obraAtual.EstacaFinal||0;if(ini>fim)ini=Math.max(0,fim-range);document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()};
   document.getElementById('btn-debug').onclick=function(){debugVisible=!debugVisible;if(!debugVisible)document.getElementById('debug-area').innerHTML='';else renderDebug()};
-  document.getElementById('r-est').oninput=atualizarInfoRegistro;
+  document.getElementById('r-est').oninput=atualizarInfoRegistro; document.getElementById('r-est-fim').oninput=atualizarInfoRegistro;
   document.getElementById('r-serv').onchange=atualizarInfoRegistro;
   document.getElementById('pf-serv').onchange=renderProjeto;
 
@@ -516,19 +542,51 @@ function bindEvents(){
 
   // Registrar execução
   document.getElementById('btn-reg').onclick=async function(){
-    var data=document.getElementById('r-data').value,est=parseInt(document.getElementById('r-est').value),sv=document.getElementById('r-serv').value,cam=parseInt(document.getElementById('r-cam').value),obs=document.getElementById('r-obs').value,msg=document.getElementById('r-msg');msg.innerHTML='';
+    var data=document.getElementById('r-data').value;
+    var estIni=parseInt(document.getElementById('r-est').value);
+    var estFim=parseInt(document.getElementById('r-est-fim').value);
+    var sv=document.getElementById('r-serv').value;
+    var cam=parseInt(document.getElementById('r-cam').value);
+    var obs=document.getElementById('r-obs').value;
+    var msg=document.getElementById('r-msg');
+    msg.innerHTML='';
     if(!podeRegistrar()){msg.innerHTML='<div class="alert alert-err">Sem permissão.</div>';return}
     if(!data){msg.innerHTML='<div class="alert alert-err">Informe a data.</div>';return}
-    if(isNaN(est)||est<(APP.obraAtual.EstacaInicial||0)||est>(APP.obraAtual.EstacaFinal||0)){msg.innerHTML='<div class="alert alert-err">Estaca fora do intervalo ('+(APP.obraAtual.EstacaInicial||0)+' a '+(APP.obraAtual.EstacaFinal||0)+').</div>';return}
-    var n=camadasProj(est,sv);
-    if(n===0){msg.innerHTML='<div class="alert alert-err">Serviço '+NOMES[sv]+' não cadastrado na estaca '+est+'.</div>';return}
-    var f=camadasExec(est,sv);
-    if(f+cam>n){msg.innerHTML='<div class="alert alert-err">Projeto: '+n+' camadas. Executadas: '+f+'. Restam '+(n-f)+'.</div>';return}
-    var pre=preReqOK(sv,est);
-    if(!pre.ok){msg.innerHTML='<div class="alert alert-err"><strong>Bloqueado:</strong> '+pre.falta+' não concluída na estaca '+est+'.</div>';return}
-    if(f>=n){msg.innerHTML='<div class="alert alert-warn">'+NOMES[sv]+' já concluída.</div>';return}
-    var btn=document.getElementById('btn-reg');btn.disabled=true;btn.textContent='Salvando...';
-    try{await DataAPI.salvarExecucao(APP.obraAtual.Id,data,est,sv,cam,APP.usuario.nome,obs);await carregarDadosObra();msg.innerHTML='<div class="alert alert-ok">✓ '+NOMES[sv]+' — estaca '+est+', '+cam+' camada(s) em '+data.split('-').reverse().join('/')+'.</div>';document.getElementById('r-obs').value='';atualizarInfoRegistro()}catch(e){msg.innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}finally{btn.disabled=false;btn.textContent='Registrar execução'}
+    if(isNaN(estIni)){msg.innerHTML='<div class="alert alert-err">Informe a estaca início.</div>';return}
+    if(isNaN(estFim))estFim=estIni;
+    if(estFim<estIni){msg.innerHTML='<div class="alert alert-err">Estaca fim menor que início.</div>';return}
+    if(!sv){msg.innerHTML='<div class="alert alert-err">Selecione o serviço.</div>';return}
+    var btn=document.getElementById('btn-reg');btn.disabled=true;btn.textContent='Registrando...';
+    var ok=0,pulos=0,bloqs=0,erros=0;
+    var total=estFim-estIni+1;
+    try{
+      for(var e=estIni;e<=estFim;e+=5){
+        var lote=[];
+        for(var j=e;j<=Math.min(e+4,estFim);j++){
+          var n=camadasProj(j,sv);
+          if(n===0){pulos++;continue}
+          var f=camadasExec(j,sv);
+          if(f>=n){pulos++;continue}
+          var pre=preReqOK(sv,j);
+          if(!pre.ok){bloqs++;continue}
+          var registrar=Math.min(cam,n-f);
+          lote.push(DataAPI.salvarExecucao(APP.obraAtual.Id,data,j,sv,registrar,APP.usuario.nome,obs));
+          ok++;
+        }
+        if(lote.length>0)await Promise.all(lote);
+        msg.innerHTML='<div class="alert alert-warn">Registrando... '+(Math.min(e+5,estFim+1)-estIni)+' de '+total+' estacas.</div>';
+        if(e+5<=estFim)await new Promise(function(r){setTimeout(r,500)});
+      }
+      await carregarDadosObra();
+      var resumo='<div class="alert alert-ok">✓ <strong>'+ok+'</strong> estaca(s) registrada(s) com sucesso.';
+      if(pulos>0)resumo+='<br>'+pulos+' estaca(s) ignorada(s) (sem projeto ou já concluída).';
+      if(bloqs>0)resumo+='<br>'+bloqs+' estaca(s) bloqueada(s) (pré-requisito não cumprido).';
+      resumo+='</div>';
+      msg.innerHTML=resumo;
+      document.getElementById('r-obs').value='';
+      atualizarInfoRegistro();
+    }catch(e){msg.innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
+    finally{btn.disabled=false;btn.textContent='Registrar execução'}
   };
 
   // Cadastro de projeto
