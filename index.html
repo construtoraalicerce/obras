@@ -111,7 +111,7 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
     <div class="card">
       <div class="card-title">Perfil longitudinal da obra</div>
       <div class="legend" id="legend-container"></div>
-      <div class="chart-wrap"><svg id="svg-grid" style="width:100%;height:auto;display:block"></svg></div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:end"> <div class="form-field" style="min-width:100px"><label>Estaca de</label><input type="number" id="g-ini" min="0" step="1" value="0"></div> <div class="form-field" style="min-width:100px"><label>Estaca até</label><input type="number" id="g-fim" min="0" step="1" value="50"></div> <button class="secondary" id="g-prev">◀ Anterior</button> <button class="secondary" id="g-next">Próximo ▶</button> <span style="font-size:12px;color:#666" id="g-info"></span> </div> <div class="chart-wrap"><svg id="svg-grid" style="width:100%;height:auto;display:block"></svg></div>
     </div>
   </div>
 
@@ -370,7 +370,14 @@ function renderGrafico(){
   var svg=document.getElementById('svg-grid');
   if(!APP.obraAtual){svg.innerHTML='';return}
   var servicos=getServicosObra();
-  var tE=APP.obraAtual.EstacaFinal||0;
+  var eIni=parseInt(document.getElementById('g-ini').value)||0;
+  var eFim=parseInt(document.getElementById('g-fim').value)||50;
+  if(eFim<eIni)eFim=eIni+50;
+  var tE=eFim;
+  var estInicioObra=APP.obraAtual.EstacaInicial||0;
+  var estFimObra=APP.obraAtual.EstacaFinal||0;
+  if(eFim>estFimObra)eFim=estFimObra;
+  document.getElementById('g-info').textContent='Mostrando estacas '+eIni+' a '+eFim+' de '+estFimObra;
   var ns='http://www.w3.org/2000/svg';
 
   // serviços de cima (tudo exceto terra) — ordem invertida
@@ -385,17 +392,17 @@ function renderGrafico(){
   var CW=16,CH=12,G=1,T=30,L=60;
   var totalRows=SR+(temTerra?mxT:0);
   var H=T+totalRows*(CH+G)+20;
-  var W=L+(tE+1)*(CW+G);
+  var numEst=eFim-eIni+1;var W=L+numEst*(CW+G);
   svg.innerHTML='';svg.setAttribute('viewBox','0 0 '+W+' '+H);
 
   // labels estacas
-  for(var e=0;e<=tE;e+=5){var t=document.createElementNS(ns,'text');t.setAttribute('x',L+e*(CW+G)+CW/2);t.setAttribute('y',18);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','10');t.setAttribute('fill','#666');t.textContent=e;svg.appendChild(t)}
+  for(var e=eIni;e<=eFim;e+=5){var t=document.createElementNS(ns,'text');t.setAttribute('x',L+(e-eIni)*(CW+G)+CW/2);t.setAttribute('y',18);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','10');t.setAttribute('fill','#666');t.textContent=e;svg.appendChild(t)}
 
   // serviços do topo
   topServs.forEach(function(s,i){
     var lb=document.createElementNS(ns,'text');lb.setAttribute('x',L-6);lb.setAttribute('y',T+i*(CH+G)+CH/2+3);lb.setAttribute('text-anchor','end');lb.setAttribute('font-size','10');lb.setAttribute('fill','#666');lb.textContent=NOMES[s];svg.appendChild(lb);
-    for(var e=0;e<=tE;e++){
-      var r=document.createElementNS(ns,'rect');r.setAttribute('x',L+e*(CW+G));r.setAttribute('y',T+i*(CH+G));r.setAttribute('width',CW);r.setAttribute('height',CH);r.setAttribute('rx','1.5');
+    for(var e=eIni;e<=eFim;e++){
+      var r=document.createElementNS(ns,'rect');r.setAttribute('x',L+(e-eIni)*(CW+G));r.setAttribute('y',T+i*(CH+G));r.setAttribute('width',CW);r.setAttribute('height',CH);r.setAttribute('rx','1.5');
       var temProj=camadasProj(e,s)>0;
       if(!temProj){r.setAttribute('fill','transparent');r.setAttribute('stroke','#ddd');r.setAttribute('stroke-width','0.3');r.setAttribute('stroke-dasharray','1,2')}
       else{r.setAttribute('fill',servConcluido(s,e)?CORES[s]:'#f5f5f5');r.setAttribute('stroke','#ccc');r.setAttribute('stroke-width','0.4')}
@@ -407,10 +414,10 @@ function renderGrafico(){
   if(temTerra){
     var yT=T+SR*(CH+G)+4;
     var lt=document.createElementNS(ns,'text');lt.setAttribute('x',L-6);lt.setAttribute('y',yT+CH);lt.setAttribute('text-anchor','end');lt.setAttribute('font-size','10');lt.setAttribute('fill','#666');lt.textContent='Terraplan.';svg.appendChild(lt);
-    for(var e=0;e<=tE;e++){
+    for(var e=eIni;e<=eFim;e++){
       var n=camadasProj(e,'terra'),fe=camadasExec(e,'terra');
       for(var c=1;c<=mxT;c++){
-        var r=document.createElementNS(ns,'rect');r.setAttribute('x',L+e*(CW+G));r.setAttribute('y',yT+(c-1)*(CH+G));r.setAttribute('width',CW);r.setAttribute('height',CH);r.setAttribute('rx','1.5');
+        var r=document.createElementNS(ns,'rect');r.setAttribute('x',L+(e-eIni)*(CW+G));r.setAttribute('y',yT+(c-1)*(CH+G));r.setAttribute('width',CW);r.setAttribute('height',CH);r.setAttribute('rx','1.5');
         if(c>n){r.setAttribute('fill','transparent');r.setAttribute('stroke','#ddd');r.setAttribute('stroke-width','0.3');r.setAttribute('stroke-dasharray','1,2')}
         else{r.setAttribute('fill',(n-c+1)<=fe?CORES.terra:'#f5f5f5');r.setAttribute('stroke','#ccc');r.setAttribute('stroke-width','0.4')}
         svg.appendChild(r);
@@ -485,7 +492,7 @@ function renderServicosObra(){
 function bindEvents(){
   document.querySelectorAll('.tab-btn').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');['dashboard','registrar','historico','projeto'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none'});if(b.dataset.tab==='historico')renderHistorico();if(b.dataset.tab==='projeto'){renderProjeto();renderServicosObra()}if(b.dataset.tab==='registrar')verificarPermissaoUI()}});
   document.getElementById('obra-sel').onchange=function(ev){var id=parseInt(ev.target.value);APP.obraAtual=APP.obras.find(function(o){return o.Id===id});carregarDadosObra().then(function(){verificarPermissaoUI()})};
-  document.getElementById('btn-reload').onclick=function(){carregarDadosObra()};
+  document.getElementById('g-ini').onchange=renderGrafico; document.getElementById('g-fim').onchange=renderGrafico; document.getElementById('g-prev').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=Math.max(APP.obraAtual.EstacaInicial||0,ini-range);fim=ini+range;document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()}; document.getElementById('g-next').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=ini+range;fim=ini+range;if(fim>(APP.obraAtual.EstacaFinal||0))fim=APP.obraAtual.EstacaFinal||0;if(ini>fim)ini=Math.max(0,fim-range);document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()};
   document.getElementById('btn-debug').onclick=function(){debugVisible=!debugVisible;if(!debugVisible)document.getElementById('debug-area').innerHTML='';else renderDebug()};
   document.getElementById('r-est').oninput=atualizarInfoRegistro;
   document.getElementById('r-serv').onchange=atualizarInfoRegistro;
@@ -501,7 +508,7 @@ function bindEvents(){
     try{
       await DataAPI.atualizarObra(APP.obraAtual.Id,{Servicos:selecionados.join(';')});
       APP.obraAtual.Servicos=selecionados.join(';');
-      popularSelects();renderStats();renderLegend();renderGrafico();
+      document.getElementById('g-ini').value=APP.obraAtual.EstacaInicial||0;document.getElementById('g-fim').value=Math.min((APP.obraAtual.EstacaInicial||0)+50,(APP.obraAtual.EstacaFinal||0));
       document.getElementById('serv-msg').innerHTML='<div class="alert alert-ok">✓ Serviços atualizados: '+selecionados.map(function(s){return NOMES[s]}).join(', ')+'.</div>';
     }catch(e){document.getElementById('serv-msg').innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
     finally{btn.disabled=false;btn.textContent='Salvar serviços da obra'}
@@ -563,7 +570,7 @@ async function carregarDadosObra(){
   var results=await Promise.all([DataAPI.listarProjeto(APP.obraAtual.Id),DataAPI.listarExecucao(APP.obraAtual.Id)]);
   APP.projeto=results[0];APP.execucao=results[1];
   dbg('Projeto: '+APP.projeto.length+' registros. Execução: '+APP.execucao.length+' registros.','ok');
-  popularSelects();renderStats();renderLegend();renderGrafico();
+  document.getElementById('g-ini').value=APP.obraAtual.EstacaInicial||0;document.getElementById('g-fim').value=Math.min((APP.obraAtual.EstacaInicial||0)+50,(APP.obraAtual.EstacaFinal||0));
   if(document.getElementById('tab-historico').style.display!=='none')renderHistorico();
   if(document.getElementById('tab-projeto').style.display!=='none'){renderProjeto();renderServicosObra()}
   atualizarInfoRegistro();
