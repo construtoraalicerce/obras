@@ -179,7 +179,7 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
 </div>
 
 <!-- MSAL.js v2 (Microsoft Authentication Library) -->
-<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.6.0/lib/msal-browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.0/lib/msal-browser.min.js"></script>
 
 <script>
 /* =================================================================
@@ -524,6 +524,10 @@ async function iniciarApp() {
    ================================================================= */
 async function boot() {
   try {
+    // MSAL v3 requer initialize(), v2 não tem esse método
+    if (typeof msalApp.initialize === 'function') {
+      await msalApp.initialize();
+    }
     var resp = await msalApp.handleRedirectPromise();
     handleLoginResponse(resp);
     if (currentAccount) {
