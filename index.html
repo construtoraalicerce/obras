@@ -173,6 +173,19 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
         <div id="proj-lista"></div>
       </div>
     </div>
+    <div class="card">
+      <div class="card-title">Eventos da obra</div>
+      <p style="font-size:13px;color:#666;margin:0 0 12px">Cadastre bueiros, pontes, riachos, zonas urbanas, etc. Eles aparecem no perfil longitudinal do dashboard.</p>
+      <div class="form-grid g3">
+        <div class="form-field"><label>Tipo de evento</label><select id="ev-tipo"></select></div>
+        <div class="form-field"><label>Estaca início</label><input type="number" id="ev-ini" min="0" value="0"></div>
+        <div class="form-field"><label>Estaca fim (igual à início se pontual)</label><input type="number" id="ev-fim" min="0" value="0"></div>
+      </div>
+      <div class="form-grid full"><div class="form-field"><label>Observação</label><input type="text" id="ev-obs" placeholder="Ex: Bueiro triplo D=1.0m, Ponte L=15m sobre Rio São Miguel"></div></div>
+      <button class="primary" id="btn-evento">Adicionar evento</button>
+      <div id="ev-msg"></div>
+      <div style="margin-top:24px"><div class="card-title">Eventos cadastrados</div><div id="eventos-lista"></div></div>
+    </div>
   </div>
 
 </div>
@@ -194,14 +207,18 @@ var SHAREPOINT_SITE_URL = 'https://' + SHAREPOINT_HOST + SHAREPOINT_SITE_PATH;
 var LISTA_OBRAS = 'Obras';
 var LISTA_PROJETO = 'Projeto';
 var LISTA_EXECUCAO = 'Execucao';
+var LISTA_EVENTOS = 'Eventos';
 
 /* =================================================================
-   CONSTANTES DE SERVIÇOS
+   CONSTANTES DE SERVIÇOS E EVENTOS
    ================================================================= */
 var TODOS_SERVICOS = ['terra','sub','base','tsd','asf'];
 var NOMES = {terra:'Terraplanagem',sub:'Sub-base',base:'Base',tsd:'TSD',asf:'Asfalto'};
 var CORES = {terra:'#EF9F27',sub:'#F0997B',base:'#993C1D',tsd:'#888780',asf:'#2C2C2A'};
 var ORDEM = ['terra','sub','base','tsd','asf'];
+var TIPOS_EVENTO = ['bueiro','riacho','ponte','zona_urbana','corte','intersecao','praca','variante','cerca','fauna'];
+var NOMES_EVENTO = {bueiro:'Bueiro',riacho:'Riacho/Rio',ponte:'Ponte/Viaduto',zona_urbana:'Zona urbana',corte:'Corte em rocha',intersecao:'Interseção',praca:'Praça/Retorno',variante:'Variante',cerca:'Cerca',fauna:'Passagem fauna'};
+var CORES_EVENTO = {bueiro:'#185FA5',riacho:'#0F6E56',ponte:'#993556',zona_urbana:'#BA7517',corte:'#A32D2D',intersecao:'#534AB7',praca:'#5F5E5A',variante:'#D85A30',cerca:'#3B6D11',fauna:'#1D9E75'};
 
 /* =================================================================
    MSAL
@@ -248,13 +265,16 @@ var DataAPI={
   async listarExecucao(obraId){return SP.listarItens(LISTA_EXECUCAO,'ObraId eq '+obraId)},
   async salvarExecucao(obraId,data,estaca,servico,numCamadas,responsavel,obs){
     return SP.criarItem(LISTA_EXECUCAO,{Title:obraId+'-E'+estaca+'-'+servico+'-'+data,ObraId:obraId,DataExecucao:data,Estaca:estaca,Servico:servico,NumCamadasExecutadas:numCamadas,Responsavel:responsavel,Observacao:obs||''})
-  }
+  },
+  async listarEventos(obraId){return SP.listarItens(LISTA_EVENTOS,'ObraId eq '+obraId)},
+  async salvarEvento(obraId,estIni,estFim,tipo,obs){return SP.criarItem(LISTA_EVENTOS,{Title:obraId+'-'+tipo+'-E'+estIni,ObraId:obraId,EstacaInicial:estIni,EstacaFinal:estFim||estIni,TipoEvento:tipo,Observacao:obs||''})},
+  async deletarEvento(id){return SP.deletarItem(LISTA_EVENTOS,id)}
 };
 
 /* =================================================================
    ESTADO
    ================================================================= */
-var APP={usuario:null,obras:[],obraAtual:null,projeto:[],execucao:[],servicosObra:[]};
+var APP={usuario:null,obras:[],obraAtual:null,projeto:[],execucao:[],eventos:[],servicosObra:[]};
 
 /* =================================================================
    HELPERS
@@ -337,11 +357,15 @@ function renderStats(){
 function renderLegend(){
   var servicos=getServicosObra();
   var container=document.getElementById('legend-container');
-  var html='';
-  servicos.slice().reverse().forEach(function(s){
-    html+='<div class="legend-item"><span class="legend-box" style="background:'+CORES[s]+'"></span>'+NOMES[s]+'</div>';
-  });
-  html+='<div class="legend-item"><span class="legend-box" style="background:#f5f5f5"></span>Pendente</div>';
+  var html='<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:4px"><span style="font-weight:500;color:#555;font-size:12px">Serviços:</span>';
+  servicos.slice().reverse().forEach(function(s){html+='<div class="legend-item"><span class="legend-box" style="background:'+CORES[s]+'"></span>'+NOMES[s]+'</div>'});
+  html+='<div class="legend-item"><span class="legend-box" style="background:#f5f5f5"></span>Pendente</div></div>';
+  if(APP.eventos.length>0){
+    var tu={};APP.eventos.forEach(function(ev){tu[ev.TipoEvento]=true});
+    html+='<div style="display:flex;gap:14px;flex-wrap:wrap"><span style="font-weight:500;color:#555;font-size:12px">Eventos:</span>';
+    Object.keys(tu).forEach(function(t){var sh=t==='corte'||t==='zona_urbana'?'border-radius:2px':'border-radius:50%';html+='<div class="legend-item"><span style="width:12px;height:12px;background:'+(CORES_EVENTO[t]||'#666')+';display:inline-block;'+sh+'"></span>'+(NOMES_EVENTO[t]||t)+'</div>'});
+    html+='</div>';
+  }
   container.innerHTML=html;
 }
 
@@ -391,11 +415,37 @@ function renderGrafico(){
   var mxT=1;
   if(temTerra){APP.projeto.filter(function(p){return p.Servico==='terra'}).forEach(function(p){if(p.NumCamadas>mxT)mxT=p.NumCamadas})}
 
-  var CW=16,CH=12,G=1,T=30,L=60;
+  var CW=16,CH=12,G=1,L=60;
+  var evtsFilt=APP.eventos.filter(function(ev){return ev.EstacaInicial<=eFim&&(ev.EstacaFinal||ev.EstacaInicial)>=eIni});
+  var EVT_H=evtsFilt.length>0?35:0;
+  var T=EVT_H+30;
   var totalRows=SR+(temTerra?mxT:0);
   var H=T+totalRows*(CH+G)+20;
   var numEst=eFim-eIni+1;var W=L+numEst*(CW+G);
   svg.innerHTML='';svg.setAttribute('viewBox','0 0 '+W+' '+H);
+
+  if(evtsFilt.length>0){
+    var evtY=EVT_H/2+5;
+    evtsFilt.forEach(function(ev){
+      var cor=CORES_EVENTO[ev.TipoEvento]||'#666';
+      var eI=Math.max(ev.EstacaInicial,eIni);
+      var eF=Math.min(ev.EstacaFinal||ev.EstacaInicial,eFim);
+      if(eF>eI){
+        var x1=L+(eI-eIni)*(CW+G)+CW/2,x2=L+(eF-eIni)*(CW+G)+CW/2;
+        var bar=document.createElementNS(ns,'rect');bar.setAttribute('x',x1-1);bar.setAttribute('y',evtY-4);bar.setAttribute('width',x2-x1+2);bar.setAttribute('height',8);bar.setAttribute('fill',cor);bar.setAttribute('opacity','0.3');bar.setAttribute('rx','3');svg.appendChild(bar);
+        var c1=document.createElementNS(ns,'circle');c1.setAttribute('cx',x1);c1.setAttribute('cy',evtY);c1.setAttribute('r',5);c1.setAttribute('fill',cor);svg.appendChild(c1);
+        var c2=document.createElementNS(ns,'circle');c2.setAttribute('cx',x2);c2.setAttribute('cy',evtY);c2.setAttribute('r',5);c2.setAttribute('fill',cor);svg.appendChild(c2);
+        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',(x1+x2)/2);lbl.setAttribute('y',evtY-10);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','9');lbl.setAttribute('fill',cor);lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' - '+ev.Observacao:'');svg.appendChild(lbl);
+      }else{
+        var x=L+(eI-eIni)*(CW+G)+CW/2;
+        var isSq=ev.TipoEvento==='corte'||ev.TipoEvento==='zona_urbana';
+        if(isSq){var sq=document.createElementNS(ns,'rect');sq.setAttribute('x',x-5);sq.setAttribute('y',evtY-5);sq.setAttribute('width',10);sq.setAttribute('height',10);sq.setAttribute('rx','2');sq.setAttribute('fill',cor);svg.appendChild(sq)}
+        else{var ci=document.createElementNS(ns,'circle');ci.setAttribute('cx',x);ci.setAttribute('cy',evtY);ci.setAttribute('r',5);ci.setAttribute('fill',cor);svg.appendChild(ci)}
+        var tk=document.createElementNS(ns,'line');tk.setAttribute('x1',x);tk.setAttribute('y1',evtY+6);tk.setAttribute('x2',x);tk.setAttribute('y2',T-2);tk.setAttribute('stroke',cor);tk.setAttribute('stroke-width','0.5');tk.setAttribute('stroke-dasharray','2,2');svg.appendChild(tk);
+        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',x);lbl.setAttribute('y',evtY-8);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','9');lbl.setAttribute('fill',cor);lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' - '+ev.Observacao:'');svg.appendChild(lbl);
+      }
+    });
+  }
 
   // labels estacas
   for(var e=eIni;e<=eFim;e+=5){var t=document.createElementNS(ns,'text');t.setAttribute('x',L+(e-eIni)*(CW+G)+CW/2);t.setAttribute('y',18);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','10');t.setAttribute('fill','#666');t.textContent=e;svg.appendChild(t)}
@@ -446,11 +496,28 @@ function renderHistorico(){
 }
 async function excluirExecucao(itemId){
   if(!confirm('Tem certeza que deseja excluir este registro?'))return;
-  try{
-    await SP.deletarItem(LISTA_EXECUCAO,itemId);
-    await carregarDadosObra();
-    renderHistorico();
-  }catch(e){alert('Erro ao excluir: '+e.message)}
+  try{await SP.deletarItem(LISTA_EXECUCAO,itemId);await carregarDadosObra();renderHistorico()}catch(e){alert('Erro ao excluir: '+e.message)}
+}
+
+function renderEventos(){
+  var d=document.getElementById('eventos-lista');
+  if(!d)return;
+  if(APP.eventos.length===0){d.innerHTML='<div style="color:#999;padding:20px;text-align:center">Nenhum evento cadastrado.</div>';return}
+  var l=APP.eventos.slice().sort(function(a,b){return a.EstacaInicial-b.EstacaInicial});
+  var h='<div style="overflow-x:auto"><table><thead><tr><th>Tipo</th><th>Estaca início</th><th>Estaca fim</th><th>Observação</th><th></th></tr></thead><tbody>';
+  l.forEach(function(ev){var cor=CORES_EVENTO[ev.TipoEvento]||'#666';h+='<tr><td><span style="display:inline-block;width:10px;height:10px;background:'+cor+';border-radius:50%;margin-right:6px"></span>'+(NOMES_EVENTO[ev.TipoEvento]||ev.TipoEvento)+'</td><td>'+ev.EstacaInicial+'</td><td>'+(ev.EstacaFinal||ev.EstacaInicial)+'</td><td>'+(ev.Observacao||'-')+'</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirEvento('+ev.Id+')">Excluir</button></td></tr>'});
+  h+='</tbody></table></div>';d.innerHTML=h;
+}
+
+async function excluirEvento(itemId){
+  if(!confirm('Excluir este evento?'))return;
+  try{await DataAPI.deletarEvento(itemId);await carregarDadosObra();renderEventos()}catch(e){alert('Erro: '+e.message)}
+}
+
+function popularSelectEventos(){
+  var sel=document.getElementById('ev-tipo');
+  if(!sel)return;
+  sel.innerHTML=TIPOS_EVENTO.map(function(t){return'<option value="'+t+'">'+(NOMES_EVENTO[t]||t)+'</option>'}).join('');
 }
 
 function renderProjeto(){
@@ -516,7 +583,7 @@ function renderServicosObra(){
    EVENTS
    ================================================================= */
 function bindEvents(){
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');['dashboard','registrar','historico','projeto'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none'});if(b.dataset.tab==='historico')renderHistorico();if(b.dataset.tab==='projeto'){renderProjeto();renderServicosObra()}if(b.dataset.tab==='registrar'){popularSelects();verificarPermissaoUI()}}});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');['dashboard','registrar','historico','projeto'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none'});if(b.dataset.tab==='historico')renderHistorico();if(b.dataset.tab==='projeto'){renderProjeto();renderServicosObra();renderEventos();popularSelectEventos()}if(b.dataset.tab==='registrar'){popularSelects();verificarPermissaoUI()}}});
   document.getElementById('obra-sel').onchange=function(ev){var id=parseInt(ev.target.value);APP.obraAtual=APP.obras.find(function(o){return o.Id===id});carregarDadosObra().then(function(){verificarPermissaoUI()})};
   document.getElementById('btn-reload').onclick=function(){carregarDadosObra().then(function(){popularSelects();verificarPermissaoUI()})};
   document.getElementById('g-ini').onchange=renderGrafico; document.getElementById('g-fim').onchange=renderGrafico; document.getElementById('g-prev').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=Math.max(APP.obraAtual.EstacaInicial||0,ini-range);fim=ini+range;document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()}; document.getElementById('g-next').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=ini+range;fim=ini+range;if(fim>(APP.obraAtual.EstacaFinal||0))fim=APP.obraAtual.EstacaFinal||0;if(ini>fim)ini=Math.max(0,fim-range);document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()};
@@ -603,6 +670,17 @@ function bindEvents(){
 
   ['h-serv','h-dt-ini','h-dt-fim'].forEach(function(id){document.getElementById(id).onchange=renderHistorico});
 
+  document.getElementById('btn-evento').onclick=async function(){
+    var tipo=document.getElementById('ev-tipo').value,ini=parseInt(document.getElementById('ev-ini').value),fim=parseInt(document.getElementById('ev-fim').value),obs=document.getElementById('ev-obs').value,msg=document.getElementById('ev-msg');msg.innerHTML='';
+    if(!tipo){msg.innerHTML='<div class="alert alert-err">Selecione o tipo.</div>';return}
+    if(isNaN(ini)){msg.innerHTML='<div class="alert alert-err">Informe a estaca início.</div>';return}
+    if(isNaN(fim)||fim<ini)fim=ini;
+    var btn=this;btn.disabled=true;btn.textContent='Salvando...';
+    try{await DataAPI.salvarEvento(APP.obraAtual.Id,ini,fim,tipo,obs);await carregarDadosObra();renderEventos();msg.innerHTML='<div class="alert alert-ok">✓ '+(NOMES_EVENTO[tipo]||tipo)+' — estacas '+ini+(fim>ini?' a '+fim:'')+'.</div>';document.getElementById('ev-obs').value=''}
+    catch(e){msg.innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
+    finally{btn.disabled=false;btn.textContent='Adicionar evento'}
+  };
+
   document.getElementById('btn-exportar').onclick=function(){
     var l=APP.execucao.slice().sort(function(a,b){return(a.DataExecucao||'').localeCompare(b.DataExecucao||'')});
     if(l.length===0){alert('Nada para exportar.');return}
@@ -627,9 +705,9 @@ function bindEvents(){
 async function carregarDadosObra(){
   if(!APP.obraAtual)return;
   dbg('Carregando obra: '+APP.obraAtual.Title+'...');
-  var results=await Promise.all([DataAPI.listarProjeto(APP.obraAtual.Id),DataAPI.listarExecucao(APP.obraAtual.Id)]);
-  APP.projeto=results[0];APP.execucao=results[1];
-  dbg('Projeto: '+APP.projeto.length+' registros. Execução: '+APP.execucao.length+' registros.','ok');
+  var results=await Promise.all([DataAPI.listarProjeto(APP.obraAtual.Id),DataAPI.listarExecucao(APP.obraAtual.Id),DataAPI.listarEventos(APP.obraAtual.Id)]);
+  APP.projeto=results[0];APP.execucao=results[1];APP.eventos=results[2];
+  dbg('Projeto: '+APP.projeto.length+' | Execução: '+APP.execucao.length+' | Eventos: '+APP.eventos.length,'ok');
   document.getElementById('g-ini').value=APP.obraAtual.EstacaInicial||0;
   document.getElementById('g-fim').value=APP.obraAtual.EstacaFinal||0;
   popularSelects();
