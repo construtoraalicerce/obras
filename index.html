@@ -531,7 +531,7 @@ function bindEvents(){
     if(isNaN(ini)||isNaN(fim)||ini>fim){pm.innerHTML='<div class="alert alert-err">Intervalo inválido.</div>';return}
     if(isNaN(cam)||cam<1){pm.innerHTML='<div class="alert alert-err">Nº de camadas inválido.</div>';return}
     var btn=this;btn.disabled=true;btn.textContent='Salvando...';
-    try{var ps=[];for(var e=ini;e<=fim;e++)ps.push(DataAPI.salvarProjeto(APP.obraAtual.Id,e,sv,cam));await Promise.all(ps);await carregarDadosObra();pm.innerHTML='<div class="alert alert-ok">✓ '+NOMES[sv]+': estacas '+ini+' a '+fim+' com '+cam+' camada(s).</div>';renderProjeto()}catch(e){pm.innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}finally{btn.disabled=false;btn.textContent='Aplicar ao intervalo'}
+    try{var total=fim-ini+1,feito=0;for(var e=ini;e<=fim;e+=10){var lote=[];for(var j=e;j<=Math.min(e+9,fim);j++)lote.push(DataAPI.salvarProjeto(APP.obraAtual.Id,j,sv,cam));await Promise.all(lote);feito+=lote.length;pm.innerHTML='<div class="alert alert-warn">Salvando... '+feito+' de '+total+' estacas.</div>'}await carregarDadosObra();pm.innerHTML='<div class="alert alert-ok">✓ '+NOMES[sv]+': estacas '+ini+' a '+fim+' com '+cam+' camada(s).</div>';renderProjeto()}catch(e){pm.innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}finally{btn.disabled=false;btn.textContent='Aplicar ao intervalo'}
   };
 
   ['h-serv','h-dt-ini','h-dt-fim'].forEach(function(id){document.getElementById(id).onchange=renderHistorico});
