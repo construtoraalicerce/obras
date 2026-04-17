@@ -142,7 +142,6 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
         <div class="form-field"><label>Data de</label><input type="date" id="h-dt-ini"></div>
         <div class="form-field"><label>Data até</label><input type="date" id="h-dt-fim"></div>
         <button class="secondary" id="btn-exportar">Exportar CSV</button>
-        <button class="secondary" id="btn-excluir-lote" style="color:#a8071a">Excluir selecionados</button>
       </div>
       <div id="hist-lista"></div>
     </div>
@@ -150,53 +149,42 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
 
   <!-- PROJETO -->
   <div id="tab-projeto" style="display:none">
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <button class="tab-btn active" data-subtab="sub-servicos" onclick="switchSubTab(this)">Serviços da obra</button>
-      <button class="tab-btn" data-subtab="sub-estacas" onclick="switchSubTab(this)">Estacas</button>
-      <button class="tab-btn" data-subtab="sub-eventos" onclick="switchSubTab(this)">Eventos</button>
+    <div class="card">
+      <div class="card-title">Serviços desta obra</div>
+      <p style="font-size:13px;color:#666;margin:0 0 12px">Selecione os serviços que esta obra possui. Isso define quais camadas aparecem no dashboard.</p>
+      <div class="chk-group" id="servicos-obra"></div>
+      <button class="primary" id="btn-salvar-servicos" style="margin-top:12px">Salvar serviços da obra</button>
+      <div id="serv-msg"></div>
     </div>
-    <div id="sub-servicos">
-      <div class="card">
-        <div class="card-title">Serviços desta obra</div>
-        <p style="font-size:13px;color:#666;margin:0 0 12px">Selecione os serviços que esta obra possui. Isso define quais camadas aparecem no dashboard.</p>
-        <div class="chk-group" id="servicos-obra"></div>
-        <button class="primary" id="btn-salvar-servicos" style="margin-top:12px">Salvar serviços da obra</button>
-        <div id="serv-msg"></div>
+    <div class="card">
+      <div class="card-title">Cadastro de camadas por estaca</div>
+      <div class="form-grid g3">
+        <div class="form-field"><label>Serviço</label><select id="p-serv"></select></div>
+        <div class="form-field"><label>Estaca início</label><input type="number" id="p-ini" min="0" value="0"></div>
+        <div class="form-field"><label>Estaca fim</label><input type="number" id="p-fim" min="0" value="0"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field"><label>Nº de camadas</label><input type="number" id="p-cam" min="1" value="1"><div style="font-size:11px;color:#888;margin-top:4px" id="p-hint">Sub-base, Base, TSD e Asfalto geralmente têm 1 camada. Terraplanagem pode ter quantas forem necessárias.</div></div>
+      </div>
+      <button class="primary" id="btn-proj">Aplicar ao intervalo</button>
+      <div id="p-msg"></div>
+      <div style="margin-top:24px"><div class="card-title">Estacas cadastradas</div>
+        <div class="filters"><div class="form-field"><label>Filtrar por serviço</label><select id="pf-serv"><option value="">Todos</option></select></div></div>
+        <div id="proj-lista"></div>
       </div>
     </div>
-    <div id="sub-estacas" style="display:none">
-      <div class="card">
-        <div class="card-title">Cadastro de camadas por estaca</div>
-        <div class="form-grid g3">
-          <div class="form-field"><label>Serviço</label><select id="p-serv"></select></div>
-          <div class="form-field"><label>Estaca início</label><input type="number" id="p-ini" min="0" value="0"></div>
-          <div class="form-field"><label>Estaca fim</label><input type="number" id="p-fim" min="0" value="0"></div>
-        </div>
-        <div class="form-grid">
-          <div class="form-field"><label>Nº de camadas</label><input type="number" id="p-cam" min="1" value="1"><div style="font-size:11px;color:#888;margin-top:4px">Sub-base, Base, TSD e Asfalto geralmente têm 1 camada. Terraplanagem pode ter quantas forem necessárias.</div></div>
-        </div>
-        <button class="primary" id="btn-proj">Aplicar ao intervalo</button>
-        <div id="p-msg"></div>
-        <div style="margin-top:24px"><div class="card-title">Estacas cadastradas</div>
-          <div class="filters"><div class="form-field"><label>Filtrar por serviço</label><select id="pf-serv"><option value="">Todos</option></select></div></div>
-          <div id="proj-lista"></div>
-        </div>
+    <div class="card">
+      <div class="card-title">Eventos da obra</div>
+      <p style="font-size:13px;color:#666;margin:0 0 12px">Cadastre bueiros, pontes, riachos, zonas urbanas, etc. Eles aparecem no perfil longitudinal do dashboard.</p>
+      <div class="form-grid g3">
+        <div class="form-field"><label>Tipo de evento</label><select id="ev-tipo"></select></div>
+        <div class="form-field"><label>Estaca início</label><input type="number" id="ev-ini" min="0" value="0"></div>
+        <div class="form-field"><label>Estaca fim (igual à início se pontual)</label><input type="number" id="ev-fim" min="0" value="0"></div>
       </div>
-    </div>
-    <div id="sub-eventos" style="display:none">
-      <div class="card">
-        <div class="card-title">Eventos da obra</div>
-        <p style="font-size:13px;color:#666;margin:0 0 12px">Cadastre bueiros, pontes, riachos, zonas urbanas, etc. Eles aparecem no perfil longitudinal do dashboard.</p>
-        <div class="form-grid g3">
-          <div class="form-field"><label>Tipo de evento</label><select id="ev-tipo"></select></div>
-          <div class="form-field"><label>Estaca início</label><input type="number" id="ev-ini" min="0" value="0"></div>
-          <div class="form-field"><label>Estaca fim (igual à início se pontual)</label><input type="number" id="ev-fim" min="0" value="0"></div>
-        </div>
-        <div class="form-grid full"><div class="form-field"><label>Observação</label><input type="text" id="ev-obs" placeholder="Ex: Bueiro triplo D=1.0m, Ponte L=15m sobre Rio São Miguel"></div></div>
-        <button class="primary" id="btn-evento">Adicionar evento</button>
-        <div id="ev-msg"></div>
-        <div style="margin-top:24px"><div class="card-title">Eventos cadastrados</div><div id="eventos-lista"></div></div>
-      </div>
+      <div class="form-grid full"><div class="form-field"><label>Observação</label><input type="text" id="ev-obs" placeholder="Ex: Bueiro triplo D=1.0m, Ponte L=15m sobre Rio São Miguel"></div></div>
+      <button class="primary" id="btn-evento">Adicionar evento</button>
+      <div id="ev-msg"></div>
+      <div style="margin-top:24px"><div class="card-title">Eventos cadastrados</div><div id="eventos-lista"></div></div>
     </div>
   </div>
 
@@ -502,8 +490,8 @@ function renderHistorico(){
   if(fF)l=l.filter(function(x){return(x.DataExecucao||'').substring(0,10)<=fF});
   l.sort(function(a,b){return(b.DataExecucao||'').localeCompare(a.DataExecucao||'')});
   if(l.length===0){d.innerHTML='<div style="color:#999;padding:20px;text-align:center">Nenhum registro.</div>';return}
-  var h='<div style="overflow-x:auto"><table><thead><tr><th style="width:30px"><input type="checkbox" id="h-check-all" onchange="toggleAllHist(this.checked)"></th><th>Data</th><th>Estaca</th><th>Serviço</th><th>Camadas</th><th>Responsável</th><th>Obs</th><th></th></tr></thead><tbody>';
-  l.forEach(function(r){var dt=(r.DataExecucao||'').substring(0,10).split('-').reverse().join('/');h+='<tr><td><input type="checkbox" class="h-check" value="'+r.Id+'"></td><td>'+dt+'</td><td>'+r.Estaca+'</td><td><span class="badge badge-'+r.Servico+'">'+(NOMES[r.Servico]||r.Servico)+'</span></td><td>'+(r.NumCamadasExecutadas||1)+'</td><td>'+(r.Responsavel||'-')+'</td><td>'+(r.Observacao||'-')+'</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirExecucao('+r.Id+')">Excluir</button></td></tr>'});
+  var h='<div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Estaca</th><th>Serviço</th><th>Camadas</th><th>Responsável</th><th>Obs</th><th></th></tr></thead><tbody>';
+  l.forEach(function(r){var dt=(r.DataExecucao||'').substring(0,10).split('-').reverse().join('/');h+='<tr><td>'+dt+'</td><td>'+r.Estaca+'</td><td><span class="badge badge-'+r.Servico+'">'+(NOMES[r.Servico]||r.Servico)+'</span></td><td>'+(r.NumCamadasExecutadas||1)+'</td><td>'+(r.Responsavel||'-')+'</td><td>'+(r.Observacao||'-')+'</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirExecucao('+r.Id+')">Excluir</button></td></tr>'});
   h+='</tbody></table></div>';d.innerHTML=h;
 }
 async function excluirExecucao(itemId){
@@ -526,44 +514,6 @@ async function excluirEvento(itemId){
   try{await DataAPI.deletarEvento(itemId);await carregarDadosObra();renderEventos()}catch(e){alert('Erro: '+e.message)}
 }
 
-function switchSubTab(btn){
-  var tabs=document.querySelectorAll('#tab-projeto > div[id^="sub-"]');
-  tabs.forEach(function(t){t.style.display='none'});
-  document.getElementById(btn.dataset.subtab).style.display='block';
-  var btns=btn.parentElement.querySelectorAll('.tab-btn');
-  btns.forEach(function(b){b.classList.remove('active')});
-  btn.classList.add('active');
-  if(btn.dataset.subtab==='sub-estacas'){popularSelects();renderProjeto()}
-  if(btn.dataset.subtab==='sub-eventos'){popularSelectEventos();renderEventos()}
-  if(btn.dataset.subtab==='sub-servicos')renderServicosObra();
-}
-
-function toggleAllHist(checked){
-  document.querySelectorAll('.h-check').forEach(function(c){c.checked=checked});
-}
-
-async function excluirLoteHistorico(){
-  var checks=document.querySelectorAll('.h-check:checked');
-  if(checks.length===0){alert('Selecione ao menos um registro.');return}
-  if(!confirm('Excluir '+checks.length+' registro(s) selecionado(s)?'))return;
-  var ids=[];checks.forEach(function(c){ids.push(parseInt(c.value))});
-  try{
-    for(var i=0;i<ids.length;i+=5){
-      var lote=[];
-      for(var j=i;j<Math.min(i+5,ids.length);j++)lote.push(SP.deletarItem(LISTA_EXECUCAO,ids[j]));
-      await Promise.all(lote);
-      if(i+5<ids.length)await new Promise(function(r){setTimeout(r,500)});
-    }
-    await carregarDadosObra();renderHistorico();
-    alert(ids.length+' registro(s) excluído(s).');
-  }catch(e){alert('Erro: '+e.message)}
-}
-
-async function excluirEstaca(itemId){
-  if(!confirm('Excluir esta estaca do projeto?'))return;
-  try{await SP.deletarItem(LISTA_PROJETO,itemId);await carregarDadosObra();renderProjeto()}catch(e){alert('Erro: '+e.message)}
-}
-
 function popularSelectEventos(){
   var sel=document.getElementById('ev-tipo');
   if(!sel)return;
@@ -576,10 +526,10 @@ function renderProjeto(){
   if(fS)lista=lista.filter(function(x){return x.Servico===fS});
   if(lista.length===0){d.innerHTML='<div style="color:#999;padding:20px;text-align:center">Nenhuma estaca cadastrada.</div>';return}
   lista.sort(function(a,b){return a.Estaca-b.Estaca||ORDEM.indexOf(a.Servico)-ORDEM.indexOf(b.Servico)});
-  var h='<div style="overflow-x:auto"><table><thead><tr><th>Estaca</th><th>Serviço</th><th>Camadas Proj.</th><th>Executadas</th><th>%</th><th></th></tr></thead><tbody>';
+  var h='<div style="overflow-x:auto"><table><thead><tr><th>Estaca</th><th>Serviço</th><th>Camadas Proj.</th><th>Executadas</th><th>%</th></tr></thead><tbody>';
   lista.forEach(function(p){
     var f=camadasExec(p.Estaca,p.Servico),pc=p.NumCamadas>0?Math.round(f/p.NumCamadas*100):0;
-    h+='<tr><td>'+p.Estaca+'</td><td><span class="badge badge-'+p.Servico+'">'+NOMES[p.Servico]+'</span></td><td>'+p.NumCamadas+'</td><td>'+f+'</td><td>'+pc+'%</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirEstaca('+p.Id+')">Excluir</button></td></tr>'
+    h+='<tr><td>'+p.Estaca+'</td><td><span class="badge badge-'+p.Servico+'">'+NOMES[p.Servico]+'</span></td><td>'+p.NumCamadas+'</td><td>'+f+'</td><td>'+pc+'%</td></tr>'
   });
   h+='</tbody></table></div>';d.innerHTML=h;
 }
@@ -642,7 +592,6 @@ function bindEvents(){
   document.getElementById('r-est').oninput=atualizarInfoRegistro; document.getElementById('r-est-fim').oninput=atualizarInfoRegistro;
   document.getElementById('r-serv').onchange=atualizarInfoRegistro;
   document.getElementById('pf-serv').onchange=renderProjeto;
-  document.getElementById('btn-excluir-lote').onclick=excluirLoteHistorico;
 
   // Salvar serviços da obra
   document.getElementById('btn-salvar-servicos').onclick=async function(){
