@@ -44,7 +44,7 @@ button.logout{background:transparent;color:#999;border:1px solid #ddd;padding:4p
 .info-box{background:#f0f7ff;border:1px solid #bae0ff;border-radius:6px;padding:10px 12px;font-size:13px;margin-top:8px;color:#333}
 .info-box.block{background:#fde7e9;border-color:#ffa39e;color:#a8071a}
 .info-box.ready{background:#d9f7be;border-color:#95de64;color:#237804}
-.legend{display:flex;gap:16px;margin-bottom:16px;font-size:12px;flex-wrap:wrap}
+.legend{display:block;margin-bottom:16px;font-size:12px}
 .legend-item{display:flex;align-items:center;gap:6px}
 .legend-box{width:14px;height:14px;display:inline-block;border-radius:2px;border:1px solid #ccc}
 .chart-wrap{overflow-x:auto}
@@ -380,6 +380,7 @@ function renderLegend(){
   var html='<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:4px"><span style="font-weight:500;color:#555;font-size:12px">Serviços:</span>';
   servicos.slice().reverse().forEach(function(s){html+='<div class="legend-item"><span class="legend-box" style="background:'+CORES[s]+'"></span>'+NOMES[s]+'</div>'});
   html+='<div class="legend-item"><span class="legend-box" style="background:#f5f5f5"></span>Pendente</div></div>';
+  html+='<div style="height:4px"></div>';
   if(APP.eventos.length>0){
     var tu={};APP.eventos.forEach(function(ev){tu[ev.TipoEvento]=true});
     html+='<div style="display:flex;gap:14px;flex-wrap:wrap"><span style="font-weight:500;color:#555;font-size:12px">Eventos:</span>';
