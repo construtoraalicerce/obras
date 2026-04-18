@@ -441,12 +441,12 @@ function renderGrafico(){
   var mxT=1;
   if(temTerra){APP.projeto.filter(function(p){return p.Servico==='terra'}).forEach(function(p){if(p.NumCamadas>mxT)mxT=p.NumCamadas})}
 
-  var CW=22,CH=18,G=2,L=75;
+  var CW=22,CH=24,G=3,L=75;
   var evtsFilt=APP.eventos.filter(function(ev){return ev.EstacaInicial<=eFim&&(ev.EstacaFinal||ev.EstacaInicial)>=eIni});
   var evtRows=1;var evtByEst={};evtsFilt.forEach(function(ev){for(var x=ev.EstacaInicial;x<=(ev.EstacaFinal||ev.EstacaInicial);x++){evtByEst[x]=(evtByEst[x]||0)+1;if(evtByEst[x]>evtRows)evtRows=evtByEst[x]}});var EVT_H=evtsFilt.length>0?(35*evtRows+20):0;
-  var T=EVT_H+30;
+  var T=EVT_H+50;
   var totalRows=SR+(temTerra?mxT:0);
-  var H=T+totalRows*(CH+G)+20;
+  var H=T+totalRows*(CH+G)+50;
   var numEst=eFim-eIni+1;var W=L+numEst*(CW+G);if(W<800)W=800;
   svg.innerHTML='';svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox','0 0 '+W+' '+H);
 
@@ -494,7 +494,7 @@ function renderGrafico(){
 
   // terraplanagem (camadas para baixo)
   if(temTerra){
-    var yT=T+SR*(CH+G)+4;
+    var yT=T+SR*(CH+G)+15;
     var lt=document.createElementNS(ns,'text');lt.setAttribute('x',L-6);lt.setAttribute('y',yT+CH);lt.setAttribute('text-anchor','end');lt.setAttribute('font-size','10');lt.setAttribute('fill','#666');lt.textContent='Terraplan.';svg.appendChild(lt);
     for(var e=eIni;e<=eFim;e++){
       var n=camadasProj(e,'terra'),fe=camExecGraf(e,'terra');
