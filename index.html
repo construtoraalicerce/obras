@@ -119,7 +119,7 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
 <button class="secondary" id="g-data-limpar">Limpar filtro</button>
 <span style="font-size:12px;color:#666" id="g-ultima-exec"></span>
 </div>
-<div class="chart-wrap" style="overflow-x:auto;min-height:300px;border:1px solid #eee;border-radius:6px;padding:8px"><svg id="svg-grid" style="display:block"></svg></div>
+<div class="chart-wrap" style="overflow-x:auto;padding-bottom:8px;border:1px solid #eee;border-radius:6px;padding:8px"><svg id="svg-grid" style="display:block"></svg></div>
     </div>
   </div>
 
@@ -443,7 +443,7 @@ function renderGrafico(){
 
   var CW=22,CH=18,G=2,L=75;
   var evtsFilt=APP.eventos.filter(function(ev){return ev.EstacaInicial<=eFim&&(ev.EstacaFinal||ev.EstacaInicial)>=eIni});
-  var evtRows=1;var evtByEst={};evtsFilt.forEach(function(ev){for(var x=ev.EstacaInicial;x<=(ev.EstacaFinal||ev.EstacaInicial);x++){evtByEst[x]=(evtByEst[x]||0)+1;if(evtByEst[x]>evtRows)evtRows=evtByEst[x]}});var EVT_H=evtsFilt.length>0?(25*evtRows+15):0;
+  var evtRows=1;var evtByEst={};evtsFilt.forEach(function(ev){for(var x=ev.EstacaInicial;x<=(ev.EstacaFinal||ev.EstacaInicial);x++){evtByEst[x]=(evtByEst[x]||0)+1;if(evtByEst[x]>evtRows)evtRows=evtByEst[x]}});var EVT_H=evtsFilt.length>0?(35*evtRows+20):0;
   var T=EVT_H+30;
   var totalRows=SR+(temTerra?mxT:0);
   var H=T+totalRows*(CH+G)+20;
@@ -459,13 +459,13 @@ function renderGrafico(){
       var slot=0;
       for(var s=0;s<evtRows;s++){var free=true;for(var x=eI;x<=eF;x++){if(evtSlots[x+'-'+s]){free=false;break}}if(free){slot=s;break}}
       for(var x=eI;x<=eF;x++)evtSlots[x+'-'+slot]=true;
-      var evtY=12+slot*25;
+      var evtY=18+slot*30;
       if(eF>eI){
         var x1=L+(eI-eIni)*(CW+G)+CW/2,x2=L+(eF-eIni)*(CW+G)+CW/2;
         var bar=document.createElementNS(ns,'rect');bar.setAttribute('x',x1-1);bar.setAttribute('y',evtY-4);bar.setAttribute('width',x2-x1+2);bar.setAttribute('height',8);bar.setAttribute('fill',cor);bar.setAttribute('opacity','0.25');bar.setAttribute('rx','3');svg.appendChild(bar);
-        var c1=document.createElementNS(ns,'circle');c1.setAttribute('cx',x1);c1.setAttribute('cy',evtY);c1.setAttribute('r',4);c1.setAttribute('fill',cor);svg.appendChild(c1);
+        var c1=document.createElementNS(ns,'circle');c1.setAttribute('cx',x1);c1.setAttribute('cy',evtY);c1.setAttribute('r',6);c1.setAttribute('fill',cor);svg.appendChild(c1);
         var c2=document.createElementNS(ns,'circle');c2.setAttribute('cx',x2);c2.setAttribute('cy',evtY);c2.setAttribute('r',4);c2.setAttribute('fill',cor);svg.appendChild(c2);
-        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',(x1+x2)/2);lbl.setAttribute('y',evtY-8);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','8');lbl.setAttribute('fill',cor);lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' - '+ev.Observacao:'');svg.appendChild(lbl);
+        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',(x1+x2)/2);lbl.setAttribute('y',evtY-8);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','10');lbl.setAttribute('fill',cor);lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' - '+ev.Observacao:'');svg.appendChild(lbl);
       }else{
         var x=L+(eI-eIni)*(CW+G)+CW/2;
         var isSq=ev.TipoEvento==='corte'||ev.TipoEvento==='zona_urbana';
