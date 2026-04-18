@@ -15,6 +15,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#f5f5f5;color:#
 .tab-btn{padding:10px 18px;border:1px solid #d0d0d0;background:#fff;border-radius:6px;cursor:pointer;font-size:14px;color:#333;transition:all .15s}
 .tab-btn:hover{background:#f0f0f0}
 .tab-btn.active{background:#0078d4;color:#fff;border-color:#0078d4}
+.sub-tab-btn{padding:8px 14px;border:1px solid #d0d0d0;background:#fff;border-radius:6px;cursor:pointer;font-size:13px;color:#555;transition:all .15s}
+.sub-tab-btn:hover{background:#f0f0f0}
+.sub-tab-btn.active{background:#0078d4;color:#fff;border-color:#0078d4}
 .card{background:#fff;border-radius:8px;border:1px solid #e0e0e0;padding:20px;margin-bottom:16px}
 .card-title{font-size:15px;font-weight:600;margin-bottom:16px}
 .grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
@@ -111,7 +114,12 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
     <div class="card">
       <div class="card-title">Perfil longitudinal da obra</div>
       <div class="legend" id="legend-container"></div>
-      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:end"> <div class="form-field" style="min-width:100px"><label>Estaca de</label><input type="number" id="g-ini" min="0" step="1" value="0"></div> <div class="form-field" style="min-width:100px"><label>Estaca até</label><input type="number" id="g-fim" min="0" step="1" value="50"></div> <button class="secondary" id="g-prev">◀ Anterior</button> <button class="secondary" id="g-next">Próximo ▶</button> <button class="secondary" id="g-all">Ver tudo</button> <span style="font-size:12px;color:#666" id="g-info"></span> </div> <div class="chart-wrap"><svg id="svg-grid" style="width:100%;height:auto;display:block"></svg></div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:end"> <div class="form-field" style="min-width:100px"><label>Estaca de</label><input type="number" id="g-ini" min="0" step="1" value="0"></div> <div class="form-field" style="min-width:100px"><label>Estaca até</label><input type="number" id="g-fim" min="0" step="1" value="50"></div> <button class="secondary" id="g-prev">◀ Anterior</button> <button class="secondary" id="g-next">Próximo ▶</button> <button class="secondary" id="g-all">Ver tudo</button> <span style="font-size:12px;color:#666" id="g-info"></span> </div> <div style="display:flex;gap:12px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
+<div class="form-field" style="min-width:140px"><label>Filtrar execução por data</label><input type="date" id="g-data-filtro"></div>
+<button class="secondary" id="g-data-limpar">Limpar filtro</button>
+<span style="font-size:12px;color:#666" id="g-ultima-exec"></span>
+</div>
+<div class="chart-wrap" style="overflow-x:auto;max-height:500px;overflow-y:auto;border:1px solid #eee;border-radius:6px;padding:8px"><svg id="svg-grid" style="display:block"></svg></div>
     </div>
   </div>
 
@@ -142,6 +150,7 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
         <div class="form-field"><label>Data de</label><input type="date" id="h-dt-ini"></div>
         <div class="form-field"><label>Data até</label><input type="date" id="h-dt-fim"></div>
         <button class="secondary" id="btn-exportar">Exportar CSV</button>
+        <button class="secondary" id="btn-excluir-lote" style="color:#a8071a">Excluir selecionados</button>
       </div>
       <div id="hist-lista"></div>
     </div>
@@ -149,42 +158,53 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
 
   <!-- PROJETO -->
   <div id="tab-projeto" style="display:none">
-    <div class="card">
-      <div class="card-title">Serviços desta obra</div>
-      <p style="font-size:13px;color:#666;margin:0 0 12px">Selecione os serviços que esta obra possui. Isso define quais camadas aparecem no dashboard.</p>
-      <div class="chk-group" id="servicos-obra"></div>
-      <button class="primary" id="btn-salvar-servicos" style="margin-top:12px">Salvar serviços da obra</button>
-      <div id="serv-msg"></div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="tab-btn active" data-subtab="sub-servicos" onclick="switchSubTab(this)" class="sub-tab-btn tab-btn active">Serviços da obra</button>
+      <button class="sub-tab-btn" data-subtab="sub-estacas" onclick="switchSubTab(this)">Estacas</button>
+      <button class="sub-tab-btn" data-subtab="sub-eventos" onclick="switchSubTab(this)">Eventos</button>
     </div>
-    <div class="card">
-      <div class="card-title">Cadastro de camadas por estaca</div>
-      <div class="form-grid g3">
-        <div class="form-field"><label>Serviço</label><select id="p-serv"></select></div>
-        <div class="form-field"><label>Estaca início</label><input type="number" id="p-ini" min="0" value="0"></div>
-        <div class="form-field"><label>Estaca fim</label><input type="number" id="p-fim" min="0" value="0"></div>
-      </div>
-      <div class="form-grid">
-        <div class="form-field"><label>Nº de camadas</label><input type="number" id="p-cam" min="1" value="1"><div style="font-size:11px;color:#888;margin-top:4px" id="p-hint">Sub-base, Base, TSD e Asfalto geralmente têm 1 camada. Terraplanagem pode ter quantas forem necessárias.</div></div>
-      </div>
-      <button class="primary" id="btn-proj">Aplicar ao intervalo</button>
-      <div id="p-msg"></div>
-      <div style="margin-top:24px"><div class="card-title">Estacas cadastradas</div>
-        <div class="filters"><div class="form-field"><label>Filtrar por serviço</label><select id="pf-serv"><option value="">Todos</option></select></div></div>
-        <div id="proj-lista"></div>
+    <div id="sub-servicos">
+      <div class="card">
+        <div class="card-title">Serviços desta obra</div>
+        <p style="font-size:13px;color:#666;margin:0 0 12px">Selecione os serviços que esta obra possui. Isso define quais camadas aparecem no dashboard.</p>
+        <div class="chk-group" id="servicos-obra"></div>
+        <button class="primary" id="btn-salvar-servicos" style="margin-top:12px">Salvar serviços da obra</button>
+        <div id="serv-msg"></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Eventos da obra</div>
-      <p style="font-size:13px;color:#666;margin:0 0 12px">Cadastre bueiros, pontes, riachos, zonas urbanas, etc. Eles aparecem no perfil longitudinal do dashboard.</p>
-      <div class="form-grid g3">
-        <div class="form-field"><label>Tipo de evento</label><select id="ev-tipo"></select></div>
-        <div class="form-field"><label>Estaca início</label><input type="number" id="ev-ini" min="0" value="0"></div>
-        <div class="form-field"><label>Estaca fim (igual à início se pontual)</label><input type="number" id="ev-fim" min="0" value="0"></div>
+    <div id="sub-estacas" style="display:none">
+      <div class="card">
+        <div class="card-title">Cadastro de camadas por estaca</div>
+        <div class="form-grid g3">
+          <div class="form-field"><label>Serviço</label><select id="p-serv"></select></div>
+          <div class="form-field"><label>Estaca início</label><input type="number" id="p-ini" min="0" value="0"></div>
+          <div class="form-field"><label>Estaca fim</label><input type="number" id="p-fim" min="0" value="0"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field"><label>Nº de camadas</label><input type="number" id="p-cam" min="1" value="1"><div style="font-size:11px;color:#888;margin-top:4px">Sub-base, Base, TSD e Asfalto geralmente têm 1 camada. Terraplanagem pode ter quantas forem necessárias.</div></div>
+        </div>
+        <button class="primary" id="btn-proj">Aplicar ao intervalo</button>
+        <div id="p-msg"></div>
+        <div style="margin-top:24px"><div class="card-title">Estacas cadastradas</div>
+          <div class="filters"><div class="form-field"><label>Filtrar por serviço</label><select id="pf-serv"><option value="">Todos</option></select></div></div>
+          <div id="proj-lista"></div>
+        </div>
       </div>
-      <div class="form-grid full"><div class="form-field"><label>Observação</label><input type="text" id="ev-obs" placeholder="Ex: Bueiro triplo D=1.0m, Ponte L=15m sobre Rio São Miguel"></div></div>
-      <button class="primary" id="btn-evento">Adicionar evento</button>
-      <div id="ev-msg"></div>
-      <div style="margin-top:24px"><div class="card-title">Eventos cadastrados</div><div id="eventos-lista"></div></div>
+    </div>
+    <div id="sub-eventos" style="display:none">
+      <div class="card">
+        <div class="card-title">Eventos da obra</div>
+        <p style="font-size:13px;color:#666;margin:0 0 12px">Cadastre bueiros, pontes, riachos, zonas urbanas, etc. Eles aparecem no perfil longitudinal do dashboard.</p>
+        <div class="form-grid g3">
+          <div class="form-field"><label>Tipo de evento</label><select id="ev-tipo"></select></div>
+          <div class="form-field"><label>Estaca início</label><input type="number" id="ev-ini" min="0" value="0"></div>
+          <div class="form-field"><label>Estaca fim (igual à início se pontual)</label><input type="number" id="ev-fim" min="0" value="0"></div>
+        </div>
+        <div class="form-grid full"><div class="form-field"><label>Observação</label><input type="text" id="ev-obs" placeholder="Ex: Bueiro triplo D=1.0m, Ponte L=15m sobre Rio São Miguel"></div></div>
+        <button class="primary" id="btn-evento">Adicionar evento</button>
+        <div id="ev-msg"></div>
+        <div style="margin-top:24px"><div class="card-title">Eventos cadastrados</div><div id="eventos-lista"></div></div>
+      </div>
     </div>
   </div>
 
@@ -404,6 +424,12 @@ function renderGrafico(){
   if(eFim<eIni)eFim=eIni;
   if(eFim>estFimObra)eFim=estFimObra;
   document.getElementById('g-info').textContent='Estacas '+eIni+' a '+eFim+' (total: '+estFimObra+')';
+  var filtroData=document.getElementById('g-data-filtro').value;
+  var execFiltrada=filtroData?APP.execucao.filter(function(e){return(e.DataExecucao||'').substring(0,10)===filtroData}):APP.execucao;
+  function camExecGraf(est,sv){var s=execFiltrada.filter(function(e){return e.Estaca===est&&e.Servico===sv}).reduce(function(a,e){return a+(e.NumCamadasExecutadas||0)},0);return Math.min(s,camadasProj(est,sv))}
+  function svConcGraf(sv,est){var n=camadasProj(est,sv);if(n===0)return false;return camExecGraf(est,sv)>=n}
+  var ultimaExec='';if(APP.execucao.length>0){var datas=APP.execucao.map(function(e){return(e.DataExecucao||'').substring(0,10)}).sort();ultimaExec=datas[datas.length-1].split('-').reverse().join('/')}
+  document.getElementById('g-ultima-exec').textContent=ultimaExec?'Última execução: '+ultimaExec+(filtroData?' | Filtrando: '+filtroData.split('-').reverse().join('/'):''):'';
   var ns='http://www.w3.org/2000/svg';
 
   // serviços de cima (tudo exceto terra) — ordem invertida
@@ -417,34 +443,38 @@ function renderGrafico(){
 
   var CW=16,CH=12,G=1,L=60;
   var evtsFilt=APP.eventos.filter(function(ev){return ev.EstacaInicial<=eFim&&(ev.EstacaFinal||ev.EstacaInicial)>=eIni});
-  var EVT_H=evtsFilt.length>0?35:0;
+  var evtRows=1;var evtByEst={};evtsFilt.forEach(function(ev){for(var x=ev.EstacaInicial;x<=(ev.EstacaFinal||ev.EstacaInicial);x++){evtByEst[x]=(evtByEst[x]||0)+1;if(evtByEst[x]>evtRows)evtRows=evtByEst[x]}});var EVT_H=evtsFilt.length>0?(25*evtRows+15):0;
   var T=EVT_H+30;
   var totalRows=SR+(temTerra?mxT:0);
   var H=T+totalRows*(CH+G)+20;
-  var numEst=eFim-eIni+1;var W=L+numEst*(CW+G);
-  svg.innerHTML='';svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  var numEst=eFim-eIni+1;var W=L+numEst*(CW+G);if(W<800)W=800;
+  svg.innerHTML='';svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox','0 0 '+W+' '+H);
 
   if(evtsFilt.length>0){
-    var evtY=EVT_H/2+5;
-    evtsFilt.forEach(function(ev){
+    var evtSlots={};
+    evtsFilt.forEach(function(ev,idx){
       var cor=CORES_EVENTO[ev.TipoEvento]||'#666';
       var eI=Math.max(ev.EstacaInicial,eIni);
       var eF=Math.min(ev.EstacaFinal||ev.EstacaInicial,eFim);
+      var slot=0;
+      for(var s=0;s<evtRows;s++){var free=true;for(var x=eI;x<=eF;x++){if(evtSlots[x+'-'+s]){free=false;break}}if(free){slot=s;break}}
+      for(var x=eI;x<=eF;x++)evtSlots[x+'-'+slot]=true;
+      var evtY=12+slot*25;
       if(eF>eI){
         var x1=L+(eI-eIni)*(CW+G)+CW/2,x2=L+(eF-eIni)*(CW+G)+CW/2;
-        var bar=document.createElementNS(ns,'rect');bar.setAttribute('x',x1-1);bar.setAttribute('y',evtY-4);bar.setAttribute('width',x2-x1+2);bar.setAttribute('height',8);bar.setAttribute('fill',cor);bar.setAttribute('opacity','0.3');bar.setAttribute('rx','3');svg.appendChild(bar);
-        var c1=document.createElementNS(ns,'circle');c1.setAttribute('cx',x1);c1.setAttribute('cy',evtY);c1.setAttribute('r',5);c1.setAttribute('fill',cor);svg.appendChild(c1);
-        var c2=document.createElementNS(ns,'circle');c2.setAttribute('cx',x2);c2.setAttribute('cy',evtY);c2.setAttribute('r',5);c2.setAttribute('fill',cor);svg.appendChild(c2);
-        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',(x1+x2)/2);lbl.setAttribute('y',evtY-10);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','9');lbl.setAttribute('fill',cor);lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' - '+ev.Observacao:'');svg.appendChild(lbl);
+        var bar=document.createElementNS(ns,'rect');bar.setAttribute('x',x1-1);bar.setAttribute('y',evtY-4);bar.setAttribute('width',x2-x1+2);bar.setAttribute('height',8);bar.setAttribute('fill',cor);bar.setAttribute('opacity','0.25');bar.setAttribute('rx','3');svg.appendChild(bar);
+        var c1=document.createElementNS(ns,'circle');c1.setAttribute('cx',x1);c1.setAttribute('cy',evtY);c1.setAttribute('r',4);c1.setAttribute('fill',cor);svg.appendChild(c1);
+        var c2=document.createElementNS(ns,'circle');c2.setAttribute('cx',x2);c2.setAttribute('cy',evtY);c2.setAttribute('r',4);c2.setAttribute('fill',cor);svg.appendChild(c2);
+        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',(x1+x2)/2);lbl.setAttribute('y',evtY-8);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','8');lbl.setAttribute('fill',cor);lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' - '+ev.Observacao:'');svg.appendChild(lbl);
       }else{
         var x=L+(eI-eIni)*(CW+G)+CW/2;
         var isSq=ev.TipoEvento==='corte'||ev.TipoEvento==='zona_urbana';
-        if(isSq){var sq=document.createElementNS(ns,'rect');sq.setAttribute('x',x-5);sq.setAttribute('y',evtY-5);sq.setAttribute('width',10);sq.setAttribute('height',10);sq.setAttribute('rx','2');sq.setAttribute('fill',cor);svg.appendChild(sq)}
-        else{var ci=document.createElementNS(ns,'circle');ci.setAttribute('cx',x);ci.setAttribute('cy',evtY);ci.setAttribute('r',5);ci.setAttribute('fill',cor);svg.appendChild(ci)}
-        var tk=document.createElementNS(ns,'line');tk.setAttribute('x1',x);tk.setAttribute('y1',evtY+6);tk.setAttribute('x2',x);tk.setAttribute('y2',T-2);tk.setAttribute('stroke',cor);tk.setAttribute('stroke-width','0.5');tk.setAttribute('stroke-dasharray','2,2');svg.appendChild(tk);
-        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',x);lbl.setAttribute('y',evtY-8);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','9');lbl.setAttribute('fill',cor);lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' - '+ev.Observacao:'');svg.appendChild(lbl);
+        if(isSq){var sq=document.createElementNS(ns,'rect');sq.setAttribute('x',x-4);sq.setAttribute('y',evtY-4);sq.setAttribute('width',8);sq.setAttribute('height',8);sq.setAttribute('rx','2');sq.setAttribute('fill',cor);svg.appendChild(sq)}
+        else{var ci=document.createElementNS(ns,'circle');ci.setAttribute('cx',x);ci.setAttribute('cy',evtY);ci.setAttribute('r',4);ci.setAttribute('fill',cor);svg.appendChild(ci)}
+        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',x);lbl.setAttribute('y',evtY-7);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','8');lbl.setAttribute('fill',cor);lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' - '+ev.Observacao:'');svg.appendChild(lbl);
       }
     });
+    var evtLine=document.createElementNS(ns,'line');evtLine.setAttribute('x1',L);evtLine.setAttribute('y1',EVT_H);evtLine.setAttribute('x2',W);evtLine.setAttribute('y2',EVT_H);evtLine.setAttribute('stroke','#ddd');evtLine.setAttribute('stroke-width','0.5');svg.appendChild(evtLine);
   }
 
   // labels estacas
@@ -457,7 +487,7 @@ function renderGrafico(){
       var r=document.createElementNS(ns,'rect');r.setAttribute('x',L+(e-eIni)*(CW+G));r.setAttribute('y',T+i*(CH+G));r.setAttribute('width',CW);r.setAttribute('height',CH);r.setAttribute('rx','1.5');
       var temProj=camadasProj(e,s)>0;
       if(!temProj){r.setAttribute('fill','transparent');r.setAttribute('stroke','#ddd');r.setAttribute('stroke-width','0.3');r.setAttribute('stroke-dasharray','1,2')}
-      else{r.setAttribute('fill',servConcluido(s,e)?CORES[s]:'#f5f5f5');r.setAttribute('stroke','#ccc');r.setAttribute('stroke-width','0.4')}
+      else{r.setAttribute('fill',svConcGraf(s,e)?CORES[s]:'#f5f5f5');r.setAttribute('stroke','#ccc');r.setAttribute('stroke-width','0.4')}
       svg.appendChild(r);
     }
   });
@@ -467,7 +497,7 @@ function renderGrafico(){
     var yT=T+SR*(CH+G)+4;
     var lt=document.createElementNS(ns,'text');lt.setAttribute('x',L-6);lt.setAttribute('y',yT+CH);lt.setAttribute('text-anchor','end');lt.setAttribute('font-size','10');lt.setAttribute('fill','#666');lt.textContent='Terraplan.';svg.appendChild(lt);
     for(var e=eIni;e<=eFim;e++){
-      var n=camadasProj(e,'terra'),fe=camadasExec(e,'terra');
+      var n=camadasProj(e,'terra'),fe=camExecGraf(e,'terra');
       for(var c=1;c<=mxT;c++){
         var r=document.createElementNS(ns,'rect');r.setAttribute('x',L+(e-eIni)*(CW+G));r.setAttribute('y',yT+(c-1)*(CH+G));r.setAttribute('width',CW);r.setAttribute('height',CH);r.setAttribute('rx','1.5');
         if(c>n){r.setAttribute('fill','transparent');r.setAttribute('stroke','#ddd');r.setAttribute('stroke-width','0.3');r.setAttribute('stroke-dasharray','1,2')}
@@ -490,8 +520,8 @@ function renderHistorico(){
   if(fF)l=l.filter(function(x){return(x.DataExecucao||'').substring(0,10)<=fF});
   l.sort(function(a,b){return(b.DataExecucao||'').localeCompare(a.DataExecucao||'')});
   if(l.length===0){d.innerHTML='<div style="color:#999;padding:20px;text-align:center">Nenhum registro.</div>';return}
-  var h='<div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Estaca</th><th>Serviço</th><th>Camadas</th><th>Responsável</th><th>Obs</th><th></th></tr></thead><tbody>';
-  l.forEach(function(r){var dt=(r.DataExecucao||'').substring(0,10).split('-').reverse().join('/');h+='<tr><td>'+dt+'</td><td>'+r.Estaca+'</td><td><span class="badge badge-'+r.Servico+'">'+(NOMES[r.Servico]||r.Servico)+'</span></td><td>'+(r.NumCamadasExecutadas||1)+'</td><td>'+(r.Responsavel||'-')+'</td><td>'+(r.Observacao||'-')+'</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirExecucao('+r.Id+')">Excluir</button></td></tr>'});
+  var h='<div style="overflow-x:auto"><table><thead><tr><th style="width:30px"><input type="checkbox" id="h-check-all" onchange="toggleAllHist(this.checked)"></th><th>Data</th><th>Estaca</th><th>Serviço</th><th>Camadas</th><th>Responsável</th><th>Obs</th><th></th></tr></thead><tbody>';
+  l.forEach(function(r){var dt=(r.DataExecucao||'').substring(0,10).split('-').reverse().join('/');h+='<tr><td><input type="checkbox" class="h-check" value="'+r.Id+'"></td><td>'+dt+'</td><td>'+r.Estaca+'</td><td><span class="badge badge-'+r.Servico+'">'+(NOMES[r.Servico]||r.Servico)+'</span></td><td>'+(r.NumCamadasExecutadas||1)+'</td><td>'+(r.Responsavel||'-')+'</td><td>'+(r.Observacao||'-')+'</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirExecucao('+r.Id+')">Excluir</button></td></tr>'});
   h+='</tbody></table></div>';d.innerHTML=h;
 }
 async function excluirExecucao(itemId){
@@ -514,6 +544,44 @@ async function excluirEvento(itemId){
   try{await DataAPI.deletarEvento(itemId);await carregarDadosObra();renderEventos()}catch(e){alert('Erro: '+e.message)}
 }
 
+function switchSubTab(btn){
+  var tabs=document.querySelectorAll('#tab-projeto > div[id^="sub-"]');
+  tabs.forEach(function(t){t.style.display='none'});
+  document.getElementById(btn.dataset.subtab).style.display='block';
+  var btns=btn.parentElement.querySelectorAll('.tab-btn');
+  btns.forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  if(btn.dataset.subtab==='sub-estacas'){popularSelects();renderProjeto()}
+  if(btn.dataset.subtab==='sub-eventos'){popularSelectEventos();renderEventos()}
+  if(btn.dataset.subtab==='sub-servicos')renderServicosObra();
+}
+
+function toggleAllHist(checked){
+  document.querySelectorAll('.h-check').forEach(function(c){c.checked=checked});
+}
+
+async function excluirLoteHistorico(){
+  var checks=document.querySelectorAll('.h-check:checked');
+  if(checks.length===0){alert('Selecione ao menos um registro.');return}
+  if(!confirm('Excluir '+checks.length+' registro(s) selecionado(s)?'))return;
+  var ids=[];checks.forEach(function(c){ids.push(parseInt(c.value))});
+  try{
+    for(var i=0;i<ids.length;i+=5){
+      var lote=[];
+      for(var j=i;j<Math.min(i+5,ids.length);j++)lote.push(SP.deletarItem(LISTA_EXECUCAO,ids[j]));
+      await Promise.all(lote);
+      if(i+5<ids.length)await new Promise(function(r){setTimeout(r,500)});
+    }
+    await carregarDadosObra();renderHistorico();
+    alert(ids.length+' registro(s) excluído(s).');
+  }catch(e){alert('Erro: '+e.message)}
+}
+
+async function excluirEstaca(itemId){
+  if(!confirm('Excluir esta estaca do projeto?'))return;
+  try{await SP.deletarItem(LISTA_PROJETO,itemId);await carregarDadosObra();renderProjeto()}catch(e){alert('Erro: '+e.message)}
+}
+
 function popularSelectEventos(){
   var sel=document.getElementById('ev-tipo');
   if(!sel)return;
@@ -526,10 +594,10 @@ function renderProjeto(){
   if(fS)lista=lista.filter(function(x){return x.Servico===fS});
   if(lista.length===0){d.innerHTML='<div style="color:#999;padding:20px;text-align:center">Nenhuma estaca cadastrada.</div>';return}
   lista.sort(function(a,b){return a.Estaca-b.Estaca||ORDEM.indexOf(a.Servico)-ORDEM.indexOf(b.Servico)});
-  var h='<div style="overflow-x:auto"><table><thead><tr><th>Estaca</th><th>Serviço</th><th>Camadas Proj.</th><th>Executadas</th><th>%</th></tr></thead><tbody>';
+  var h='<div style="overflow-x:auto"><table><thead><tr><th>Estaca</th><th>Serviço</th><th>Camadas Proj.</th><th>Executadas</th><th>%</th><th></th></tr></thead><tbody>';
   lista.forEach(function(p){
     var f=camadasExec(p.Estaca,p.Servico),pc=p.NumCamadas>0?Math.round(f/p.NumCamadas*100):0;
-    h+='<tr><td>'+p.Estaca+'</td><td><span class="badge badge-'+p.Servico+'">'+NOMES[p.Servico]+'</span></td><td>'+p.NumCamadas+'</td><td>'+f+'</td><td>'+pc+'%</td></tr>'
+    h+='<tr><td>'+p.Estaca+'</td><td><span class="badge badge-'+p.Servico+'">'+NOMES[p.Servico]+'</span></td><td>'+p.NumCamadas+'</td><td>'+f+'</td><td>'+pc+'%</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirEstaca('+p.Id+')">Excluir</button></td></tr>'
   });
   h+='</tbody></table></div>';d.innerHTML=h;
 }
@@ -583,15 +651,18 @@ function renderServicosObra(){
    EVENTS
    ================================================================= */
 function bindEvents(){
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');['dashboard','registrar','historico','projeto'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none'});if(b.dataset.tab==='historico')renderHistorico();if(b.dataset.tab==='projeto'){renderProjeto();renderServicosObra();renderEventos();popularSelectEventos()}if(b.dataset.tab==='registrar'){popularSelects();verificarPermissaoUI()}}});
+  document.querySelectorAll('.tab-btn[data-tab]').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab-btn[data-tab]').forEach(function(x){x.classList.remove('active')});b.classList.add('active');['dashboard','registrar','historico','projeto'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none'});if(b.dataset.tab==='historico')renderHistorico();if(b.dataset.tab==='projeto'){renderProjeto();renderServicosObra();renderEventos();popularSelectEventos()}if(b.dataset.tab==='registrar'){popularSelects();verificarPermissaoUI()}}});
   document.getElementById('obra-sel').onchange=function(ev){var id=parseInt(ev.target.value);APP.obraAtual=APP.obras.find(function(o){return o.Id===id});carregarDadosObra().then(function(){verificarPermissaoUI()})};
   document.getElementById('btn-reload').onclick=function(){carregarDadosObra().then(function(){popularSelects();verificarPermissaoUI()})};
   document.getElementById('g-ini').onchange=renderGrafico; document.getElementById('g-fim').onchange=renderGrafico; document.getElementById('g-prev').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=Math.max(APP.obraAtual.EstacaInicial||0,ini-range);fim=ini+range;document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()}; document.getElementById('g-next').onclick=function(){var ini=parseInt(document.getElementById('g-ini').value)||0;var fim=parseInt(document.getElementById('g-fim').value)||50;var range=fim-ini;ini=ini+range;fim=ini+range;if(fim>(APP.obraAtual.EstacaFinal||0))fim=APP.obraAtual.EstacaFinal||0;if(ini>fim)ini=Math.max(0,fim-range);document.getElementById('g-ini').value=ini;document.getElementById('g-fim').value=fim;renderGrafico()};
   document.getElementById('g-all').onclick=function(){document.getElementById('g-ini').value=APP.obraAtual.EstacaInicial||0;document.getElementById('g-fim').value=APP.obraAtual.EstacaFinal||0;renderGrafico()};
+  document.getElementById('g-data-filtro').onchange=renderGrafico;
+  document.getElementById('g-data-limpar').onclick=function(){document.getElementById('g-data-filtro').value='';renderGrafico()};
   document.getElementById('btn-debug').onclick=function(){debugVisible=!debugVisible;if(!debugVisible)document.getElementById('debug-area').innerHTML='';else renderDebug()};
   document.getElementById('r-est').oninput=atualizarInfoRegistro; document.getElementById('r-est-fim').oninput=atualizarInfoRegistro;
   document.getElementById('r-serv').onchange=atualizarInfoRegistro;
   document.getElementById('pf-serv').onchange=renderProjeto;
+  document.getElementById('btn-excluir-lote').onclick=excluirLoteHistorico;
 
   // Salvar serviços da obra
   document.getElementById('btn-salvar-servicos').onclick=async function(){
