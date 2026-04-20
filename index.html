@@ -219,7 +219,7 @@ table td{padding:10px;border-bottom:1px solid #f0f0f0}
    ================================================================= */
 var MSAL_CLIENT_ID = '13e6d132-d14c-4e07-9f7c-0aab1a7ef672';
 var MSAL_TENANT_ID = '808cc4d8-fcde-4703-abb7-b0e9aa5aeb2b';
-var MSAL_REDIRECT_URI = 'https://construtoraalicerce.github.io/obras/';
+var MSAL_REDIRECT_URI = 'var todasObras=await DataAPI.listarObras(); APP.obras=todasObras.filter(function(o){   if(!o.Responsaveis||o.Responsaveis.trim()==='')return true;   var emails=o.Responsaveis.toLowerCase().split(';').map(function(e){return e.trim()});   return emails.indexOf((APP.usuario.email||'').toLowerCase())>=0; });';
 
 var SHAREPOINT_HOST = 'construtoraalicerceceara.sharepoint.com';
 var SHAREPOINT_SITE_PATH = '/sites/AcompanhamentoObrasdeInfra';
