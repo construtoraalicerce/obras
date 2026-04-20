@@ -839,7 +839,7 @@ async function boot(){
     var resp=await msalApp.handleRedirectPromise();
     handleLoginResponse(resp);
     if(currentAccount){await iniciarApp()}
-    else{document.getElementById('btn-login').onclick=async function(){try{var lr=await msalApp.loginPopup(loginRequest);handleLoginResponse(lr);if(currentAccount)await iniciarApp()}catch(e){document.getElementById('login-err').innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}}}
+    else{document.getElementById('btn-login').onclick=function(){msalApp.loginRedirect(loginRequest)}}
   }catch(e){document.getElementById('login-err').innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
 }
 boot();
