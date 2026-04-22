@@ -1,1286 +1,1967 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acompanhamento de Obras — Pavimentação</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box}
-body{font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#f0f2f5;color:#222;line-height:1.5}
-.header{background:#fff;border-bottom:2px solid #0078d4;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.header h1{margin:0;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;letter-spacing:.5px;color:#0078d4}
-.header .user{font-size:13px;color:#666;display:flex;align-items:center;gap:8px}
-.container{max-width:1440px;margin:0 auto;padding:20px}
-.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;border-bottom:2px solid #e0e0e0;padding-bottom:0}
-.tab-btn{padding:10px 18px;border:none;background:transparent;border-radius:6px 6px 0 0;cursor:pointer;font-size:14px;font-weight:500;color:#666;transition:all .15s;margin-bottom:-2px;border-bottom:2px solid transparent}
-.tab-btn:hover{background:#f5f5f5;color:#333}
-.tab-btn.active{background:#fff;color:#0078d4;border-bottom:2px solid #0078d4;border:1px solid #e0e0e0;border-bottom-color:#0078d4}
-.sub-tab-btn{padding:7px 14px;border:1px solid #d0d0d0;background:#fff;border-radius:6px;cursor:pointer;font-size:13px;color:#555;transition:all .15s}
-.sub-tab-btn:hover{background:#f0f0f0}
-.sub-tab-btn.active{background:#0078d4;color:#fff;border-color:#0078d4}
-.card{background:#fff;border-radius:8px;border:1px solid #e0e0e0;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-.card-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;color:#222;letter-spacing:.3px;text-transform:uppercase}
-.grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px}
-.stat-card{background:#fafafa;border-radius:8px;padding:14px;border:1px solid #eee;border-left:4px solid #ddd}
-.stat-label{font-size:11px;color:#666;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.stat-value{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:#222}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.form-grid.g3{grid-template-columns:1fr 1fr 1fr}
-.form-grid.full>div{grid-column:1/-1}
-.form-field label{display:block;font-size:12px;color:#555;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
-.form-field input,.form-field select{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px;font-family:inherit;background:#fff}
-.form-field input:focus,.form-field select:focus{outline:none;border-color:#0078d4;box-shadow:0 0 0 2px rgba(0,120,212,.15)}
-.form-field input:disabled{background:#f5f5f5;color:#999}
-.km-hint{font-size:11px;color:#0078d4;margin-top:3px;font-family:'Barlow Condensed',sans-serif;font-weight:600}
-button.primary{background:#0078d4;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600;transition:background .15s;letter-spacing:.3px}
-button.primary:hover{background:#106ebe}
-button.primary:disabled{background:#ccc;cursor:not-allowed}
-button.secondary{background:#fff;color:#333;border:1px solid #ccc;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .15s}
-button.secondary:hover{background:#f0f0f0}
-button.logout{background:transparent;color:#999;border:1px solid #ddd;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px}
-.alert{padding:12px 14px;border-radius:6px;font-size:13px;margin-top:12px}
-.alert-err{background:#fde7e9;color:#a8071a;border:1px solid #ffa39e}
-.alert-ok{background:#d9f7be;color:#237804;border:1px solid #95de64}
-.alert-warn{background:#fff7e6;color:#ad4e00;border:1px solid #ffc069}
-.info-box{background:#f0f7ff;border:1px solid #bae0ff;border-radius:6px;padding:10px 12px;font-size:13px;margin-top:8px;color:#333}
-.info-box.block{background:#fde7e9;border-color:#ffa39e;color:#a8071a}
-.info-box.ready{background:#d9f7be;border-color:#95de64;color:#237804}
-.legend{display:block;margin-bottom:16px;font-size:12px}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:12px}
-.legend-box{width:14px;height:14px;display:inline-block;border-radius:2px;border:1px solid rgba(0,0,0,.1)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-table th{text-align:left;padding:10px 12px;background:#f5f7fa;border-bottom:2px solid #e0e0e0;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.3px;color:#555}
-table td{padding:10px 12px;border-bottom:1px solid #f0f0f0}
-table tr:hover td{background:#fafafa}
-.filters{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:end}
-.filters .form-field{min-width:160px}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;letter-spacing:.3px}
-.badge-terra{background:#fff3d9;color:#ad6800}
-.badge-sub{background:#ffe7d6;color:#ad4e00}
-.badge-base{background:#ffccc7;color:#a8071a}
-.badge-recicl{background:#d4edda;color:#1e5c33}
-.badge-imprim{background:#fff3cd;color:#7c5a00}
-.badge-tsd{background:#e8e8e8;color:#444}
-.badge-micro{background:#f8d7e3;color:#7c1f4a}
-.badge-cbuq{background:#2C2C2A;color:#fff}
-.badge-asf{background:#333;color:#fff}
-/* Event status badges */
-.status-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
-.status-indicativo{background:#e8e8e8;color:#555}
-.status-emexecucao{background:#fff3cd;color:#7c5a00;border:1px solid #ffc107}
-.status-executado{background:#d4edda;color:#1a5c2e;border:1px solid #52c41a}
-.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.dot-indicativo{background:#909090}
-.dot-emexecucao{background:#D4A017}
-.dot-executado{background:#3A9C4E}
-/* Strip chart */
-.strip-wrap{margin-bottom:12px;border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fff}
-.strip-header{background:linear-gradient(135deg,#f5f7fa 0%,#eef1f5 100%);padding:8px 14px;font-size:12px;font-weight:600;color:#444;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}
-.strip-header .km-range{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#0078d4;letter-spacing:.5px}
-.strip-header .est-range{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:#888}
-.strip-body{padding:8px;overflow:hidden}
-/* Servicos ordem list */
-.servicos-ordem-list{display:flex;flex-direction:column;gap:6px}
-.servico-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fafafa;border:1px solid #eee;border-radius:6px}
-.servico-item label{flex:1;font-size:14px;font-weight:400;display:flex;align-items:center;gap:6px;cursor:pointer;margin:0}
-.reorder-btns{display:flex;gap:4px}
-/* Weekly summary */
-.weekly-box{background:linear-gradient(135deg,#f0f7ff,#e8f4fd);border:1px solid #bae0ff;border-radius:8px;padding:16px;margin-bottom:16px}
-.weekly-box .card-title{color:#0078d4;margin-bottom:12px}
-/* Debug */
-.debug-panel{background:#1e1e1e;color:#4ec9b0;font-family:'Consolas','Courier New',monospace;font-size:12px;padding:16px;border-radius:8px;margin-bottom:16px;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
-.debug-panel .err{color:#f48771}
-.debug-panel .ok{color:#6a9955}
-.debug-panel .info{color:#569cd6}
-.mode-banner{padding:10px 16px;font-size:13px;font-weight:500;text-align:center}
-.mode-banner.ok{background:#d9f7be;color:#237804;border-bottom:1px solid #95de64}
-.login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:20px}
-.login-screen h2{font-family:'Barlow Condensed',sans-serif;font-size:28px;margin-bottom:8px;color:#0078d4;font-weight:700}
-.login-screen p{color:#666;margin-bottom:24px;max-width:400px}
-.login-btn{background:#0078d4;color:#fff;border:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s}
-.login-btn:hover{background:#106ebe}
-.login-btn svg{width:20px;height:20px}
-@media print{
-  .tabs,.filters,.mode-banner,.header .user,#debug-area,button.secondary,button.primary{display:none!important}
-  .strip-wrap{page-break-inside:avoid;margin-bottom:8px}
-  body{background:#fff}
-  .card{box-shadow:none;border:1px solid #ccc}
-}
-@media(max-width:768px){.grid-stats{grid-template-columns:repeat(2,1fr)}.form-grid,.form-grid.g3{grid-template-columns:1fr}.header{padding:12px 16px}.container{padding:12px}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acompanhamento de Obras — Pavimentação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      background: #f0f2f5;
+      color: #222;
+      line-height: 1.5
+    }
+
+    .header {
+      background: #fff;
+      border-bottom: 2px solid #0078d4;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08)
+    }
+
+    .header h1 {
+      margin: 0;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      color: #0078d4
+    }
+
+    .header .user {
+      font-size: 13px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 0
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border: none;
+      background: transparent;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+      transition: all .15s;
+      margin-bottom: -2px;
+      border-bottom: 2px solid transparent
+    }
+
+    .tab-btn:hover {
+      background: #f5f5f5;
+      color: #333
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: #0078d4;
+      border-bottom: 2px solid #0078d4;
+      border: 1px solid #e0e0e0;
+      border-bottom-color: #0078d4
+    }
+
+    .sub-tab-btn {
+      padding: 7px 14px;
+      border: 1px solid #d0d0d0;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #555;
+      transition: all .15s
+    }
+
+    .sub-tab-btn:hover {
+      background: #f0f0f0
+    }
+
+    .sub-tab-btn.active {
+      background: #0078d4;
+      color: #fff;
+      border-color: #0078d4
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .04)
+    }
+
+    .card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #222;
+      letter-spacing: .3px;
+      text-transform: uppercase
+    }
+
+    .grid-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px
+    }
+
+    .stat-card {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 14px;
+      border: 1px solid #eee;
+      border-left: 4px solid #ddd
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    .stat-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #222
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px
+    }
+
+    .form-grid.g3 {
+      grid-template-columns: 1fr 1fr 1fr
+    }
+
+    .form-grid.full>div {
+      grid-column: 1/-1
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .3px
+    }
+
+    .form-field input,
+    .form-field select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+      outline: none;
+      border-color: #0078d4;
+      box-shadow: 0 0 0 2px rgba(0, 120, 212, .15)
+    }
+
+    .form-field input:disabled {
+      background: #f5f5f5;
+      color: #999
+    }
+
+    .km-hint {
+      font-size: 11px;
+      color: #0078d4;
+      margin-top: 3px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600
+    }
+
+    button.primary {
+      background: #0078d4;
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background .15s;
+      letter-spacing: .3px
+    }
+
+    button.primary:hover {
+      background: #106ebe
+    }
+
+    button.primary:disabled {
+      background: #ccc;
+      cursor: not-allowed
+    }
+
+    button.secondary {
+      background: #fff;
+      color: #333;
+      border: 1px solid #ccc;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all .15s
+    }
+
+    button.secondary:hover {
+      background: #f0f0f0
+    }
+
+    button.logout {
+      background: transparent;
+      color: #999;
+      border: 1px solid #ddd;
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px
+    }
+
+    .alert {
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-top: 12px
+    }
+
+    .alert-err {
+      background: #fde7e9;
+      color: #a8071a;
+      border: 1px solid #ffa39e
+    }
+
+    .alert-ok {
+      background: #d9f7be;
+      color: #237804;
+      border: 1px solid #95de64
+    }
+
+    .alert-warn {
+      background: #fff7e6;
+      color: #ad4e00;
+      border: 1px solid #ffc069
+    }
+
+    .info-box {
+      background: #f0f7ff;
+      border: 1px solid #bae0ff;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 13px;
+      margin-top: 8px;
+      color: #333
+    }
+
+    .info-box.block {
+      background: #fde7e9;
+      border-color: #ffa39e;
+      color: #a8071a
+    }
+
+    .info-box.ready {
+      background: #d9f7be;
+      border-color: #95de64;
+      color: #237804
+    }
+
+    .legend {
+      display: block;
+      margin-bottom: 16px;
+      font-size: 12px
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px
+    }
+
+    .legend-box {
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      border-radius: 2px;
+      border: 1px solid rgba(0, 0, 0, .1)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px
+    }
+
+    table th {
+      text-align: left;
+      padding: 10px 12px;
+      background: #f5f7fa;
+      border-bottom: 2px solid #e0e0e0;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      color: #555
+    }
+
+    table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0f0f0
+    }
+
+    table tr:hover td {
+      background: #fafafa
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: end
+    }
+
+    .filters .form-field {
+      min-width: 160px
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .3px
+    }
+
+    .badge-terra {
+      background: #fff3d9;
+      color: #ad6800
+    }
+
+    .badge-sub {
+      background: #ffe7d6;
+      color: #ad4e00
+    }
+
+    .badge-base {
+      background: #ffccc7;
+      color: #a8071a
+    }
+
+    .badge-recicl {
+      background: #d4edda;
+      color: #1e5c33
+    }
+
+    .badge-imprim {
+      background: #fff3cd;
+      color: #7c5a00
+    }
+
+    .badge-tsd {
+      background: #e8e8e8;
+      color: #444
+    }
+
+    .badge-micro {
+      background: #f8d7e3;
+      color: #7c1f4a
+    }
+
+    .badge-cbuq {
+      background: #2C2C2A;
+      color: #fff
+    }
+
+    .badge-asf {
+      background: #333;
+      color: #fff
+    }
+
+    /* Event status badges */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .status-indicativo {
+      background: #e8e8e8;
+      color: #555
+    }
+
+    .status-emexecucao {
+      background: #fff3cd;
+      color: #7c5a00;
+      border: 1px solid #ffc107
+    }
+
+    .status-executado {
+      background: #d4edda;
+      color: #1a5c2e;
+      border: 1px solid #52c41a
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block
+    }
+
+    .dot-indicativo {
+      background: #909090
+    }
+
+    .dot-emexecucao {
+      background: #D4A017
+    }
+
+    .dot-executado {
+      background: #3A9C4E
+    }
+
+    /* Strip chart */
+    .strip-wrap {
+      margin-bottom: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff
+    }
+
+    .strip-header {
+      background: linear-gradient(135deg, #f5f7fa 0%, #eef1f5 100%);
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .strip-header .km-range {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0078d4;
+      letter-spacing: .5px
+    }
+
+    .strip-header .est-range {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      color: #888
+    }
+
+    .strip-body {
+      padding: 8px;
+      overflow: hidden
+    }
+
+    /* Servicos ordem list */
+    .servicos-ordem-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .servico-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 6px
+    }
+
+    .servico-item label {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      margin: 0
+    }
+
+    .reorder-btns {
+      display: flex;
+      gap: 4px
+    }
+
+    /* Weekly summary */
+    .weekly-box {
+      background: linear-gradient(135deg, #f0f7ff, #e8f4fd);
+      border: 1px solid #bae0ff;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px
+    }
+
+    .weekly-box .card-title {
+      color: #0078d4;
+      margin-bottom: 12px
+    }
+
+    /* Debug */
+    .debug-panel {
+      background: #1e1e1e;
+      color: #4ec9b0;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all
+    }
+
+    .debug-panel .err {
+      color: #f48771
+    }
+
+    .debug-panel .ok {
+      color: #6a9955
+    }
+
+    .debug-panel .info {
+      color: #569cd6
+    }
+
+    .mode-banner {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center
+    }
+
+    .mode-banner.ok {
+      background: #d9f7be;
+      color: #237804;
+      border-bottom: 1px solid #95de64
+    }
+
+    .login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      text-align: center;
+      padding: 20px
+    }
+
+    .login-screen h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: #0078d4;
+      font-weight: 700
+    }
+
+    .login-screen p {
+      color: #666;
+      margin-bottom: 24px;
+      max-width: 400px
+    }
+
+    .login-btn {
+      background: #0078d4;
+      color: #fff;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background .15s
+    }
+
+    .login-btn:hover {
+      background: #106ebe
+    }
+
+    .login-btn svg {
+      width: 20px;
+      height: 20px
+    }
+
+    @media print {
+
+      .tabs,
+      .filters,
+      .mode-banner,
+      .header .user,
+      #debug-area,
+      button.secondary,
+      button.primary {
+        display: none !important
+      }
+
+      .strip-wrap {
+        page-break-inside: avoid;
+        margin-bottom: 8px
+      }
+
+      body {
+        background: #fff
+      }
+
+      .card {
+        box-shadow: none;
+        border: 1px solid #ccc
+      }
+    }
+
+    @media(max-width:768px) {
+      .grid-stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .form-grid,
+      .form-grid.g3 {
+        grid-template-columns: 1fr
+      }
+
+      .header {
+        padding: 12px 16px
+      }
+
+      .container {
+        padding: 12px
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div id="login-screen" class="login-screen">
-  <h2>Acompanhamento de Obras</h2>
-  <p>Faça login com sua conta Microsoft corporativa para acessar o sistema.</p>
-  <button class="login-btn" id="btn-login">
-    <svg viewBox="0 0 21 21" fill="none"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
-    Entrar com Microsoft
-  </button>
-  <div id="login-err" style="margin-top:16px"></div>
-</div>
-
-<div id="app-main" style="display:none">
-<div id="mode-banner" class="mode-banner ok" style="display:none"></div>
-<div class="header">
-  <h1>Acompanhamento de Obras — Pavimentação</h1>
-  <div class="user"><span id="user-info"></span><button class="logout" id="btn-logout">Sair</button></div>
-</div>
-<div class="container">
-  <div id="debug-area"></div>
-  <div class="filters">
-    <div class="form-field"><label>Obra (Centro de Negócio)</label><select id="obra-sel"><option>Carregando...</option></select></div>
-    <button class="secondary" id="btn-reload" title="Atualizar dados" style="padding:7px 10px;display:inline-flex;align-items:center;justify-content:center">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.66 2.34A8 8 0 1 0 15 8h-1.5a6.5 6.5 0 1 1-1.18-3.7L9.5 7H15V1.5l-1.34.84z" fill="currentColor"/></svg>
+  <div id="login-screen" class="login-screen">
+    <h2>Acompanhamento de Obras</h2>
+    <p>Faça login com sua conta Microsoft corporativa para acessar o sistema.</p>
+    <button class="login-btn" id="btn-login">
+      <svg viewBox="0 0 21 21" fill="none">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+        <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+        <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+      </svg>
+      Entrar com Microsoft
     </button>
-    <button class="secondary" id="btn-debug" style="font-size:11px;color:#999;display:none">Debug</button>
-  </div>
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="dashboard">Perfil unifilar</button>
-    <button class="tab-btn" data-tab="registrar">Registrar execução</button>
-    <button class="tab-btn" data-tab="historico">Histórico</button>
-    <button class="tab-btn" data-tab="projeto">Cadastro do projeto</button>
+    <div id="login-err" style="margin-top:16px"></div>
   </div>
 
-  <!-- PERFIL UNIFILAR -->
-  <div id="tab-dashboard">
-    <div class="grid-stats" id="stats-container"></div>
-    <div class="card">
-      <div class="card-title">Perfil longitudinal da obra</div>
-      <div class="legend" id="legend-container"></div>
-      <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:end">
-        <div class="form-field" style="min-width:160px"><label>Período de</label><input type="date" id="g-data-ini"></div>
-        <div class="form-field" style="min-width:160px"><label>Período até</label><input type="date" id="g-data-fim"></div>
-        <button class="secondary" id="g-data-limpar">Limpar filtro</button>
-        <span style="font-size:12px;color:#666;font-family:'Barlow Condensed',sans-serif;font-weight:600" id="g-ultima-exec"></span>
-      </div>
-      <div id="faixas-container"></div>
+  <div id="app-main" style="display:none">
+    <div id="mode-banner" class="mode-banner ok" style="display:none"></div>
+    <div class="header">
+      <h1>Acompanhamento de Obras — Pavimentação</h1>
+      <div class="user"><span id="user-info"></span><button class="logout" id="btn-logout">Sair</button></div>
     </div>
-  </div>
-
-  <!-- REGISTRAR -->
-  <div id="tab-registrar" style="display:none">
-    <div class="card">
-      <div class="card-title">Registrar execução</div>
-      <div style="background:#f0f7ff;border:1px solid #bae0ff;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#0050a0;line-height:1.8">
-        <strong>Como funciona o cadastro por células (100m):</strong><br>
-        • Cada célula = 5 estacas = 100m (estacas espaçadas a cada 20m).<br>
-        • A estaca fim é calculada automaticamente: para 1 célula fim = início + 4, para 2 células fim = início + 9, e assim por diante.
-      </div>
-      <div class="form-grid">
-        <div class="form-field"><label>Data</label><input type="date" id="r-data"></div>
-        <div class="form-field"><label>Serviço</label><select id="r-serv" onchange="atualizarInfoRegistro()"><option value="">Selecione...</option></select></div>
-      </div>
-      <div class="form-grid g3">
-        <div class="form-field">
-          <label>Estaca início (múltiplo de 5)</label>
-          <input type="number" id="r-est" min="0" step="5" placeholder="Ex: 0">
-          <div class="km-hint" id="r-est-km"></div>
-        </div>
-        <div class="form-field">
-          <label>Estaca fim</label>
-          <input type="number" id="r-est-fim" min="0" step="5" placeholder="—" disabled>
-          <div class="km-hint" id="r-est-fim-km"></div>
-        </div>
-        <div class="form-field"><label>Nº de camadas executadas</label><input type="number" id="r-cam" min="1" value="1"></div>
-      </div>
-      <div class="form-grid full"><div class="form-field"><label>Observação (opcional)</label><input type="text" id="r-obs" placeholder="Ex: Chuva após 16h"></div></div>
-      <div class="info-box" id="r-info">Informe a estaca e o serviço.</div>
-      <div id="r-perm" style="display:none"></div>
-      <div style="margin-top:16px"><button class="primary" id="btn-reg">Salvar</button></div>
-      <div id="r-msg"></div>
-    </div>
-  </div>
-
-  <!-- HISTÓRICO -->
-  <div id="tab-historico" style="display:none">
-    <div class="card">
-      <div class="card-title">Histórico de registros</div>
+    <div class="container">
+      <div id="debug-area"></div>
       <div class="filters">
-        <div class="form-field"><label>Serviço</label><select id="h-serv"><option value="">Todos</option></select></div>
-        <div class="form-field"><label>Semana</label><input type="week" id="h-semana"></div>
-        <div class="form-field"><label>Data de</label><input type="date" id="h-dt-ini"></div>
-        <div class="form-field"><label>Data até</label><input type="date" id="h-dt-fim"></div>
-        <button class="secondary" id="btn-exportar">Exportar CSV</button>
-        <button class="secondary" id="btn-excluir-lote" style="color:#a8071a">Excluir selecionados</button>
+        <div class="form-field"><label>Obra (Centro de Negócio)</label><select id="obra-sel">
+            <option>Carregando...</option>
+          </select></div>
+        <button class="secondary" id="btn-reload" title="Atualizar dados"
+          style="padding:5px 11px;font-size:20px;line-height:1;color:#0078d4;border-color:#bae0ff;background:#f0f7ff">↻</button>
+        <button class="secondary" id="btn-debug" style="font-size:11px;color:#999;display:none">Debug</button>
       </div>
-      <div id="weekly-summary-box"></div>
-      <div id="hist-lista"></div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="dashboard">Perfil unifilar</button>
+        <button class="tab-btn" data-tab="registrar">Registrar execução</button>
+        <button class="tab-btn" data-tab="historico">Histórico</button>
+        <button class="tab-btn" data-tab="projeto">Cadastro do projeto</button>
+      </div>
+
+      <!-- PERFIL UNIFILAR -->
+      <div id="tab-dashboard">
+        <div class="grid-stats" id="stats-container"></div>
+        <div class="card">
+          <div class="card-title">Perfil longitudinal da obra</div>
+          <div class="legend" id="legend-container"></div>
+          <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:end">
+            <div class="form-field" style="min-width:160px"><label>Período de</label><input type="date" id="g-data-ini">
+            </div>
+            <div class="form-field" style="min-width:160px"><label>Período até</label><input type="date"
+                id="g-data-fim"></div>
+            <button class="secondary" id="g-data-limpar">Limpar filtro</button>
+            <span style="font-size:12px;color:#666;font-family:'Barlow Condensed',sans-serif;font-weight:600"
+              id="g-ultima-exec"></span>
+          </div>
+          <div id="faixas-container"></div>
+        </div>
+      </div>
+
+      <!-- REGISTRAR -->
+      <div id="tab-registrar" style="display:none">
+        <div class="card">
+          <div class="card-title">Registrar execução</div>
+          <div
+            style="background:#f0f7ff;border:1px solid #bae0ff;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#0050a0;line-height:1.8">
+            <strong>Como funciona o cadastro por células (100m):</strong><br>
+            • Cada célula = 5 estacas = 100m (estacas espaçadas a cada 20m).<br>
+            • A estaca fim é calculada automaticamente: para 1 célula fim = início + 4, para 2 células fim = início + 9,
+            e assim por diante.
+          </div>
+          <div class="form-grid">
+            <div class="form-field"><label>Data</label><input type="date" id="r-data"></div>
+            <div class="form-field"><label>Serviço</label><select id="r-serv" onchange="atualizarInfoRegistro()">
+                <option value="">Selecione...</option>
+              </select></div>
+          </div>
+          <div class="form-grid g3">
+            <div class="form-field">
+              <label>Estaca início (múltiplo de 5)</label>
+              <input type="number" id="r-est" min="0" step="5" placeholder="Ex: 0">
+              <div class="km-hint" id="r-est-km"></div>
+            </div>
+            <div class="form-field">
+              <label>Estaca fim</label>
+              <input type="number" id="r-est-fim" min="0" step="5" placeholder="—" disabled>
+              <div class="km-hint" id="r-est-fim-km"></div>
+            </div>
+            <div class="form-field"><label>Nº de camadas executadas</label><input type="number" id="r-cam" min="1"
+                value="1"></div>
+          </div>
+          <div class="form-grid full">
+            <div class="form-field"><label>Observação (opcional)</label><input type="text" id="r-obs"
+                placeholder="Ex: Chuva após 16h"></div>
+          </div>
+          <div class="info-box" id="r-info">Informe a estaca e o serviço.</div>
+          <div id="r-perm" style="display:none"></div>
+          <div style="margin-top:16px"><button class="primary" id="btn-reg">Salvar</button></div>
+          <div id="r-msg"></div>
+        </div>
+      </div>
+
+      <!-- HISTÓRICO -->
+      <div id="tab-historico" style="display:none">
+        <div class="card">
+          <div class="card-title">Histórico de registros</div>
+          <div class="filters">
+            <div class="form-field"><label>Serviço</label><select id="h-serv">
+                <option value="">Todos</option>
+              </select></div>
+            <div class="form-field"><label>Semana</label><input type="week" id="h-semana"></div>
+            <div class="form-field"><label>Data de</label><input type="date" id="h-dt-ini"></div>
+            <div class="form-field"><label>Data até</label><input type="date" id="h-dt-fim"></div>
+            <button class="secondary" id="btn-exportar">Exportar CSV</button>
+            <button class="secondary" id="btn-excluir-lote" style="color:#a8071a">Excluir selecionados</button>
+          </div>
+          <div id="weekly-summary-box"></div>
+          <div id="hist-lista"></div>
+        </div>
+      </div>
+
+      <!-- PROJETO -->
+      <div id="tab-projeto" style="display:none">
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+          <button class="sub-tab-btn active" data-subtab="sub-servicos" onclick="switchSubTab(this)">Serviços da
+            obra</button>
+          <button class="sub-tab-btn" data-subtab="sub-estacas" onclick="switchSubTab(this)">Estacas</button>
+          <button class="sub-tab-btn" data-subtab="sub-eventos" onclick="switchSubTab(this)">Outros serviços</button>
+        </div>
+        <div id="sub-servicos">
+          <div class="card">
+            <div class="card-title">Serviços desta obra</div>
+            <p style="font-size:13px;color:#666;margin:0 0 12px">Selecione e ordene os serviços desta obra. Use ↑↓ para
+              definir a ordem de pré-requisito. A Imprimação pode ser posicionada conforme necessário.</p>
+            <div id="servicos-obra"></div>
+            <button class="primary" id="btn-salvar-servicos" style="margin-top:14px">Salvar serviços da obra</button>
+            <div id="serv-msg"></div>
+          </div>
+        </div>
+        <div id="sub-estacas" style="display:none">
+          <div class="card">
+            <div class="card-title">Cadastro de camadas por célula (100m = 5 estacas)</div>
+            <div
+              style="background:#f0f7ff;border:1px solid #bae0ff;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#0050a0">
+              Cada célula equivale a 100m (5 estacas). Informe estacas em múltiplos de 5.
+            </div>
+            <div class="form-grid g3">
+              <div class="form-field"><label>Serviço</label><select id="p-serv"></select></div>
+              <div class="form-field">
+                <label>Estaca início</label>
+                <input type="number" id="p-ini" min="0" step="5" value="0">
+                <div class="km-hint" id="p-ini-km">km 0+000</div>
+              </div>
+              <div class="form-field">
+                <label>Estaca fim</label>
+                <input type="number" id="p-fim" min="0" step="5" value="0">
+                <div class="km-hint" id="p-fim-km">km 0+000</div>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-field"><label>Nº de camadas</label><input type="number" id="p-cam" min="1" value="1">
+                <div style="font-size:11px;color:#888;margin-top:4px">Qualquer serviço pode ter múltiplas camadas.
+                  Terraplanagem costuma ter mais camadas (aterros); pavimentação geralmente 1 por serviço.</div>
+              </div>
+            </div>
+            <button class="primary" id="btn-proj">Aplicar ao intervalo</button>
+            <div id="p-msg"></div>
+            <div style="margin-top:24px">
+              <div class="card-title">Células cadastradas</div>
+              <div class="filters">
+                <div class="form-field"><label>Filtrar por serviço</label><select id="pf-serv">
+                    <option value="">Todos</option>
+                  </select></div>
+              </div>
+              <div id="proj-lista"></div>
+            </div>
+          </div>
+        </div>
+        <div id="sub-eventos" style="display:none">
+          <div class="card">
+            <div class="card-title">Outros serviços da obra</div>
+            <p style="font-size:13px;color:#666;margin:0 0 12px">Cadastre bueiros, pontes, riachos, zonas urbanas, etc.
+              Acompanhe o status de execução: <span class="status-pill status-indicativo">Indicativo</span> <span
+                class="status-pill status-emexecucao">Em execução</span> <span
+                class="status-pill status-executado">Executado</span></p>
+            <div class="form-grid g3">
+              <div class="form-field"><label>Tipo</label><select id="ev-tipo"></select></div>
+              <div class="form-field">
+                <label>Estaca início</label>
+                <input type="number" id="ev-ini" min="0" step="5" value="0">
+                <div class="km-hint" id="ev-ini-km">km 0+000</div>
+              </div>
+              <div class="form-field">
+                <label>Estaca fim (igual se pontual)</label>
+                <input type="number" id="ev-fim" min="0" step="5" value="0">
+                <div class="km-hint" id="ev-fim-km">km 0+000</div>
+              </div>
+            </div>
+            <div class="form-grid full">
+              <div class="form-field"><label>Observação</label><input type="text" id="ev-obs"
+                  placeholder="Ex: Bueiro triplo D=1.0m, Ponte L=15m sobre Rio São Miguel"></div>
+            </div>
+            <button class="primary" id="btn-evento">Adicionar</button>
+            <div id="ev-msg"></div>
+            <div style="margin-top:24px">
+              <div class="card-title">Outros serviços cadastrados</div>
+              <div id="eventos-lista"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- PROJETO -->
-  <div id="tab-projeto" style="display:none">
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-      <button class="sub-tab-btn active" data-subtab="sub-servicos" onclick="switchSubTab(this)">Serviços da obra</button>
-      <button class="sub-tab-btn" data-subtab="sub-estacas" onclick="switchSubTab(this)">Estacas</button>
-      <button class="sub-tab-btn" data-subtab="sub-eventos" onclick="switchSubTab(this)">Outros serviços</button>
-    </div>
-    <div id="sub-servicos">
-      <div class="card">
-        <div class="card-title">Serviços desta obra</div>
-        <p style="font-size:13px;color:#666;margin:0 0 12px">Selecione e ordene os serviços desta obra. Use ↑↓ para definir a ordem de pré-requisito. A Imprimação pode ser posicionada conforme necessário.</p>
-        <div id="servicos-obra"></div>
-        <button class="primary" id="btn-salvar-servicos" style="margin-top:14px">Salvar serviços da obra</button>
-        <div id="serv-msg"></div>
-      </div>
-    </div>
-    <div id="sub-estacas" style="display:none">
-      <div class="card">
-        <div class="card-title">Cadastro de camadas por célula (100m = 5 estacas)</div>
-        <div style="background:#f0f7ff;border:1px solid #bae0ff;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#0050a0">
-          Cada célula equivale a 100m (5 estacas). Informe estacas em múltiplos de 5.
-        </div>
-        <div class="form-grid g3">
-          <div class="form-field"><label>Serviço</label><select id="p-serv"></select></div>
-          <div class="form-field">
-            <label>Estaca início</label>
-            <input type="number" id="p-ini" min="0" step="5" value="0">
-            <div class="km-hint" id="p-ini-km">km 0+000</div>
-          </div>
-          <div class="form-field">
-            <label>Estaca fim</label>
-            <input type="number" id="p-fim" min="0" step="5" value="0">
-            <div class="km-hint" id="p-fim-km">km 0+000</div>
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-field"><label>Nº de camadas</label><input type="number" id="p-cam" min="1" value="1"><div style="font-size:11px;color:#888;margin-top:4px">Qualquer serviço pode ter múltiplas camadas. Terraplanagem costuma ter mais camadas (aterros); pavimentação geralmente 1 por serviço.</div></div>
-        </div>
-        <button class="primary" id="btn-proj">Aplicar ao intervalo</button>
-        <div id="p-msg"></div>
-        <div style="margin-top:24px"><div class="card-title">Células cadastradas</div>
-          <div class="filters"><div class="form-field"><label>Filtrar por serviço</label><select id="pf-serv"><option value="">Todos</option></select></div></div>
-          <div id="proj-lista"></div>
-        </div>
-      </div>
-    </div>
-    <div id="sub-eventos" style="display:none">
-      <div class="card">
-        <div class="card-title">Outros serviços da obra</div>
-        <p style="font-size:13px;color:#666;margin:0 0 12px">Cadastre bueiros, pontes, riachos, zonas urbanas, etc. Acompanhe o status de execução: <span class="status-pill status-indicativo">Indicativo</span> <span class="status-pill status-emexecucao">Em execução</span> <span class="status-pill status-executado">Executado</span></p>
-        <div class="form-grid g3">
-          <div class="form-field"><label>Tipo</label><select id="ev-tipo"></select></div>
-          <div class="form-field">
-            <label>Estaca início</label>
-            <input type="number" id="ev-ini" min="0" step="5" value="0">
-            <div class="km-hint" id="ev-ini-km">km 0+000</div>
-          </div>
-          <div class="form-field">
-            <label>Estaca fim (igual se pontual)</label>
-            <input type="number" id="ev-fim" min="0" step="5" value="0">
-            <div class="km-hint" id="ev-fim-km">km 0+000</div>
-          </div>
-        </div>
-        <div class="form-grid full"><div class="form-field"><label>Observação</label><input type="text" id="ev-obs" placeholder="Ex: Bueiro triplo D=1.0m, Ponte L=15m sobre Rio São Miguel"></div></div>
-        <button class="primary" id="btn-evento">Adicionar</button>
-        <div id="ev-msg"></div>
-        <div style="margin-top:24px"><div class="card-title">Outros serviços cadastrados</div><div id="eventos-lista"></div></div>
-      </div>
-    </div>
-  </div>
+  <script src="https://unpkg.com/@azure/msal-browser@2.38.0/lib/msal-browser.min.js"></script>
 
-</div>
-</div>
+  <script>
+    /* =================================================================
+       CONFIGURAÇÃO
+       ================================================================= */
+    // Emails com acesso ao painel de Debug — adicione os emails dos administradores
+    var ADMIN_EMAILS = ['administrador@construtoraalicerceceara.onmicrosoft.com'];
 
-<script src="https://unpkg.com/@azure/msal-browser@2.38.0/lib/msal-browser.min.js"></script>
+    var MSAL_CLIENT_ID = '13e6d132-d14c-4e07-9f7c-0aab1a7ef672';
+    var MSAL_TENANT_ID = '808cc4d8-fcde-4703-abb7-b0e9aa5aeb2b';
+    var MSAL_REDIRECT_URI = 'https://construtoraalicerce.github.io/obras/';
 
-<script>
-/* =================================================================
-   CONFIGURAÇÃO
-   ================================================================= */
-// Emails com acesso ao painel de Debug — adicione os emails dos administradores
-var ADMIN_EMAILS = ['paulolima.civil@gmail.com'];
+    var SHAREPOINT_HOST = 'construtoraalicerceceara.sharepoint.com';
+    var SHAREPOINT_SITE_PATH = '/sites/AcompanhamentoObrasdeInfra';
+    var SHAREPOINT_SITE_URL = 'https://' + SHAREPOINT_HOST + SHAREPOINT_SITE_PATH;
+    var LISTA_OBRAS = 'Obras';
+    var LISTA_PROJETO = 'Projeto';
+    var LISTA_EXECUCAO = 'Execucao';
+    var LISTA_EVENTOS = 'Eventos';
 
-var MSAL_CLIENT_ID = '13e6d132-d14c-4e07-9f7c-0aab1a7ef672';
-var MSAL_TENANT_ID = '808cc4d8-fcde-4703-abb7-b0e9aa5aeb2b';
-var MSAL_REDIRECT_URI = 'https://construtoraalicerce.github.io/obras/';
+    /* =================================================================
+       CONSTANTES DE SERVIÇOS
+       ================================================================= */
+    var CELULA_ESTACAS = 5;   // 1 célula = 5 estacas = 100m (estacas a cada 20m)
+    var STRIP_CELLS = 50;     // 50 células por faixa = 5.000m
 
-var SHAREPOINT_HOST = 'construtoraalicerceceara.sharepoint.com';
-var SHAREPOINT_SITE_PATH = '/sites/AcompanhamentoObrasdeInfra';
-var SHAREPOINT_SITE_URL = 'https://' + SHAREPOINT_HOST + SHAREPOINT_SITE_PATH;
-var LISTA_OBRAS = 'Obras';
-var LISTA_PROJETO = 'Projeto';
-var LISTA_EXECUCAO = 'Execucao';
-var LISTA_EVENTOS = 'Eventos';
+    var TODOS_SERVICOS = ['terra', 'sub', 'base', 'recicl', 'imprim', 'tsd', 'micro', 'cbuq'];
+    var NOMES = {
+      terra: 'Terraplanagem', sub: 'Sub-base', base: 'Base',
+      recicl: 'Reciclagem', imprim: 'Imprimação',
+      tsd: 'TSD', micro: 'Microrevestimento', cbuq: 'CBUQ'
+    };
+    var CORES = {
+      terra: '#EF9F27', sub: '#F0997B', base: '#993C1D',
+      recicl: '#3D7A4F', imprim: '#B8912F',
+      tsd: '#888780', micro: '#9C3D72', cbuq: '#2C2C2A'
+    };
+    var ORDEM_DEFAULT = ['terra', 'sub', 'base', 'recicl', 'imprim', 'tsd', 'micro', 'cbuq'];
+    // Nomes curtos para rótulos do gráfico SVG (max ~11 chars)
+    var NOMES_CHART = {
+      terra: 'Terraplan.', sub: 'Sub-base', base: 'Base',
+      recicl: 'Reciclagem', imprim: 'Imprimação', tsd: 'TSD',
+      micro: 'Microrev.', cbuq: 'CBUQ'
+    };
 
-/* =================================================================
-   CONSTANTES DE SERVIÇOS
-   ================================================================= */
-var CELULA_ESTACAS = 5;   // 1 célula = 5 estacas = 100m (estacas a cada 20m)
-var STRIP_CELLS = 50;     // 50 células por faixa = 5.000m
+    var TIPOS_EVENTO = ['bueiro', 'riacho', 'ponte', 'zona_urbana', 'corte', 'intersecao', 'praca', 'variante', 'cerca', 'fauna'];
+    var NOMES_EVENTO = { bueiro: 'Bueiro', riacho: 'Riacho/Rio', ponte: 'Ponte/Viaduto', zona_urbana: 'Zona urbana', corte: 'Corte em rocha', intersecao: 'Interseção', praca: 'Praça/Retorno', variante: 'Variante', cerca: 'Cerca', fauna: 'Passagem fauna' };
+    var CORES_EVENTO = { bueiro: '#185FA5', riacho: '#0F6E56', ponte: '#993556', zona_urbana: '#BA7517', corte: '#A32D2D', intersecao: '#534AB7', praca: '#5F5E5A', variante: '#D85A30', cerca: '#3B6D11', fauna: '#1D9E75' };
 
-var TODOS_SERVICOS = ['terra','sub','base','recicl','imprim','tsd','micro','cbuq'];
-var NOMES = {
-  terra:'Terraplanagem', sub:'Sub-base', base:'Base',
-  recicl:'Reciclagem', imprim:'Imprimação',
-  tsd:'TSD', micro:'Microrevestimento', cbuq:'CBUQ'
-};
-var CORES = {
-  terra:'#EF9F27', sub:'#F0997B', base:'#993C1D',
-  recicl:'#3D7A4F', imprim:'#B8912F',
-  tsd:'#888780', micro:'#9C3D72', cbuq:'#2C2C2A'
-};
-var ORDEM_DEFAULT = ['terra','sub','base','recicl','imprim','tsd','micro','cbuq'];
-// Nomes curtos para rótulos do gráfico SVG (max ~11 chars)
-var NOMES_CHART = {
-  terra:'Terraplan.', sub:'Sub-base', base:'Base',
-  recicl:'Reciclagem', imprim:'Imprimação', tsd:'TSD',
-  micro:'Microrev.', cbuq:'CBUQ'
-};
+    var STATUS_EVENTO = ['indicativo', 'emexecucao', 'executado'];
+    var STATUS_EVENTO_NOMES = { indicativo: 'Indicativo', emexecucao: 'Em execução', executado: 'Executado' };
+    var STATUS_EVENTO_CORES = { indicativo: '#909090', emexecucao: '#D4A017', executado: '#3A9C4E' };
 
-var TIPOS_EVENTO = ['bueiro','riacho','ponte','zona_urbana','corte','intersecao','praca','variante','cerca','fauna'];
-var NOMES_EVENTO = {bueiro:'Bueiro',riacho:'Riacho/Rio',ponte:'Ponte/Viaduto',zona_urbana:'Zona urbana',corte:'Corte em rocha',intersecao:'Interseção',praca:'Praça/Retorno',variante:'Variante',cerca:'Cerca',fauna:'Passagem fauna'};
-var CORES_EVENTO = {bueiro:'#185FA5',riacho:'#0F6E56',ponte:'#993556',zona_urbana:'#BA7517',corte:'#A32D2D',intersecao:'#534AB7',praca:'#5F5E5A',variante:'#D85A30',cerca:'#3B6D11',fauna:'#1D9E75'};
+    /* =================================================================
+       MSAL
+       ================================================================= */
+    var msalConfig = { auth: { clientId: MSAL_CLIENT_ID, authority: 'https://login.microsoftonline.com/' + MSAL_TENANT_ID, redirectUri: MSAL_REDIRECT_URI }, cache: { cacheLocation: 'localStorage' } };
+    var msalApp = null;
+    var currentAccount = null;
+    var loginRequest = { scopes: ['https://' + SHAREPOINT_HOST + '/AllSites.Write'] };
 
-var STATUS_EVENTO = ['indicativo','emexecucao','executado'];
-var STATUS_EVENTO_NOMES = {indicativo:'Indicativo', emexecucao:'Em execução', executado:'Executado'};
-var STATUS_EVENTO_CORES = {indicativo:'#909090', emexecucao:'#D4A017', executado:'#3A9C4E'};
+    function handleLoginResponse(r) { if (r && r.account) { currentAccount = r.account; msalApp.setActiveAccount(currentAccount) } else { var a = msalApp.getAllAccounts(); if (a.length > 0) { currentAccount = a[0]; msalApp.setActiveAccount(currentAccount) } } }
+    async function getToken() { if (!currentAccount) throw new Error('Não autenticado'); try { var r = await msalApp.acquireTokenSilent({ ...loginRequest, account: currentAccount }); return r.accessToken } catch (e) { var r = await msalApp.acquireTokenPopup(loginRequest); currentAccount = r.account; return r.accessToken } }
 
-/* =================================================================
-   MSAL
-   ================================================================= */
-var msalConfig = {auth:{clientId:MSAL_CLIENT_ID,authority:'https://login.microsoftonline.com/'+MSAL_TENANT_ID,redirectUri:MSAL_REDIRECT_URI},cache:{cacheLocation:'localStorage'}};
-var msalApp = null;
-var currentAccount = null;
-var loginRequest = {scopes:['https://'+SHAREPOINT_HOST+'/AllSites.Write']};
+    /* =================================================================
+       DEBUG
+       ================================================================= */
+    var debugVisible = false, debugLog = [];
+    function dbg(m, t) { debugLog.push({ ts: new Date().toLocaleTimeString('pt-BR'), msg: m, type: t || 'info' }); renderDebug() }
+    function renderDebug() { if (!debugVisible) return; var a = document.getElementById('debug-area'); var h = '<div class="debug-panel"><strong style="color:#dcdcaa">Log</strong>\n\n'; debugLog.forEach(function (d) { h += '<span class="' + (d.type === 'err' ? 'err' : d.type === 'ok' ? 'ok' : 'info') + '">[' + d.ts + '] ' + d.msg + '</span>\n' }); h += '</div>'; a.innerHTML = h }
 
-function handleLoginResponse(r){if(r&&r.account){currentAccount=r.account;msalApp.setActiveAccount(currentAccount)}else{var a=msalApp.getAllAccounts();if(a.length>0){currentAccount=a[0];msalApp.setActiveAccount(currentAccount)}}}
-async function getToken(){if(!currentAccount)throw new Error('Não autenticado');try{var r=await msalApp.acquireTokenSilent({...loginRequest,account:currentAccount});return r.accessToken}catch(e){var r=await msalApp.acquireTokenPopup(loginRequest);currentAccount=r.account;return r.accessToken}}
+    /* =================================================================
+       SHAREPOINT REST API
+       ================================================================= */
+    var SP = {
+      async spFetch(ep, opts) { var tk = await getToken(); var url = SHAREPOINT_SITE_URL + '/_api' + ep; var o = { method: (opts && opts.method) || 'GET', headers: { 'Accept': 'application/json;odata=nometadata', 'Content-Type': 'application/json;odata=nometadata', 'Authorization': 'Bearer ' + tk } }; if (opts && opts.headers) Object.keys(opts.headers).forEach(function (k) { o.headers[k] = opts.headers[k] }); if (opts && opts.body) o.body = opts.body; dbg((o.method) + ' ' + ep); var r = await fetch(url, o); if (!r.ok) { var t = await r.text(); dbg('ERRO ' + r.status + ': ' + t.substring(0, 300), 'err'); throw new Error('SP erro ' + r.status) } var ct = r.headers.get('content-type') || ''; if (ct.indexOf('json') >= 0) { var d = await r.json(); dbg('OK', 'ok'); return d } return null },
+      async getDigest() { var d = await this.spFetch('/contextinfo', { method: 'POST' }); return d.FormDigestValue },
+      async listarItens(l, f) { var ep = "/web/lists/getbytitle('" + l + "')/items?$top=5000"; if (f) ep += '&$filter=' + encodeURIComponent(f); var d = await this.spFetch(ep); return d.value || [] },
+      async criarItem(l, c) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items", { method: 'POST', headers: { 'X-RequestDigest': dg }, body: JSON.stringify(c) }) },
+      async atualizarItem(l, id, c) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items(" + id + ")", { method: 'POST', headers: { 'X-RequestDigest': dg, 'X-HTTP-Method': 'MERGE', 'If-Match': '*' }, body: JSON.stringify(c) }) },
+      async deletarItem(l, id) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items(" + id + ")", { method: 'POST', headers: { 'X-RequestDigest': dg, 'X-HTTP-Method': 'DELETE', 'If-Match': '*' } }) }
+    };
 
-/* =================================================================
-   DEBUG
-   ================================================================= */
-var debugVisible=false,debugLog=[];
-function dbg(m,t){debugLog.push({ts:new Date().toLocaleTimeString('pt-BR'),msg:m,type:t||'info'});renderDebug()}
-function renderDebug(){if(!debugVisible)return;var a=document.getElementById('debug-area');var h='<div class="debug-panel"><strong style="color:#dcdcaa">Log</strong>\n\n';debugLog.forEach(function(d){h+='<span class="'+(d.type==='err'?'err':d.type==='ok'?'ok':'info')+'">['+d.ts+'] '+d.msg+'</span>\n'});h+='</div>';a.innerHTML=h}
+    /* =================================================================
+       DATA API
+       ================================================================= */
+    var DataAPI = {
+      async listarObras() { return SP.listarItens(LISTA_OBRAS) },
+      async atualizarObra(id, campos) { return SP.atualizarItem(LISTA_OBRAS, id, campos) },
+      async listarProjeto(obraId) { return SP.listarItens(LISTA_PROJETO, 'ObraId eq ' + obraId) },
+      async salvarProjeto(obraId, estaca, servico, numCamadas) {
+        var ex = await SP.listarItens(LISTA_PROJETO, 'ObraId eq ' + obraId + ' and Estaca eq ' + estaca + " and Servico eq '" + servico + "'");
+        if (ex.length > 0) return SP.atualizarItem(LISTA_PROJETO, ex[0].Id, { NumCamadas: numCamadas });
+        return SP.criarItem(LISTA_PROJETO, { Title: obraId + '-E' + estaca + '-' + servico, ObraId: obraId, Estaca: estaca, Servico: servico, NumCamadas: numCamadas })
+      },
+      async listarExecucao(obraId) { return SP.listarItens(LISTA_EXECUCAO, 'ObraId eq ' + obraId) },
+      async salvarExecucao(obraId, data, estaca, servico, numCamadas, responsavel, obs) {
+        return SP.criarItem(LISTA_EXECUCAO, { Title: obraId + '-E' + estaca + '-' + servico + '-' + data, ObraId: obraId, DataExecucao: data, Estaca: estaca, Servico: servico, NumCamadasExecutadas: numCamadas, Responsavel: responsavel, Observacao: obs || '' })
+      },
+      async listarEventos(obraId) { return SP.listarItens(LISTA_EVENTOS, 'ObraId eq ' + obraId) },
+      async salvarEvento(obraId, estIni, estFim, tipo, obs) {
+        return SP.criarItem(LISTA_EVENTOS, { Title: obraId + '-' + tipo + '-E' + estIni, ObraId: obraId, EstacaInicial: estIni, EstacaFinal: estFim || estIni, TipoEvento: tipo, Status: 'indicativo', Observacao: obs || '' })
+      },
+      async atualizarEvento(id, campos) { return SP.atualizarItem(LISTA_EVENTOS, id, campos) },
+      async deletarEvento(id) { return SP.deletarItem(LISTA_EVENTOS, id) }
+    };
 
-/* =================================================================
-   SHAREPOINT REST API
-   ================================================================= */
-var SP={
-  async spFetch(ep,opts){var tk=await getToken();var url=SHAREPOINT_SITE_URL+'/_api'+ep;var o={method:(opts&&opts.method)||'GET',headers:{'Accept':'application/json;odata=nometadata','Content-Type':'application/json;odata=nometadata','Authorization':'Bearer '+tk}};if(opts&&opts.headers)Object.keys(opts.headers).forEach(function(k){o.headers[k]=opts.headers[k]});if(opts&&opts.body)o.body=opts.body;dbg((o.method)+' '+ep);var r=await fetch(url,o);if(!r.ok){var t=await r.text();dbg('ERRO '+r.status+': '+t.substring(0,300),'err');throw new Error('SP erro '+r.status)}var ct=r.headers.get('content-type')||'';if(ct.indexOf('json')>=0){var d=await r.json();dbg('OK','ok');return d}return null},
-  async getDigest(){var d=await this.spFetch('/contextinfo',{method:'POST'});return d.FormDigestValue},
-  async listarItens(l,f){var ep="/web/lists/getbytitle('"+l+"')/items?$top=5000";if(f)ep+='&$filter='+encodeURIComponent(f);var d=await this.spFetch(ep);return d.value||[]},
-  async criarItem(l,c){var dg=await this.getDigest();return await this.spFetch("/web/lists/getbytitle('"+l+"')/items",{method:'POST',headers:{'X-RequestDigest':dg},body:JSON.stringify(c)})},
-  async atualizarItem(l,id,c){var dg=await this.getDigest();return await this.spFetch("/web/lists/getbytitle('"+l+"')/items("+id+")",{method:'POST',headers:{'X-RequestDigest':dg,'X-HTTP-Method':'MERGE','If-Match':'*'},body:JSON.stringify(c)})},
-  async deletarItem(l,id){var dg=await this.getDigest();return await this.spFetch("/web/lists/getbytitle('"+l+"')/items("+id+")",{method:'POST',headers:{'X-RequestDigest':dg,'X-HTTP-Method':'DELETE','If-Match':'*'}})}
-};
+    /* =================================================================
+       ESTADO
+       ================================================================= */
+    var APP = { usuario: null, obras: [], obraAtual: null, projeto: [], execucao: [], eventos: [], servicosObra: [] };
 
-/* =================================================================
-   DATA API
-   ================================================================= */
-var DataAPI={
-  async listarObras(){return SP.listarItens(LISTA_OBRAS)},
-  async atualizarObra(id,campos){return SP.atualizarItem(LISTA_OBRAS,id,campos)},
-  async listarProjeto(obraId){return SP.listarItens(LISTA_PROJETO,'ObraId eq '+obraId)},
-  async salvarProjeto(obraId,estaca,servico,numCamadas){
-    var ex=await SP.listarItens(LISTA_PROJETO,'ObraId eq '+obraId+' and Estaca eq '+estaca+" and Servico eq '"+servico+"'");
-    if(ex.length>0)return SP.atualizarItem(LISTA_PROJETO,ex[0].Id,{NumCamadas:numCamadas});
-    return SP.criarItem(LISTA_PROJETO,{Title:obraId+'-E'+estaca+'-'+servico,ObraId:obraId,Estaca:estaca,Servico:servico,NumCamadas:numCamadas})
-  },
-  async listarExecucao(obraId){return SP.listarItens(LISTA_EXECUCAO,'ObraId eq '+obraId)},
-  async salvarExecucao(obraId,data,estaca,servico,numCamadas,responsavel,obs){
-    return SP.criarItem(LISTA_EXECUCAO,{Title:obraId+'-E'+estaca+'-'+servico+'-'+data,ObraId:obraId,DataExecucao:data,Estaca:estaca,Servico:servico,NumCamadasExecutadas:numCamadas,Responsavel:responsavel,Observacao:obs||''})
-  },
-  async listarEventos(obraId){return SP.listarItens(LISTA_EVENTOS,'ObraId eq '+obraId)},
-  async salvarEvento(obraId,estIni,estFim,tipo,obs){
-    return SP.criarItem(LISTA_EVENTOS,{Title:obraId+'-'+tipo+'-E'+estIni,ObraId:obraId,EstacaInicial:estIni,EstacaFinal:estFim||estIni,TipoEvento:tipo,Status:'indicativo',Observacao:obs||''})
-  },
-  async atualizarEvento(id,campos){return SP.atualizarItem(LISTA_EVENTOS,id,campos)},
-  async deletarEvento(id){return SP.deletarItem(LISTA_EVENTOS,id)}
-};
-
-/* =================================================================
-   ESTADO
-   ================================================================= */
-var APP={usuario:null,obras:[],obraAtual:null,projeto:[],execucao:[],eventos:[],servicosObra:[]};
-
-/* =================================================================
-   HELPERS — CONVERSÃO KM/ESTACA
-   ================================================================= */
-function estakaParaKm(est){
-  var metros=est*20;
-  var km=Math.floor(metros/1000);
-  var resto=String(metros%1000).padStart(3,'0');
-  return 'km '+km+'+'+resto;
-}
-
-function celToKm(cel){return estakaParaKm(cel*CELULA_ESTACAS)}
-
-function normalizarEstaca(v){
-  // arredonda para o múltiplo de CELULA_ESTACAS mais próximo (abaixo)
-  return Math.floor(v/CELULA_ESTACAS)*CELULA_ESTACAS;
-}
-
-/* =================================================================
-   HELPERS — SERVIÇOS
-   ================================================================= */
-function getOrdemServicos(){
-  if(!APP.obraAtual)return ORDEM_DEFAULT.slice();
-  var o=APP.obraAtual.OrdemServicos;
-  if(!o||o.trim()==='')return ORDEM_DEFAULT.slice();
-  var ordem=o.split(';').map(function(x){return x.trim()}).filter(function(x){return TODOS_SERVICOS.indexOf(x)>=0});
-  TODOS_SERVICOS.forEach(function(sv){if(ordem.indexOf(sv)<0)ordem.push(sv)});
-  return ordem;
-}
-
-function getServicosObra(){
-  if(!APP.obraAtual)return ORDEM_DEFAULT.slice();
-  var s=APP.obraAtual.Servicos;
-  var selecionados=(!s||s.trim()==='') ? TODOS_SERVICOS : s.split(';').map(function(x){return x.trim()}).filter(function(x){return TODOS_SERVICOS.indexOf(x)>=0});
-  var ordem=getOrdemServicos();
-  return ordem.filter(function(sv){return selecionados.indexOf(sv)>=0});
-}
-
-function camadasProj(est,sv){
-  var gs=normalizarEstaca(est);
-  var p=APP.projeto.find(function(x){return x.Estaca===gs&&x.Servico===sv});
-  return p?p.NumCamadas:0;
-}
-
-function camadasExec(est,sv){
-  var gs=normalizarEstaca(est);
-  var s=APP.execucao.filter(function(e){return e.Estaca===gs&&e.Servico===sv}).reduce(function(a,e){return a+(e.NumCamadasExecutadas||0)},0);
-  return Math.min(s,camadasProj(gs,sv));
-}
-
-function servConcluido(sv,est){
-  var gs=normalizarEstaca(est);
-  var n=camadasProj(gs,sv);
-  if(n===0)return false;
-  return camadasExec(gs,sv)>=n;
-}
-
-function preReqOK(sv,est){
-  var servicos=getServicosObra();
-  var idx=servicos.indexOf(sv);
-  var gs=normalizarEstaca(est);
-  for(var i=0;i<idx;i++){
-    if(!servConcluido(servicos[i],gs))return{ok:false,falta:NOMES[servicos[i]]};
-  }
-  return{ok:true};
-}
-
-function podeRegistrar(){
-  if(!APP.obraAtual)return false;
-  var r=APP.obraAtual.Responsaveis;
-  if(!r||r.trim()==='')return true;
-  var emails=r.toLowerCase().split(';').map(function(e){return e.trim()});
-  return emails.indexOf((APP.usuario.email||'').toLowerCase())>=0;
-}
-
-function estacasComProjeto(){
-  var set={};
-  APP.projeto.forEach(function(p){set[p.Estaca]=true});
-  return Object.keys(set).map(Number).sort(function(a,b){return a-b});
-}
-
-/* =================================================================
-   POPULAR SELECTS
-   ================================================================= */
-function popularSelects(){
-  var servicos=getServicosObra();
-  var ids=['r-serv','p-serv','h-serv','pf-serv'];
-  ids.forEach(function(id){
-    var sel=document.getElementById(id);if(!sel)return;
-    var isFilter=id==='h-serv'||id==='pf-serv';
-    var html=isFilter?'<option value="">Todos</option>':'';
-    servicos.forEach(function(s){html+='<option value="'+s+'">'+NOMES[s]+'</option>'});
-    sel.innerHTML=html;
-  });
-}
-
-/* =================================================================
-   STATS
-   ================================================================= */
-function renderStats(){
-  var servicos=getServicosObra();
-  var container=document.getElementById('stats-container');
-  container.innerHTML='';
-  servicos.forEach(function(s){
-    var div=document.createElement('div');
-    div.className='stat-card';
-    div.style.borderLeftColor=CORES[s];
-    div.innerHTML='<div class="stat-label">'+NOMES[s]+'</div><div class="stat-value" id="pct-'+s+'">—</div>';
-    container.appendChild(div);
-  });
-}
-
-function atualizarPercentuais(){
-  var servicos=getServicosObra();
-  var grupos=estacasComProjeto();
-  servicos.forEach(function(sv){
-    var el=document.getElementById('pct-'+sv);if(!el)return;
-    if(sv==='terra'){
-      var tp=0,te=0;
-      grupos.forEach(function(g){var n=camadasProj(g,'terra');tp+=n;te+=camadasExec(g,'terra')});
-      el.textContent=tp>0?Math.round(te/tp*100)+'%':'0%';
-    }else{
-      var estSv=APP.projeto.filter(function(p){return p.Servico===sv});
-      if(estSv.length===0){el.textContent='—';return}
-      var conc=estSv.filter(function(p){return servConcluido(sv,p.Estaca)}).length;
-      el.textContent=Math.round(conc/estSv.length*100)+'%';
+    /* =================================================================
+       HELPERS — CONVERSÃO KM/ESTACA
+       ================================================================= */
+    function estakaParaKm(est) {
+      var metros = est * 20;
+      var km = Math.floor(metros / 1000);
+      var resto = String(metros % 1000).padStart(3, '0');
+      return 'km ' + km + '+' + resto;
     }
-  });
-}
 
-function renderLegend(){
-  var servicos=getServicosObra();
-  var container=document.getElementById('legend-container');
-  var html='<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px"><span style="font-weight:700;color:#555;font-size:12px;text-transform:uppercase;letter-spacing:.3px">Serviços:</span>';
-  servicos.forEach(function(s){html+='<div class="legend-item"><span class="legend-box" style="background:'+CORES[s]+'"></span>'+NOMES[s]+'</div>'});
-  html+='<div class="legend-item"><span class="legend-box" style="background:#f0f0f0"></span>Pendente</div></div>';
-  if(APP.eventos.length>0){
-    html+='<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px"><span style="font-weight:700;color:#555;font-size:12px;text-transform:uppercase;letter-spacing:.3px">Outros serviços:</span>';
-    html+='<div class="legend-item"><span class="status-dot dot-indicativo" style="display:inline-block;width:12px;height:12px;border-radius:50%"></span>Indicativo</div>';
-    html+='<div class="legend-item"><span class="status-dot dot-emexecucao" style="display:inline-block;width:12px;height:12px;border-radius:50%"></span>Em execução</div>';
-    html+='<div class="legend-item"><span class="status-dot dot-executado" style="display:inline-block;width:12px;height:12px;border-radius:50%"></span>Executado</div>';
-    html+='</div>';
-  }
-  container.innerHTML=html;
-}
+    function celToKm(cel) { return estakaParaKm(cel * CELULA_ESTACAS) }
 
-/* =================================================================
-   GRÁFICO EM FAIXAS
-   ================================================================= */
-function renderGraficoFaixas(){
-  var container=document.getElementById('faixas-container');
-  if(!APP.obraAtual){container.innerHTML='';return}
+    function normalizarEstaca(v) {
+      // arredonda para o múltiplo de CELULA_ESTACAS mais próximo (abaixo)
+      return Math.floor(v / CELULA_ESTACAS) * CELULA_ESTACAS;
+    }
 
-  var servicos=getServicosObra();
-  var estIni=APP.obraAtual.EstacaInicial||0;
-  var estFim=APP.obraAtual.EstacaFinal||0;
-  var celIni=Math.floor(estIni/CELULA_ESTACAS);
-  var celFim=Math.floor(estFim/CELULA_ESTACAS);
+    /* =================================================================
+       HELPERS — SERVIÇOS
+       ================================================================= */
+    function getOrdemServicos() {
+      if (!APP.obraAtual) return ORDEM_DEFAULT.slice();
+      var o = APP.obraAtual.OrdemServicos;
+      if (!o || o.trim() === '') return ORDEM_DEFAULT.slice();
+      var ordem = o.split(';').map(function (x) { return x.trim() }).filter(function (x) { return TODOS_SERVICOS.indexOf(x) >= 0 });
+      TODOS_SERVICOS.forEach(function (sv) { if (ordem.indexOf(sv) < 0) ordem.push(sv) });
+      return ordem;
+    }
 
-  var filtroIni=document.getElementById('g-data-ini').value;
-  var filtroFim=document.getElementById('g-data-fim').value;
-  var execFiltrada=APP.execucao.filter(function(e){
-    var d=(e.DataExecucao||'').substring(0,10);
-    if(filtroIni&&d<filtroIni)return false;
-    if(filtroFim&&d>filtroFim)return false;
-    return true;
-  });
+    function getServicosObra() {
+      if (!APP.obraAtual) return ORDEM_DEFAULT.slice();
+      var s = APP.obraAtual.Servicos;
+      var selecionados = (!s || s.trim() === '') ? TODOS_SERVICOS : s.split(';').map(function (x) { return x.trim() }).filter(function (x) { return TODOS_SERVICOS.indexOf(x) >= 0 });
+      var ordem = getOrdemServicos();
+      return ordem.filter(function (sv) { return selecionados.indexOf(sv) >= 0 });
+    }
 
-  var ultimaExec='';
-  if(APP.execucao.length>0){
-    var datas=APP.execucao.map(function(e){return(e.DataExecucao||'').substring(0,10)}).sort();
-    ultimaExec=datas[datas.length-1].split('-').reverse().join('/');
-  }
-  var filtroLabel='';
-  if(filtroIni&&filtroFim)filtroLabel=' | '+filtroIni.split('-').reverse().join('/')+' a '+filtroFim.split('-').reverse().join('/');
-  else if(filtroIni)filtroLabel=' | a partir de '+filtroIni.split('-').reverse().join('/');
-  else if(filtroFim)filtroLabel=' | até '+filtroFim.split('-').reverse().join('/');
-  document.getElementById('g-ultima-exec').textContent=ultimaExec?'Última execução: '+ultimaExec+filtroLabel:'';
+    function camadasProj(est, sv) {
+      var gs = normalizarEstaca(est);
+      var p = APP.projeto.find(function (x) { return x.Estaca === gs && x.Servico === sv });
+      return p ? p.NumCamadas : 0;
+    }
 
-  container.innerHTML='';
+    function camadasExec(est, sv) {
+      var gs = normalizarEstaca(est);
+      var s = APP.execucao.filter(function (e) { return e.Estaca === gs && e.Servico === sv }).reduce(function (a, e) { return a + (e.NumCamadasExecutadas || 0) }, 0);
+      return Math.min(s, camadasProj(gs, sv));
+    }
 
-  // CW calculado 1x com base em STRIP_CELLS (faixa cheia = 50 células)
-  // Todas as faixas usam o mesmo CW; a última faixa (parcial) ficará menor
-  var _L=104,_rp=8;
-  var _containerW=(container.clientWidth||1200)-20;
-  var CW_GLOBAL=Math.max(14,Math.floor((_containerW-_L-_rp)/STRIP_CELLS));
+    function servConcluido(sv, est) {
+      var gs = normalizarEstaca(est);
+      var n = camadasProj(gs, sv);
+      if (n === 0) return false;
+      return camadasExec(gs, sv) >= n;
+    }
 
-  for(var stripStart=celIni;stripStart<=celFim;stripStart+=STRIP_CELLS){
-    var stripEnd=Math.min(stripStart+STRIP_CELLS-1,celFim);
-    var wrap=criarFaixa(stripStart,stripEnd,servicos,execFiltrada,CW_GLOBAL);
-    container.appendChild(wrap);
-  }
-
-  atualizarPercentuais();
-}
-
-function criarFaixa(celIni,celFim,servicos,execFiltrada,cwGlobal){
-  var wrap=document.createElement('div');
-  wrap.className='strip-wrap';
-
-  var header=document.createElement('div');
-  header.className='strip-header';
-  header.innerHTML='<span class="km-range">'+celToKm(celIni)+' &mdash; '+celToKm(celFim+1)+'</span>'+
-    '<span class="est-range">E.'+celIni*CELULA_ESTACAS+' a E.'+(celFim*CELULA_ESTACAS+CELULA_ESTACAS-1)+'</span>';
-  wrap.appendChild(header);
-
-  var body=document.createElement('div');
-  body.className='strip-body';
-  var svg=renderFaixaSVG(celIni,celFim,servicos,execFiltrada,cwGlobal);
-  body.appendChild(svg);
-  wrap.appendChild(body);
-  return wrap;
-}
-
-function renderFaixaSVG(celIni,celFim,servicos,execFiltrada,cwGlobal){
-  var ns='http://www.w3.org/2000/svg';
-  var temTerra=servicos.indexOf('terra')>=0;
-  var topServs=servicos.filter(function(s){return s!=='terra'}).reverse();
-  var SR=topServs.length;
-
-  var mxT=1;
-  if(temTerra){
-    APP.projeto.filter(function(p){return p.Servico==='terra'}).forEach(function(p){if(p.NumCamadas>mxT)mxT=p.NumCamadas});
-  }
-
-  var numCel=celFim-celIni+1;
-  var L=104; // espaço suficiente para "Reciclagem" e "Imprimação"
-  var rightPad=8;
-  // usa CW global (mesmo para todas as faixas); largura total varia pelo nº real de células
-  var CW=cwGlobal||Math.max(14,Math.floor(((document.getElementById('faixas-container').clientWidth||1200)-20-L-rightPad)/STRIP_CELLS));
-  var W=L+numCel*CW+rightPad;
-  var G=2;
-  var CH=22;
-
-  // Eventos filtrados para esta faixa
-  var evtsFilt=APP.eventos.filter(function(ev){
-    var eCelIni=Math.floor((ev.EstacaInicial||0)/CELULA_ESTACAS);
-    var eCelFim=Math.floor((ev.EstacaFinal||ev.EstacaInicial||0)/CELULA_ESTACAS);
-    return eCelIni<=celFim&&eCelFim>=celIni;
-  });
-
-  var evtRows=0;
-  if(evtsFilt.length>0){
-    evtRows=1;
-    var evtByCol={};
-    evtsFilt.forEach(function(ev){
-      var eCI=Math.max(Math.floor((ev.EstacaInicial||0)/CELULA_ESTACAS),celIni);
-      var eCF=Math.min(Math.floor((ev.EstacaFinal||ev.EstacaInicial||0)/CELULA_ESTACAS),celFim);
-      for(var x=eCI;x<=eCF;x++){evtByCol[x]=(evtByCol[x]||0)+1;if(evtByCol[x]>evtRows)evtRows=evtByCol[x];}
-    });
-  }
-
-  var Y=8;
-  var EVT_ZONE_H=evtsFilt.length>0?(28*evtRows+8):0;
-  var EVT_START=Y;Y+=EVT_ZONE_H;
-  if(evtsFilt.length>0)Y+=8;
-  var KM_LABEL_Y=Y+13;Y+=20;
-  var SERV_LINE_Y=Y;Y+=4;
-  var SERV_START=Y;Y+=SR*(CH+G);Y+=10;
-  var TERRA_START=Y;Y+=temTerra?mxT*(CH+G):0;Y+=16;
-  var H=Y;
-
-  var svg=document.createElementNS(ns,'svg');
-  svg.setAttribute('width',W);svg.setAttribute('height',H);svg.style.display='block';
-
-  function camExecGrafCel(cel,sv){
-    var gs=cel*CELULA_ESTACAS;
-    var s=execFiltrada.filter(function(e){return e.Estaca===gs&&e.Servico===sv}).reduce(function(a,e){return a+(e.NumCamadasExecutadas||0)},0);
-    return Math.min(s,camadasProj(gs,sv));
-  }
-  function svConcGrafCel(sv,cel){
-    var gs=cel*CELULA_ESTACAS;var n=camadasProj(gs,sv);
-    if(n===0)return false;return camExecGrafCel(cel,sv)>=n;
-  }
-
-  // === EVENTOS / OUTROS SERVIÇOS ===
-  if(evtsFilt.length>0){
-    var evtSlots={};
-    evtsFilt.forEach(function(ev){
-      var status=ev.Status||'indicativo';
-      var cor=STATUS_EVENTO_CORES[status]||STATUS_EVENTO_CORES.indicativo;
-      var eCI=Math.max(Math.floor((ev.EstacaInicial||0)/CELULA_ESTACAS),celIni);
-      var eCF=Math.min(Math.floor((ev.EstacaFinal||ev.EstacaInicial||0)/CELULA_ESTACAS),celFim);
-      var slot=0;
-      for(var s=0;s<evtRows;s++){var free=true;for(var x=eCI;x<=eCF;x++){if(evtSlots[x+'-'+s]){free=false;break}}if(free){slot=s;break}}
-      for(var x=eCI;x<=eCF;x++)evtSlots[x+'-'+slot]=true;
-      var evtY=EVT_START+14+slot*28;
-
-      if(eCF>eCI){
-        var x1=L+(eCI-celIni)*CW+CW/2,x2=L+(eCF-celIni)*CW+CW/2;
-        var bar=document.createElementNS(ns,'rect');bar.setAttribute('x',x1-2);bar.setAttribute('y',evtY-4);bar.setAttribute('width',x2-x1+4);bar.setAttribute('height',8);bar.setAttribute('fill',cor);bar.setAttribute('opacity','0.25');bar.setAttribute('rx','3');svg.appendChild(bar);
-        var c1=document.createElementNS(ns,'circle');c1.setAttribute('cx',x1);c1.setAttribute('cy',evtY);c1.setAttribute('r',5);c1.setAttribute('fill',cor);svg.appendChild(c1);
-        var c2=document.createElementNS(ns,'circle');c2.setAttribute('cx',x2);c2.setAttribute('cy',evtY);c2.setAttribute('r',5);c2.setAttribute('fill',cor);svg.appendChild(c2);
-        var lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',(x1+x2)/2);lbl.setAttribute('y',evtY-8);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','9');lbl.setAttribute('fill',cor);lbl.setAttribute('font-weight','600');lbl.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' — '+ev.Observacao:'');svg.appendChild(lbl);
-      }else{
-        var ex=L+(eCI-celIni)*CW+CW/2;
-        var isSq=ev.TipoEvento==='corte'||ev.TipoEvento==='zona_urbana';
-        if(isSq){var sq=document.createElementNS(ns,'rect');sq.setAttribute('x',ex-5);sq.setAttribute('y',evtY-5);sq.setAttribute('width',10);sq.setAttribute('height',10);sq.setAttribute('rx','2');sq.setAttribute('fill',cor);svg.appendChild(sq)}
-        else{var ci=document.createElementNS(ns,'circle');ci.setAttribute('cx',ex);ci.setAttribute('cy',evtY);ci.setAttribute('r',5);ci.setAttribute('fill',cor);svg.appendChild(ci)}
-        var tk=document.createElementNS(ns,'line');tk.setAttribute('x1',ex);tk.setAttribute('y1',evtY+6);tk.setAttribute('x2',ex);tk.setAttribute('y2',KM_LABEL_Y-14);tk.setAttribute('stroke',cor);tk.setAttribute('stroke-width','0.8');tk.setAttribute('stroke-dasharray','3,3');svg.appendChild(tk);
-        var lbl2=document.createElementNS(ns,'text');lbl2.setAttribute('x',ex);lbl2.setAttribute('y',evtY-8);lbl2.setAttribute('text-anchor','middle');lbl2.setAttribute('font-size','9');lbl2.setAttribute('fill',cor);lbl2.setAttribute('font-weight','600');lbl2.textContent=(NOMES_EVENTO[ev.TipoEvento]||'')+(ev.Observacao?' — '+ev.Observacao:'');svg.appendChild(lbl2);
+    function preReqOK(sv, est) {
+      var servicos = getServicosObra();
+      var idx = servicos.indexOf(sv);
+      var gs = normalizarEstaca(est);
+      for (var i = 0; i < idx; i++) {
+        if (!servConcluido(servicos[i], gs)) return { ok: false, falta: NOMES[servicos[i]] };
       }
-    });
-    var sepEv=document.createElementNS(ns,'line');sepEv.setAttribute('x1',L-10);sepEv.setAttribute('y1',EVT_START+EVT_ZONE_H+4);sepEv.setAttribute('x2',W-4);sepEv.setAttribute('y2',EVT_START+EVT_ZONE_H+4);sepEv.setAttribute('stroke','#ccc');sepEv.setAttribute('stroke-width','1');sepEv.setAttribute('stroke-dasharray','6,4');svg.appendChild(sepEv);
-  }
-
-  // === MARCADORES KM ===
-  for(var c=celIni;c<=celFim;c++){
-    var showLabel=(c-celIni)%5===0||c===celIni||c===celFim;
-    if(showLabel){
-      var tx=L+(c-celIni)*CW+CW/2;
-      var t=document.createElementNS(ns,'text');t.setAttribute('x',tx);t.setAttribute('y',KM_LABEL_Y);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','10');t.setAttribute('fill','#444');t.setAttribute('font-weight','600');
-      var metros=c*CELULA_ESTACAS*20;var km=Math.floor(metros/1000);var rr=String(metros%1000).padStart(3,'0');
-      t.textContent=km+'+'+rr;svg.appendChild(t);
+      return { ok: true };
     }
-    // tick
-    var tick=document.createElementNS(ns,'line');tick.setAttribute('x1',L+(c-celIni)*CW+CW/2);tick.setAttribute('y1',KM_LABEL_Y+2);tick.setAttribute('x2',L+(c-celIni)*CW+CW/2);tick.setAttribute('y2',SERV_LINE_Y);tick.setAttribute('stroke','#ddd');tick.setAttribute('stroke-width','0.5');svg.appendChild(tick);
-  }
 
-  // separador
-  var sep2=document.createElementNS(ns,'line');sep2.setAttribute('x1',L-10);sep2.setAttribute('y1',SERV_LINE_Y);sep2.setAttribute('x2',W-4);sep2.setAttribute('y2',SERV_LINE_Y);sep2.setAttribute('stroke','#ddd');sep2.setAttribute('stroke-width','1');svg.appendChild(sep2);
-
-  // === SERVIÇOS DO TOPO ===
-  topServs.forEach(function(s,i){
-    var lb=document.createElementNS(ns,'text');lb.setAttribute('x',L-8);lb.setAttribute('y',SERV_START+i*(CH+G)+CH/2+4);lb.setAttribute('text-anchor','end');lb.setAttribute('font-size','10');lb.setAttribute('fill','#555');lb.setAttribute('font-weight','600');
-    lb.textContent=NOMES_CHART[s]||NOMES[s];svg.appendChild(lb);
-    for(var c=celIni;c<=celFim;c++){
-      var gs=c*CELULA_ESTACAS;
-      var r=document.createElementNS(ns,'rect');r.setAttribute('x',L+(c-celIni)*CW);r.setAttribute('y',SERV_START+i*(CH+G));r.setAttribute('width',CW-1);r.setAttribute('height',CH);r.setAttribute('rx','2');
-      var temProj=camadasProj(gs,s)>0;
-      if(!temProj){r.setAttribute('fill','transparent');r.setAttribute('stroke','#e8e8e8');r.setAttribute('stroke-width','0.5');r.setAttribute('stroke-dasharray','2,2')}
-      else{var conc=svConcGrafCel(s,c);r.setAttribute('fill',conc?CORES[s]:'#f0f0f0');r.setAttribute('stroke',conc?CORES[s]:'#ccc');r.setAttribute('stroke-width','0.5')}
-      var title=document.createElementNS(ns,'title');title.textContent=celToKm(c)+' — '+NOMES[s]+(temProj?(svConcGrafCel(s,c)?' (concluída)':' (pendente)'):' (sem projeto)');r.appendChild(title);
-      svg.appendChild(r);
+    function podeRegistrar() {
+      if (!APP.obraAtual) return false;
+      var r = APP.obraAtual.Responsaveis;
+      if (!r || r.trim() === '') return true;
+      var emails = r.toLowerCase().split(';').map(function (e) { return e.trim() });
+      return emails.indexOf((APP.usuario.email || '').toLowerCase()) >= 0;
     }
-  });
 
-  // === TERRAPLANAGEM ===
-  if(temTerra){
-    var sep3=document.createElementNS(ns,'line');sep3.setAttribute('x1',L-10);sep3.setAttribute('y1',TERRA_START-5);sep3.setAttribute('x2',W-4);sep3.setAttribute('y2',TERRA_START-5);sep3.setAttribute('stroke','#ddd');sep3.setAttribute('stroke-width','0.5');svg.appendChild(sep3);
-    var lt=document.createElementNS(ns,'text');lt.setAttribute('x',L-8);lt.setAttribute('y',TERRA_START+CH/2+4);lt.setAttribute('text-anchor','end');lt.setAttribute('font-size','10');lt.setAttribute('fill','#555');lt.setAttribute('font-weight','600');lt.textContent='Terraplan.';svg.appendChild(lt);
-    for(var c=celIni;c<=celFim;c++){
-      var gs2=c*CELULA_ESTACAS;var n=camadasProj(gs2,'terra'),fe=camExecGrafCel(c,'terra');
-      for(var cam=1;cam<=mxT;cam++){
-        var r=document.createElementNS(ns,'rect');r.setAttribute('x',L+(c-celIni)*CW);r.setAttribute('y',TERRA_START+(cam-1)*(CH+G));r.setAttribute('width',CW-1);r.setAttribute('height',CH);r.setAttribute('rx','2');
-        if(cam>n){r.setAttribute('fill','transparent');r.setAttribute('stroke','#e8e8e8');r.setAttribute('stroke-width','0.3');r.setAttribute('stroke-dasharray','2,2')}
-        else{var feita=(n-cam+1)<=fe;r.setAttribute('fill',feita?CORES.terra:'#f0f0f0');r.setAttribute('stroke',feita?CORES.terra:'#ccc');r.setAttribute('stroke-width','0.5');
-          var title2=document.createElementNS(ns,'title');title2.textContent=celToKm(c)+' — Terraplanagem camada '+(n-cam+1)+'/'+n+(feita?' (executada)':' (pendente)');r.appendChild(title2);
+    function estacasComProjeto() {
+      var set = {};
+      APP.projeto.forEach(function (p) { set[p.Estaca] = true });
+      return Object.keys(set).map(Number).sort(function (a, b) { return a - b });
+    }
+
+    /* =================================================================
+       POPULAR SELECTS
+       ================================================================= */
+    function popularSelects() {
+      var servicos = getServicosObra();
+      var ids = ['r-serv', 'p-serv', 'h-serv', 'pf-serv'];
+      ids.forEach(function (id) {
+        var sel = document.getElementById(id); if (!sel) return;
+        var isFilter = id === 'h-serv' || id === 'pf-serv';
+        var html = isFilter ? '<option value="">Todos</option>' : '';
+        servicos.forEach(function (s) { html += '<option value="' + s + '">' + NOMES[s] + '</option>' });
+        sel.innerHTML = html;
+      });
+    }
+
+    /* =================================================================
+       STATS
+       ================================================================= */
+    function renderStats() {
+      var servicos = getServicosObra();
+      var container = document.getElementById('stats-container');
+      container.innerHTML = '';
+      servicos.forEach(function (s) {
+        var div = document.createElement('div');
+        div.className = 'stat-card';
+        div.style.borderLeftColor = CORES[s];
+        div.innerHTML = '<div class="stat-label">' + NOMES[s] + '</div><div class="stat-value" id="pct-' + s + '">—</div>';
+        container.appendChild(div);
+      });
+    }
+
+    function atualizarPercentuais() {
+      var servicos = getServicosObra();
+      var grupos = estacasComProjeto();
+      servicos.forEach(function (sv) {
+        var el = document.getElementById('pct-' + sv); if (!el) return;
+        if (sv === 'terra') {
+          var tp = 0, te = 0;
+          grupos.forEach(function (g) { var n = camadasProj(g, 'terra'); tp += n; te += camadasExec(g, 'terra') });
+          el.textContent = tp > 0 ? Math.round(te / tp * 100) + '%' : '0%';
+        } else {
+          var estSv = APP.projeto.filter(function (p) { return p.Servico === sv });
+          if (estSv.length === 0) { el.textContent = '—'; return }
+          var conc = estSv.filter(function (p) { return servConcluido(sv, p.Estaca) }).length;
+          el.textContent = Math.round(conc / estSv.length * 100) + '%';
         }
-        svg.appendChild(r);
+      });
+    }
+
+    function renderLegend() {
+      var servicos = getServicosObra();
+      var container = document.getElementById('legend-container');
+      var html = '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px"><span style="font-weight:700;color:#555;font-size:12px;text-transform:uppercase;letter-spacing:.3px">Serviços:</span>';
+      servicos.forEach(function (s) { html += '<div class="legend-item"><span class="legend-box" style="background:' + CORES[s] + '"></span>' + NOMES[s] + '</div>' });
+      html += '<div class="legend-item"><span class="legend-box" style="background:#f0f0f0"></span>Pendente</div></div>';
+      if (APP.eventos.length > 0) {
+        html += '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px"><span style="font-weight:700;color:#555;font-size:12px;text-transform:uppercase;letter-spacing:.3px">Outros serviços:</span>';
+        html += '<div class="legend-item"><span class="status-dot dot-indicativo" style="display:inline-block;width:12px;height:12px;border-radius:50%"></span>Indicativo</div>';
+        html += '<div class="legend-item"><span class="status-dot dot-emexecucao" style="display:inline-block;width:12px;height:12px;border-radius:50%"></span>Em execução</div>';
+        html += '<div class="legend-item"><span class="status-dot dot-executado" style="display:inline-block;width:12px;height:12px;border-radius:50%"></span>Executado</div>';
+        html += '</div>';
       }
+      container.innerHTML = html;
     }
-  }
 
-  return svg;
-}
+    /* =================================================================
+       GRÁFICO EM FAIXAS
+       ================================================================= */
+    function renderGraficoFaixas() {
+      var container = document.getElementById('faixas-container');
+      if (!APP.obraAtual) { container.innerHTML = ''; return }
 
-/* =================================================================
-   SEMANA ISO
-   ================================================================= */
-function getISOWeek(dateStr){
-  if(!dateStr)return'';
-  var d=new Date(dateStr+'T00:00:00Z');
-  var dayNum=d.getUTCDay()||7;
-  d.setUTCDate(d.getUTCDate()+4-dayNum);
-  var yearStart=new Date(Date.UTC(d.getUTCFullYear(),0,1));
-  var weekNo=Math.ceil((((d-yearStart)/86400000)+1)/7);
-  return d.getUTCFullYear()+'-W'+String(weekNo).padStart(2,'0');
-}
+      var servicos = getServicosObra();
+      var estIni = APP.obraAtual.EstacaInicial || 0;
+      var estFim = APP.obraAtual.EstacaFinal || 0;
+      var celIni = Math.floor(estIni / CELULA_ESTACAS);
+      var celFim = Math.floor(estFim / CELULA_ESTACAS);
 
-/* =================================================================
-   HISTÓRICO
-   ================================================================= */
-function renderHistorico(){
-  var d=document.getElementById('hist-lista');
-  var fS=document.getElementById('h-serv').value;
-  var fI=document.getElementById('h-dt-ini').value;
-  var fF=document.getElementById('h-dt-fim').value;
-  var fSemana=document.getElementById('h-semana').value;
-  var l=APP.execucao.slice();
-  if(fS)l=l.filter(function(x){return x.Servico===fS});
-  if(fSemana)l=l.filter(function(x){return getISOWeek((x.DataExecucao||'').substring(0,10))===fSemana});
-  if(fI)l=l.filter(function(x){return(x.DataExecucao||'').substring(0,10)>=fI});
-  if(fF)l=l.filter(function(x){return(x.DataExecucao||'').substring(0,10)<=fF});
-  l.sort(function(a,b){return(b.DataExecucao||'').localeCompare(a.DataExecucao||'')});
+      var filtroIni = document.getElementById('g-data-ini').value;
+      var filtroFim = document.getElementById('g-data-fim').value;
+      var execFiltrada = APP.execucao.filter(function (e) {
+        var d = (e.DataExecucao || '').substring(0, 10);
+        if (filtroIni && d < filtroIni) return false;
+        if (filtroFim && d > filtroFim) return false;
+        return true;
+      });
 
-  // Resumo semanal
-  renderResumoSemanal(fSemana,l);
+      var ultimaExec = '';
+      if (APP.execucao.length > 0) {
+        var datas = APP.execucao.map(function (e) { return (e.DataExecucao || '').substring(0, 10) }).sort();
+        ultimaExec = datas[datas.length - 1].split('-').reverse().join('/');
+      }
+      var filtroLabel = '';
+      if (filtroIni && filtroFim) filtroLabel = ' | ' + filtroIni.split('-').reverse().join('/') + ' a ' + filtroFim.split('-').reverse().join('/');
+      else if (filtroIni) filtroLabel = ' | a partir de ' + filtroIni.split('-').reverse().join('/');
+      else if (filtroFim) filtroLabel = ' | até ' + filtroFim.split('-').reverse().join('/');
+      document.getElementById('g-ultima-exec').textContent = ultimaExec ? 'Última execução: ' + ultimaExec + filtroLabel : '';
 
-  if(l.length===0){d.innerHTML='<div style="color:#999;padding:20px;text-align:center">Nenhum registro encontrado.</div>';return}
-  var h='<div style="overflow-x:auto"><table><thead><tr><th style="width:30px"><input type="checkbox" id="h-check-all" onchange="toggleAllHist(this.checked)"></th><th>Data</th><th>Célula (km)</th><th>Estaca</th><th>Serviço</th><th>Camadas</th><th>Responsável</th><th>Obs</th><th></th></tr></thead><tbody>';
-  l.forEach(function(r){
-    var dt=(r.DataExecucao||'').substring(0,10).split('-').reverse().join('/');
-    var gs=normalizarEstaca(r.Estaca||0);
-    var kmLabel=estakaParaKm(gs)+' – '+estakaParaKm(gs+CELULA_ESTACAS);
-    h+='<tr><td><input type="checkbox" class="h-check" value="'+r.Id+'"></td><td>'+dt+'</td><td style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:12px;color:#0078d4">'+kmLabel+'</td><td>E.'+gs+'</td><td><span class="badge badge-'+r.Servico+'">'+(NOMES[r.Servico]||r.Servico)+'</span></td><td>'+(r.NumCamadasExecutadas||1)+'</td><td>'+(r.Responsavel||'-')+'</td><td>'+(r.Observacao||'-')+'</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirExecucao('+r.Id+')">Excluir</button></td></tr>';
-  });
-  h+='</tbody></table></div>';d.innerHTML=h;
-}
+      container.innerHTML = '';
 
-function renderResumoSemanal(semana,execSemana){
-  var box=document.getElementById('weekly-summary-box');
-  if(!semana||!execSemana||execSemana.length===0){box.innerHTML='';return}
-  var porServico={};
-  execSemana.forEach(function(x){
-    if(!porServico[x.Servico])porServico[x.Servico]={celulas:new Set(),camadas:0};
-    porServico[x.Servico].celulas.add(normalizarEstaca(x.Estaca||0));
-    porServico[x.Servico].camadas+=(x.NumCamadasExecutadas||1);
-  });
-  var html='<div class="weekly-box"><div class="card-title">Resumo da semana selecionada</div><div class="grid-stats">';
-  Object.keys(porServico).forEach(function(sv){
-    var cells=porServico[sv].celulas.size;
-    var metros=cells*CELULA_ESTACAS*20;
-    html+='<div class="stat-card" style="border-left-color:'+(CORES[sv]||'#ddd')+'"><div class="stat-label">'+(NOMES[sv]||sv)+'</div><div class="stat-value" style="color:'+(CORES[sv]||'#333')+'">'+(metros>=1000?(metros/1000).toFixed(1)+' km':metros+' m')+'</div><div style="font-size:11px;color:#999">'+cells+' célula(s)</div></div>';
-  });
-  html+='</div></div>';
-  box.innerHTML=html;
-}
+      // CW calculado 1x com base em STRIP_CELLS (faixa cheia = 50 células)
+      // Todas as faixas usam o mesmo CW; a última faixa (parcial) ficará menor
+      var _L = 104, _rp = 8;
+      var _containerW = (container.clientWidth || 1200) - 20;
+      var CW_GLOBAL = Math.max(14, Math.floor((_containerW - _L - _rp) / STRIP_CELLS));
 
-async function excluirExecucao(itemId){
-  if(!confirm('Tem certeza que deseja excluir este registro?'))return;
-  try{await SP.deletarItem(LISTA_EXECUCAO,itemId);await carregarDadosObra();renderHistorico()}catch(e){alert('Erro ao excluir: '+e.message)}
-}
+      for (var stripStart = celIni; stripStart <= celFim; stripStart += STRIP_CELLS) {
+        var stripEnd = Math.min(stripStart + STRIP_CELLS - 1, celFim);
+        var wrap = criarFaixa(stripStart, stripEnd, servicos, execFiltrada, CW_GLOBAL);
+        container.appendChild(wrap);
+      }
 
-function toggleAllHist(checked){
-  document.querySelectorAll('.h-check').forEach(function(c){c.checked=checked});
-}
-
-async function excluirLoteHistorico(){
-  var checks=document.querySelectorAll('.h-check:checked');
-  if(checks.length===0){alert('Selecione ao menos um registro.');return}
-  if(!confirm('Excluir '+checks.length+' registro(s) selecionado(s)?'))return;
-  var ids=[];checks.forEach(function(c){ids.push(parseInt(c.value))});
-  try{
-    for(var i=0;i<ids.length;i+=5){
-      var lote=[];
-      for(var j=i;j<Math.min(i+5,ids.length);j++)lote.push(SP.deletarItem(LISTA_EXECUCAO,ids[j]));
-      await Promise.all(lote);
-      if(i+5<ids.length)await new Promise(function(r){setTimeout(r,500)});
+      atualizarPercentuais();
     }
-    await carregarDadosObra();renderHistorico();
-    alert(ids.length+' registro(s) excluído(s).');
-  }catch(e){alert('Erro: '+e.message)}
-}
 
-/* =================================================================
-   EVENTOS / OUTROS SERVIÇOS
-   ================================================================= */
-function renderEventos(){
-  var d=document.getElementById('eventos-lista');
-  if(!d)return;
-  if(APP.eventos.length===0){d.innerHTML='<div style="color:#999;padding:20px;text-align:center">Nenhum serviço cadastrado.</div>';return}
-  var l=APP.eventos.slice().sort(function(a,b){return a.EstacaInicial-b.EstacaInicial});
-  var h='<div style="overflow-x:auto"><table><thead><tr><th>Tipo</th><th>Trecho</th><th>Observação</th><th>Status</th><th></th></tr></thead><tbody>';
-  l.forEach(function(ev){
-    var status=ev.Status||'indicativo';
-    var cor=CORES_EVENTO[ev.TipoEvento]||'#666';
-    var kmIni=estakaParaKm(ev.EstacaInicial||0);
-    var kmFim=estakaParaKm(ev.EstacaFinal||ev.EstacaInicial||0);
-    var trecho=ev.EstacaFinal&&ev.EstacaFinal!==ev.EstacaInicial?(kmIni+' — '+kmFim):kmIni;
-    h+='<tr>'+
-      '<td><span style="display:inline-block;width:10px;height:10px;background:'+cor+';border-radius:50%;margin-right:6px"></span>'+(NOMES_EVENTO[ev.TipoEvento]||ev.TipoEvento)+'</td>'+
-      '<td style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:12px;color:#0078d4">'+trecho+'<br><span style="color:#999;font-weight:400">E.'+ev.EstacaInicial+(ev.EstacaFinal&&ev.EstacaFinal!==ev.EstacaInicial?' a E.'+ev.EstacaFinal:'')+'</span></td>'+
-      '<td>'+(ev.Observacao||'-')+'</td>'+
-      '<td><select class="ev-status-sel" style="font-size:12px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;background:#fff" onchange="atualizarStatusEvento('+ev.Id+',this.value)">'+
-        STATUS_EVENTO.map(function(s){return'<option value="'+s+'"'+(s===status?' selected':'')+'>'+STATUS_EVENTO_NOMES[s]+'</option>'}).join('')+
-      '</select></td>'+
-      '<td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirEvento('+ev.Id+')">Excluir</button></td>'+
-      '</tr>';
-  });
-  h+='</tbody></table></div>';d.innerHTML=h;
-}
+    function criarFaixa(celIni, celFim, servicos, execFiltrada, cwGlobal) {
+      var wrap = document.createElement('div');
+      wrap.className = 'strip-wrap';
 
-async function atualizarStatusEvento(itemId,novoStatus){
-  var ev=APP.eventos.find(function(e){return e.Id===itemId});
-  var statusAnterior=ev?ev.Status:null;
-  if(ev)ev.Status=novoStatus;
-  renderGraficoFaixas();
-  renderLegend();
-  try{
-    await DataAPI.atualizarEvento(itemId,{Status:novoStatus});
-  }catch(e){
-    if(ev)ev.Status=statusAnterior;
-    renderGraficoFaixas();renderLegend();
-    var msg=document.getElementById('ev-msg');
-    if(msg)msg.innerHTML='<div class="alert alert-err">Erro ao salvar status: '+e.message+'</div>';
-  }
-}
+      var header = document.createElement('div');
+      header.className = 'strip-header';
+      header.innerHTML = '<span class="km-range">' + celToKm(celIni) + ' &mdash; ' + celToKm(celFim + 1) + '</span>' +
+        '<span class="est-range">E.' + celIni * CELULA_ESTACAS + ' a E.' + (celFim * CELULA_ESTACAS + CELULA_ESTACAS - 1) + '</span>';
+      wrap.appendChild(header);
 
-async function excluirEvento(itemId){
-  if(!confirm('Excluir este item?'))return;
-  try{await DataAPI.deletarEvento(itemId);await carregarDadosObra();renderEventos()}catch(e){alert('Erro: '+e.message)}
-}
-
-function popularSelectEventos(){
-  var sel=document.getElementById('ev-tipo');
-  if(!sel)return;
-  sel.innerHTML=TIPOS_EVENTO.map(function(t){return'<option value="'+t+'">'+(NOMES_EVENTO[t]||t)+'</option>'}).join('');
-}
-
-function atualizarKmHints(){
-  var campos=[
-    {inp:'r-est',hint:'r-est-km'},
-    {inp:'p-ini',hint:'p-ini-km'},{inp:'p-fim',hint:'p-fim-km'},
-    {inp:'ev-ini',hint:'ev-ini-km'},{inp:'ev-fim',hint:'ev-fim-km'}
-  ];
-  campos.forEach(function(c){
-    var inp=document.getElementById(c.inp),hint=document.getElementById(c.hint);
-    if(!inp||!hint)return;
-    var v=parseInt(inp.value);
-    if(!isNaN(v))hint.textContent=estakaParaKm(v);else hint.textContent='';
-  });
-  // r-est-fim: mostra o limite final da última célula (gsFim + 5 estacas)
-  var fimEl=document.getElementById('r-est-fim'),fimHint=document.getElementById('r-est-fim-km');
-  if(fimEl&&fimHint){
-    var vFim=parseInt(fimEl.value);
-    if(!isNaN(vFim)){
-      var gsFim=normalizarEstaca(vFim);
-      var numCelH=(gsFim-normalizarEstaca(parseInt(document.getElementById('r-est').value)||0))/CELULA_ESTACAS+1;
-      fimHint.textContent='→ até '+estakaParaKm(gsFim+CELULA_ESTACAS)+' ('+numCelH+' célula(s) = '+numCelH*100+'m)';
-    }else fimHint.textContent='';
-  }
-}
-
-/* =================================================================
-   PROJETO — TABELA
-   ================================================================= */
-function renderProjeto(){
-  var d=document.getElementById('proj-lista'),fS=document.getElementById('pf-serv').value;
-  var lista=APP.projeto.slice();
-  if(fS)lista=lista.filter(function(x){return x.Servico===fS});
-  if(lista.length===0){d.innerHTML='<div style="color:#999;padding:20px;text-align:center">Nenhuma célula cadastrada.</div>';return}
-  lista.sort(function(a,b){return a.Estaca-b.Estaca});
-  var h='<div style="overflow-x:auto"><table><thead><tr><th>Trecho (100m)</th><th>Estaca</th><th>Serviço</th><th>Camadas Proj.</th><th>Executadas</th><th>%</th><th></th></tr></thead><tbody>';
-  lista.forEach(function(p){
-    var f=camadasExec(p.Estaca,p.Servico),pc=p.NumCamadas>0?Math.round(f/p.NumCamadas*100):0;
-    var kmStr=estakaParaKm(p.Estaca)+' – '+estakaParaKm(p.Estaca+CELULA_ESTACAS);
-    h+='<tr><td style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:12px;color:#0078d4">'+kmStr+'</td><td>E.'+p.Estaca+'</td><td><span class="badge badge-'+p.Servico+'">'+NOMES[p.Servico]+'</span></td><td>'+p.NumCamadas+'</td><td>'+f+'</td><td>'+pc+'%</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirEstaca('+p.Id+')">Excluir</button></td></tr>';
-  });
-  h+='</tbody></table></div>';d.innerHTML=h;
-}
-
-async function excluirEstaca(itemId){
-  if(!confirm('Excluir esta célula do projeto?'))return;
-  try{await SP.deletarItem(LISTA_PROJETO,itemId);await carregarDadosObra();renderProjeto()}catch(e){alert('Erro: '+e.message)}
-}
-
-/* =================================================================
-   SERVIÇOS DA OBRA — COM REORDENAÇÃO
-   ================================================================= */
-function renderServicosObra(){
-  var container=document.getElementById('servicos-obra');
-  var atuais=getServicosObra();
-  // garante que terra seja sempre o primeiro na ordem
-  var ordem=getOrdemServicos();
-  var idxTerra=ordem.indexOf('terra');
-  if(idxTerra>0){ordem.splice(idxTerra,1);ordem.unshift('terra');}
-
-  var seqNum=0;
-  var html='<div class="servicos-ordem-list">';
-  ordem.forEach(function(s,i){
-    var ativo=atuais.indexOf(s)>=0;
-    var isTerra=s==='terra';
-    var checked=ativo?'checked':'';
-    if(ativo)seqNum++;
-    var seqLabel=ativo
-      ?'<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#0078d4;color:#fff;font-size:11px;font-weight:700;flex-shrink:0">'+seqNum+'</span>'
-      :'<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e0e0e0;color:#999;font-size:11px;flex-shrink:0">&mdash;</span>';
-    var reqLabel=ativo&&seqNum>1?' <span style="font-size:11px;color:#888">(requer '+NOMES[ordem[i-1]]+')</span>':'';
-    var lockBadge=isTerra?'<span style="font-size:10px;color:#888;padding:1px 6px;border:1px solid #ddd;border-radius:4px;margin-left:6px">1ª sempre</span>':'';
-    var reorderBtns=isTerra
-      ? '<span style="font-size:10px;color:#bbb;padding:2px 8px">fixo</span>'
-      : (
-          (i>1?'<button class="secondary" style="padding:2px 8px;font-size:12px;line-height:1" onclick="moverServico(\''+s+'\',-1)">↑</button>':'<button class="secondary" style="padding:2px 8px;font-size:12px;line-height:1;visibility:hidden">↑</button>')+
-          (i<ordem.length-1?'<button class="secondary" style="padding:2px 8px;font-size:12px;line-height:1" onclick="moverServico(\''+s+'\',1)">↓</button>':'<button class="secondary" style="padding:2px 8px;font-size:12px;line-height:1;visibility:hidden">↓</button>')
-        );
-    html+='<div class="servico-item" style="'+(ativo?'border-left:3px solid '+CORES[s]+';':'opacity:.65;')+(isTerra?'background:#fffdf5;':'')+'">'+
-      seqLabel+
-      '<label style="flex:1"><input type="checkbox" value="'+s+'" '+checked+(isTerra?' disabled checked':'')+'>'+
-      '<span style="width:14px;height:14px;background:'+CORES[s]+';display:inline-block;border-radius:3px;border:1px solid rgba(0,0,0,.1);vertical-align:middle;margin:0 4px"></span>'+
-      '<strong>'+NOMES[s]+'</strong>'+lockBadge+reqLabel+
-      '</label>'+
-      '<div class="reorder-btns">'+reorderBtns+'</div></div>';
-  });
-  html+='</div><div style="margin-top:10px;font-size:12px;color:#888">O número em azul indica a sequência de pré-requisito. Terraplanagem é sempre o primeiro serviço (fundação da via). Use ↑↓ para ajustar a ordem dos demais. A Imprimação pode ser posicionada livremente.</div>';
-  container.innerHTML=html;
-  // Garante que terra esteja sempre nos selecionados
-  var terraCheck=container.querySelector('input[value="terra"]');
-  if(terraCheck)terraCheck.checked=true;
-}
-
-function moverServico(sv,dir){
-  if(sv==='terra')return; // terra é sempre primeira, não pode ser movida
-  var ordem=getOrdemServicos();
-  // garante terra no índice 0
-  var idxT=ordem.indexOf('terra');if(idxT>0){ordem.splice(idxT,1);ordem.unshift('terra');}
-  var idx=ordem.indexOf(sv);if(idx<0)return;
-  var ni=idx+dir;
-  if(ni<=0||ni>=ordem.length)return; // não pode ultrapassar terra (posição 0)
-  ordem.splice(idx,1);ordem.splice(ni,0,sv);
-  if(!APP.obraAtual)return;
-  APP.obraAtual.OrdemServicos=ordem.join(';');
-  renderServicosObra();
-}
-
-/* =================================================================
-   SUB-TABS
-   ================================================================= */
-function switchSubTab(btn){
-  var tabs=document.querySelectorAll('#tab-projeto > div[id^="sub-"]');
-  tabs.forEach(function(t){t.style.display='none'});
-  document.getElementById(btn.dataset.subtab).style.display='block';
-  var btns=btn.parentElement.querySelectorAll('.sub-tab-btn');
-  btns.forEach(function(b){b.classList.remove('active')});
-  btn.classList.add('active');
-  if(btn.dataset.subtab==='sub-estacas'){popularSelects();renderProjeto()}
-  if(btn.dataset.subtab==='sub-eventos'){popularSelectEventos();renderEventos()}
-  if(btn.dataset.subtab==='sub-servicos')renderServicosObra();
-}
-
-/* =================================================================
-   INFO BOX REGISTRO
-   ================================================================= */
-function atualizarInfoRegistro(){
-  var estIni=parseInt(document.getElementById('r-est').value);
-  var estFim=parseInt(document.getElementById('r-est-fim').value);
-  var sv=document.getElementById('r-serv').value;
-  var info=document.getElementById('r-info');
-  var ci=document.getElementById('r-cam');
-  atualizarKmHints();
-  info.className='info-box';
-  if(isNaN(estIni)||!sv){info.textContent='Informe a estaca e o serviço.';return}
-  var gsIni=normalizarEstaca(estIni);
-  var gsFim=isNaN(estFim)?gsIni:normalizarEstaca(estFim);
-  if(gsFim<gsIni)gsFim=gsIni;
-  var numCel=(gsFim-gsIni)/CELULA_ESTACAS+1;
-  var semProj=0;
-  for(var e=gsIni;e<=gsFim;e+=CELULA_ESTACAS){if(camadasProj(e,sv)===0)semProj++}
-  if(semProj===numCel){info.className='info-box block';info.innerHTML='<strong>Trecho '+estakaParaKm(gsIni)+' a '+estakaParaKm(gsFim+CELULA_ESTACAS)+':</strong> '+NOMES[sv]+' não cadastrado nestas células.';ci.disabled=true;return}
-  ci.disabled=false;
-  var pre=preReqOK(sv,gsIni);
-  if(!pre.ok){info.className='info-box block';info.innerHTML='<strong>Atenção:</strong> '+pre.falta+' não concluída em parte do trecho. O registro só será feito onde o pré-requisito estiver OK.'}
-  else{
-    var km1=estakaParaKm(gsIni),km2=estakaParaKm(gsFim+CELULA_ESTACAS);
-    info.innerHTML='<strong>'+km1+' a '+km2+' — '+NOMES[sv]+':</strong> '+numCel+' célula(s) = '+numCel*100+'m'+(semProj>0?' ('+semProj+' sem projeto)':'')+'.';}
-}
-
-/* =================================================================
-   EVENTS
-   ================================================================= */
-function bindEvents(){
-  document.querySelectorAll('.tab-btn[data-tab]').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab-btn[data-tab]').forEach(function(x){x.classList.remove('active')});b.classList.add('active');['dashboard','registrar','historico','projeto'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none'});if(b.dataset.tab==='historico')renderHistorico();if(b.dataset.tab==='projeto'){renderProjeto();renderServicosObra();renderEventos();popularSelectEventos()}if(b.dataset.tab==='registrar'){popularSelects();verificarPermissaoUI()}}});
-
-  document.getElementById('obra-sel').onchange=function(ev){var id=parseInt(ev.target.value);APP.obraAtual=APP.obras.find(function(o){return o.Id===id});carregarDadosObra().then(function(){verificarPermissaoUI()})};
-  document.getElementById('btn-reload').onclick=function(){carregarDadosObra().then(function(){popularSelects();verificarPermissaoUI()})};
-  document.getElementById('g-data-ini').onchange=renderGraficoFaixas;
-  document.getElementById('g-data-fim').onchange=renderGraficoFaixas;
-  document.getElementById('g-data-limpar').onclick=function(){document.getElementById('g-data-ini').value='';document.getElementById('g-data-fim').value='';renderGraficoFaixas()};
-  document.getElementById('btn-debug').onclick=function(){debugVisible=!debugVisible;if(!debugVisible)document.getElementById('debug-area').innerHTML='';else renderDebug()};
-
-  // Estaca início — habilita e configura estaca fim ao digitar
-  document.getElementById('r-est').oninput=function(){
-    var estIni=parseInt(this.value);
-    var fim=document.getElementById('r-est-fim');
-    var fimKm=document.getElementById('r-est-fim-km');
-    if(!isNaN(estIni)&&estIni>=0&&estIni%CELULA_ESTACAS===0){
-      fim.disabled=false;
-      var minFim=estIni+CELULA_ESTACAS-1; // primeiro fim válido: início+4
-      fim.min=minFim;
-      fim.step=CELULA_ESTACAS; // passo de 5: 4, 9, 14, 19...
-      // só redefine o valor se estiver vazio ou menor que o mínimo
-      if(!fim.value||parseInt(fim.value)<minFim){fim.value=minFim;}
-    }else{
-      fim.disabled=true;fim.value='';fimKm.textContent='';
+      var body = document.createElement('div');
+      body.className = 'strip-body';
+      var svg = renderFaixaSVG(celIni, celFim, servicos, execFiltrada, cwGlobal);
+      body.appendChild(svg);
+      wrap.appendChild(body);
+      return wrap;
     }
-    atualizarKmHints();atualizarInfoRegistro();
-  };
-  document.getElementById('r-est-fim').oninput=function(){atualizarKmHints();atualizarInfoRegistro()};
-  // Km hints para outros campos
-  ['p-ini','p-fim','ev-ini','ev-fim'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.oninput=function(){atualizarKmHints();};
-  });
-  document.getElementById('r-serv').onchange=atualizarInfoRegistro;
-  document.getElementById('pf-serv').onchange=renderProjeto;
-  document.getElementById('btn-excluir-lote').onclick=excluirLoteHistorico;
 
-  // Histórico filters
-  ['h-serv','h-dt-ini','h-dt-fim'].forEach(function(id){document.getElementById(id).onchange=renderHistorico});
-  document.getElementById('h-semana').onchange=renderHistorico;
+    function renderFaixaSVG(celIni, celFim, servicos, execFiltrada, cwGlobal) {
+      var ns = 'http://www.w3.org/2000/svg';
+      var temTerra = servicos.indexOf('terra') >= 0;
+      var topServs = servicos.filter(function (s) { return s !== 'terra' }).reverse();
+      var SR = topServs.length;
 
-  // Salvar serviços da obra
-  document.getElementById('btn-salvar-servicos').onclick=async function(){
-    var checks=document.querySelectorAll('#servicos-obra input[type=checkbox]');
-    var selecionados=[];
-    checks.forEach(function(c){if(c.checked)selecionados.push(c.value)});
-    if(selecionados.length===0){document.getElementById('serv-msg').innerHTML='<div class="alert alert-err">Selecione ao menos um serviço.</div>';return}
-    var ordem=getOrdemServicos();
-    var btn=this;btn.disabled=true;btn.textContent='Salvando...';
-    try{
-      await DataAPI.atualizarObra(APP.obraAtual.Id,{Servicos:selecionados.join(';'),OrdemServicos:ordem.join(';')});
-      APP.obraAtual.Servicos=selecionados.join(';');APP.obraAtual.OrdemServicos=ordem.join(';');
-      popularSelects();renderStats();renderLegend();renderGraficoFaixas();
-      document.getElementById('serv-msg').innerHTML='<div class="alert alert-ok">✓ Serviços atualizados: '+selecionados.map(function(s){return NOMES[s]}).join(', ')+'.</div>';
-    }catch(e){document.getElementById('serv-msg').innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
-    finally{btn.disabled=false;btn.textContent='Salvar serviços da obra'}
-  };
+      var mxT = 1;
+      if (temTerra) {
+        APP.projeto.filter(function (p) { return p.Servico === 'terra' }).forEach(function (p) { if (p.NumCamadas > mxT) mxT = p.NumCamadas });
+      }
 
-  // Registrar execução
-  document.getElementById('btn-reg').onclick=async function(){
-    var data=document.getElementById('r-data').value;
-    var estIni=parseInt(document.getElementById('r-est').value);
-    var estFim=parseInt(document.getElementById('r-est-fim').value);
-    var sv=document.getElementById('r-serv').value;
-    var cam=parseInt(document.getElementById('r-cam').value);
-    var obs=document.getElementById('r-obs').value;
-    var msg=document.getElementById('r-msg');
-    msg.innerHTML='';
-    if(!podeRegistrar()){msg.innerHTML='<div class="alert alert-err">Sem permissão.</div>';return}
-    if(!data){msg.innerHTML='<div class="alert alert-err">Informe a data.</div>';return}
-    if(isNaN(estIni)){msg.innerHTML='<div class="alert alert-err">Informe a estaca início.</div>';return}
-    if(isNaN(estFim)||estFim<estIni+CELULA_ESTACAS-1){msg.innerHTML='<div class="alert alert-err">Informe a estaca fim (mín. início+'+(CELULA_ESTACAS-1)+' = '+(estIni+CELULA_ESTACAS-1)+').</div>';return}
-    if((estFim-estIni+1)%CELULA_ESTACAS!==0){msg.innerHTML='<div class="alert alert-err">Estaca fim inválida. Para início='+estIni+' os valores válidos são: '+(estIni+CELULA_ESTACAS-1)+', '+(estIni+2*CELULA_ESTACAS-1)+', '+(estIni+3*CELULA_ESTACAS-1)+'... (incrementos de '+CELULA_ESTACAS+').</div>';return}
-    var gsIni=normalizarEstaca(estIni);
-    var gsFim=normalizarEstaca(estFim);
-    if(gsFim<gsIni){msg.innerHTML='<div class="alert alert-err">Estaca fim menor que início.</div>';return}
-    if(!sv){msg.innerHTML='<div class="alert alert-err">Selecione o serviço.</div>';return}
-    var btn=document.getElementById('btn-reg');btn.disabled=true;btn.textContent='Salvando...';
-    var ok=0,pulos=0,bloqs=0;
-    var totalCel=(gsFim-gsIni)/CELULA_ESTACAS+1;
-    try{
-      for(var e=gsIni;e<=gsFim;e+=CELULA_ESTACAS*5){
-        var lote=[];
-        for(var j=e;j<=Math.min(e+CELULA_ESTACAS*4,gsFim);j+=CELULA_ESTACAS){
-          var n=camadasProj(j,sv);
-          if(n===0){pulos++;continue}
-          var f=camadasExec(j,sv);
-          if(f>=n){pulos++;continue}
-          var pre=preReqOK(sv,j);
-          if(!pre.ok){bloqs++;continue}
-          var registrar=Math.min(cam,n-f);
-          lote.push(DataAPI.salvarExecucao(APP.obraAtual.Id,data,j,sv,registrar,APP.usuario.nome,obs));
-          ok++;
+      var numCel = celFim - celIni + 1;
+      var L = 104; // espaço suficiente para "Reciclagem" e "Imprimação"
+      var rightPad = 8;
+      // usa CW global (mesmo para todas as faixas); largura total varia pelo nº real de células
+      var CW = cwGlobal || Math.max(14, Math.floor(((document.getElementById('faixas-container').clientWidth || 1200) - 20 - L - rightPad) / STRIP_CELLS));
+      var W = L + numCel * CW + rightPad;
+      var G = 2;
+      var CH = 22;
+
+      // Eventos filtrados para esta faixa
+      var evtsFilt = APP.eventos.filter(function (ev) {
+        var eCelIni = Math.floor((ev.EstacaInicial || 0) / CELULA_ESTACAS);
+        var eCelFim = Math.floor((ev.EstacaFinal || ev.EstacaInicial || 0) / CELULA_ESTACAS);
+        return eCelIni <= celFim && eCelFim >= celIni;
+      });
+
+      var evtRows = 0;
+      if (evtsFilt.length > 0) {
+        evtRows = 1;
+        var evtByCol = {};
+        evtsFilt.forEach(function (ev) {
+          var eCI = Math.max(Math.floor((ev.EstacaInicial || 0) / CELULA_ESTACAS), celIni);
+          var eCF = Math.min(Math.floor((ev.EstacaFinal || ev.EstacaInicial || 0) / CELULA_ESTACAS), celFim);
+          for (var x = eCI; x <= eCF; x++) { evtByCol[x] = (evtByCol[x] || 0) + 1; if (evtByCol[x] > evtRows) evtRows = evtByCol[x]; }
+        });
+      }
+
+      var Y = 8;
+      var EVT_ZONE_H = evtsFilt.length > 0 ? (28 * evtRows + 8) : 0;
+      var EVT_START = Y; Y += EVT_ZONE_H;
+      if (evtsFilt.length > 0) Y += 8;
+      var KM_LABEL_Y = Y + 13; Y += 20;
+      var SERV_LINE_Y = Y; Y += 4;
+      var SERV_START = Y; Y += SR * (CH + G); Y += 10;
+      var TERRA_START = Y; Y += temTerra ? mxT * (CH + G) : 0; Y += 16;
+      var H = Y;
+
+      var svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('width', W); svg.setAttribute('height', H); svg.style.display = 'block';
+
+      function camExecGrafCel(cel, sv) {
+        var gs = cel * CELULA_ESTACAS;
+        var s = execFiltrada.filter(function (e) { return e.Estaca === gs && e.Servico === sv }).reduce(function (a, e) { return a + (e.NumCamadasExecutadas || 0) }, 0);
+        return Math.min(s, camadasProj(gs, sv));
+      }
+      function svConcGrafCel(sv, cel) {
+        var gs = cel * CELULA_ESTACAS; var n = camadasProj(gs, sv);
+        if (n === 0) return false; return camExecGrafCel(cel, sv) >= n;
+      }
+
+      // === EVENTOS / OUTROS SERVIÇOS ===
+      if (evtsFilt.length > 0) {
+        var evtSlots = {};
+        evtsFilt.forEach(function (ev) {
+          var status = ev.Status || 'indicativo';
+          var cor = STATUS_EVENTO_CORES[status] || STATUS_EVENTO_CORES.indicativo;
+          var eCI = Math.max(Math.floor((ev.EstacaInicial || 0) / CELULA_ESTACAS), celIni);
+          var eCF = Math.min(Math.floor((ev.EstacaFinal || ev.EstacaInicial || 0) / CELULA_ESTACAS), celFim);
+          var slot = 0;
+          for (var s = 0; s < evtRows; s++) { var free = true; for (var x = eCI; x <= eCF; x++) { if (evtSlots[x + '-' + s]) { free = false; break } } if (free) { slot = s; break } }
+          for (var x = eCI; x <= eCF; x++)evtSlots[x + '-' + slot] = true;
+          var evtY = EVT_START + 14 + slot * 28;
+
+          if (eCF > eCI) {
+            var x1 = L + (eCI - celIni) * CW + CW / 2, x2 = L + (eCF - celIni) * CW + CW / 2;
+            var bar = document.createElementNS(ns, 'rect'); bar.setAttribute('x', x1 - 2); bar.setAttribute('y', evtY - 4); bar.setAttribute('width', x2 - x1 + 4); bar.setAttribute('height', 8); bar.setAttribute('fill', cor); bar.setAttribute('opacity', '0.25'); bar.setAttribute('rx', '3'); svg.appendChild(bar);
+            var c1 = document.createElementNS(ns, 'circle'); c1.setAttribute('cx', x1); c1.setAttribute('cy', evtY); c1.setAttribute('r', 5); c1.setAttribute('fill', cor); svg.appendChild(c1);
+            var c2 = document.createElementNS(ns, 'circle'); c2.setAttribute('cx', x2); c2.setAttribute('cy', evtY); c2.setAttribute('r', 5); c2.setAttribute('fill', cor); svg.appendChild(c2);
+            var lbl = document.createElementNS(ns, 'text'); lbl.setAttribute('x', (x1 + x2) / 2); lbl.setAttribute('y', evtY - 8); lbl.setAttribute('text-anchor', 'middle'); lbl.setAttribute('font-size', '9'); lbl.setAttribute('fill', cor); lbl.setAttribute('font-weight', '600'); lbl.textContent = (NOMES_EVENTO[ev.TipoEvento] || '') + (ev.Observacao ? ' — ' + ev.Observacao : ''); svg.appendChild(lbl);
+          } else {
+            var ex = L + (eCI - celIni) * CW + CW / 2;
+            var isSq = ev.TipoEvento === 'corte' || ev.TipoEvento === 'zona_urbana';
+            if (isSq) { var sq = document.createElementNS(ns, 'rect'); sq.setAttribute('x', ex - 5); sq.setAttribute('y', evtY - 5); sq.setAttribute('width', 10); sq.setAttribute('height', 10); sq.setAttribute('rx', '2'); sq.setAttribute('fill', cor); svg.appendChild(sq) }
+            else { var ci = document.createElementNS(ns, 'circle'); ci.setAttribute('cx', ex); ci.setAttribute('cy', evtY); ci.setAttribute('r', 5); ci.setAttribute('fill', cor); svg.appendChild(ci) }
+            var tk = document.createElementNS(ns, 'line'); tk.setAttribute('x1', ex); tk.setAttribute('y1', evtY + 6); tk.setAttribute('x2', ex); tk.setAttribute('y2', KM_LABEL_Y - 14); tk.setAttribute('stroke', cor); tk.setAttribute('stroke-width', '0.8'); tk.setAttribute('stroke-dasharray', '3,3'); svg.appendChild(tk);
+            var lbl2 = document.createElementNS(ns, 'text'); lbl2.setAttribute('x', ex); lbl2.setAttribute('y', evtY - 8); lbl2.setAttribute('text-anchor', 'middle'); lbl2.setAttribute('font-size', '9'); lbl2.setAttribute('fill', cor); lbl2.setAttribute('font-weight', '600'); lbl2.textContent = (NOMES_EVENTO[ev.TipoEvento] || '') + (ev.Observacao ? ' — ' + ev.Observacao : ''); svg.appendChild(lbl2);
+          }
+        });
+        var sepEv = document.createElementNS(ns, 'line'); sepEv.setAttribute('x1', L - 10); sepEv.setAttribute('y1', EVT_START + EVT_ZONE_H + 4); sepEv.setAttribute('x2', W - 4); sepEv.setAttribute('y2', EVT_START + EVT_ZONE_H + 4); sepEv.setAttribute('stroke', '#ccc'); sepEv.setAttribute('stroke-width', '1'); sepEv.setAttribute('stroke-dasharray', '6,4'); svg.appendChild(sepEv);
+      }
+
+      // === MARCADORES KM ===
+      for (var c = celIni; c <= celFim; c++) {
+        var showLabel = (c - celIni) % 5 === 0 || c === celIni || c === celFim;
+        if (showLabel) {
+          var tx = L + (c - celIni) * CW + CW / 2;
+          var t = document.createElementNS(ns, 'text'); t.setAttribute('x', tx); t.setAttribute('y', KM_LABEL_Y); t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', '10'); t.setAttribute('fill', '#444'); t.setAttribute('font-weight', '600');
+          var metros = c * CELULA_ESTACAS * 20; var km = Math.floor(metros / 1000); var rr = String(metros % 1000).padStart(3, '0');
+          t.textContent = km + '+' + rr; svg.appendChild(t);
         }
-        if(lote.length>0)await Promise.all(lote);
-        var prog=Math.min(e+CELULA_ESTACAS*5,gsFim+1);
-        msg.innerHTML='<div class="alert alert-warn">Registrando... '+Math.round((prog-gsIni)/CELULA_ESTACAS)+' de '+totalCel+' células.</div>';
-        if(e+CELULA_ESTACAS*5<=gsFim)await new Promise(function(r){setTimeout(r,500)});
+        // tick
+        var tick = document.createElementNS(ns, 'line'); tick.setAttribute('x1', L + (c - celIni) * CW + CW / 2); tick.setAttribute('y1', KM_LABEL_Y + 2); tick.setAttribute('x2', L + (c - celIni) * CW + CW / 2); tick.setAttribute('y2', SERV_LINE_Y); tick.setAttribute('stroke', '#ddd'); tick.setAttribute('stroke-width', '0.5'); svg.appendChild(tick);
       }
-      await carregarDadosObra();
-      var resumo='<div class="alert alert-ok">✓ <strong>'+ok+'</strong> célula(s) registrada(s) com sucesso.';
-      if(pulos>0)resumo+='<br>'+pulos+' célula(s) ignorada(s) (sem projeto ou já concluída).';
-      if(bloqs>0)resumo+='<br>'+bloqs+' célula(s) bloqueada(s) (pré-requisito não cumprido).';
-      resumo+='</div>';
-      msg.innerHTML=resumo;
-      document.getElementById('r-obs').value='';
+
+      // separador
+      var sep2 = document.createElementNS(ns, 'line'); sep2.setAttribute('x1', L - 10); sep2.setAttribute('y1', SERV_LINE_Y); sep2.setAttribute('x2', W - 4); sep2.setAttribute('y2', SERV_LINE_Y); sep2.setAttribute('stroke', '#ddd'); sep2.setAttribute('stroke-width', '1'); svg.appendChild(sep2);
+
+      // === SERVIÇOS DO TOPO ===
+      topServs.forEach(function (s, i) {
+        var lb = document.createElementNS(ns, 'text'); lb.setAttribute('x', L - 8); lb.setAttribute('y', SERV_START + i * (CH + G) + CH / 2 + 4); lb.setAttribute('text-anchor', 'end'); lb.setAttribute('font-size', '10'); lb.setAttribute('fill', '#555'); lb.setAttribute('font-weight', '600');
+        lb.textContent = NOMES_CHART[s] || NOMES[s]; svg.appendChild(lb);
+        for (var c = celIni; c <= celFim; c++) {
+          var gs = c * CELULA_ESTACAS;
+          var r = document.createElementNS(ns, 'rect'); r.setAttribute('x', L + (c - celIni) * CW); r.setAttribute('y', SERV_START + i * (CH + G)); r.setAttribute('width', CW - 1); r.setAttribute('height', CH); r.setAttribute('rx', '2');
+          var temProj = camadasProj(gs, s) > 0;
+          if (!temProj) { r.setAttribute('fill', 'transparent'); r.setAttribute('stroke', '#e8e8e8'); r.setAttribute('stroke-width', '0.5'); r.setAttribute('stroke-dasharray', '2,2') }
+          else { var conc = svConcGrafCel(s, c); r.setAttribute('fill', conc ? CORES[s] : '#f0f0f0'); r.setAttribute('stroke', conc ? CORES[s] : '#ccc'); r.setAttribute('stroke-width', '0.5') }
+          var title = document.createElementNS(ns, 'title'); title.textContent = celToKm(c) + ' — ' + NOMES[s] + (temProj ? (svConcGrafCel(s, c) ? ' (concluída)' : ' (pendente)') : ' (sem projeto)'); r.appendChild(title);
+          svg.appendChild(r);
+        }
+      });
+
+      // === TERRAPLANAGEM ===
+      if (temTerra) {
+        var sep3 = document.createElementNS(ns, 'line'); sep3.setAttribute('x1', L - 10); sep3.setAttribute('y1', TERRA_START - 5); sep3.setAttribute('x2', W - 4); sep3.setAttribute('y2', TERRA_START - 5); sep3.setAttribute('stroke', '#ddd'); sep3.setAttribute('stroke-width', '0.5'); svg.appendChild(sep3);
+        var lt = document.createElementNS(ns, 'text'); lt.setAttribute('x', L - 8); lt.setAttribute('y', TERRA_START + CH / 2 + 4); lt.setAttribute('text-anchor', 'end'); lt.setAttribute('font-size', '10'); lt.setAttribute('fill', '#555'); lt.setAttribute('font-weight', '600'); lt.textContent = 'Terraplan.'; svg.appendChild(lt);
+        for (var c = celIni; c <= celFim; c++) {
+          var gs2 = c * CELULA_ESTACAS; var n = camadasProj(gs2, 'terra'), fe = camExecGrafCel(c, 'terra');
+          for (var cam = 1; cam <= mxT; cam++) {
+            var r = document.createElementNS(ns, 'rect'); r.setAttribute('x', L + (c - celIni) * CW); r.setAttribute('y', TERRA_START + (cam - 1) * (CH + G)); r.setAttribute('width', CW - 1); r.setAttribute('height', CH); r.setAttribute('rx', '2');
+            if (cam > n) { r.setAttribute('fill', 'transparent'); r.setAttribute('stroke', '#e8e8e8'); r.setAttribute('stroke-width', '0.3'); r.setAttribute('stroke-dasharray', '2,2') }
+            else {
+              var feita = (n - cam + 1) <= fe; r.setAttribute('fill', feita ? CORES.terra : '#f0f0f0'); r.setAttribute('stroke', feita ? CORES.terra : '#ccc'); r.setAttribute('stroke-width', '0.5');
+              var title2 = document.createElementNS(ns, 'title'); title2.textContent = celToKm(c) + ' — Terraplanagem camada ' + (n - cam + 1) + '/' + n + (feita ? ' (executada)' : ' (pendente)'); r.appendChild(title2);
+            }
+            svg.appendChild(r);
+          }
+        }
+      }
+
+      return svg;
+    }
+
+    /* =================================================================
+       SEMANA ISO
+       ================================================================= */
+    function getISOWeek(dateStr) {
+      if (!dateStr) return '';
+      var d = new Date(dateStr + 'T00:00:00Z');
+      var dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return d.getUTCFullYear() + '-W' + String(weekNo).padStart(2, '0');
+    }
+
+    /* =================================================================
+       HISTÓRICO
+       ================================================================= */
+    function renderHistorico() {
+      var d = document.getElementById('hist-lista');
+      var fS = document.getElementById('h-serv').value;
+      var fI = document.getElementById('h-dt-ini').value;
+      var fF = document.getElementById('h-dt-fim').value;
+      var fSemana = document.getElementById('h-semana').value;
+      var l = APP.execucao.slice();
+      if (fS) l = l.filter(function (x) { return x.Servico === fS });
+      if (fSemana) l = l.filter(function (x) { return getISOWeek((x.DataExecucao || '').substring(0, 10)) === fSemana });
+      if (fI) l = l.filter(function (x) { return (x.DataExecucao || '').substring(0, 10) >= fI });
+      if (fF) l = l.filter(function (x) { return (x.DataExecucao || '').substring(0, 10) <= fF });
+      l.sort(function (a, b) { return (b.DataExecucao || '').localeCompare(a.DataExecucao || '') });
+
+      // Resumo semanal
+      renderResumoSemanal(fSemana, l);
+
+      if (l.length === 0) { d.innerHTML = '<div style="color:#999;padding:20px;text-align:center">Nenhum registro encontrado.</div>'; return }
+      var h = '<div style="overflow-x:auto"><table><thead><tr><th style="width:30px"><input type="checkbox" id="h-check-all" onchange="toggleAllHist(this.checked)"></th><th>Data</th><th>Célula (km)</th><th>Estaca</th><th>Serviço</th><th>Camadas</th><th>Responsável</th><th>Obs</th><th></th></tr></thead><tbody>';
+      l.forEach(function (r) {
+        var dt = (r.DataExecucao || '').substring(0, 10).split('-').reverse().join('/');
+        var gs = normalizarEstaca(r.Estaca || 0);
+        var kmLabel = estakaParaKm(gs) + ' – ' + estakaParaKm(gs + CELULA_ESTACAS);
+        h += '<tr><td><input type="checkbox" class="h-check" value="' + r.Id + '"></td><td>' + dt + '</td><td style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:12px;color:#0078d4">' + kmLabel + '</td><td>E.' + gs + '</td><td><span class="badge badge-' + r.Servico + '">' + (NOMES[r.Servico] || r.Servico) + '</span></td><td>' + (r.NumCamadasExecutadas || 1) + '</td><td>' + (r.Responsavel || '-') + '</td><td>' + (r.Observacao || '-') + '</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirExecucao(' + r.Id + ')">Excluir</button></td></tr>';
+      });
+      h += '</tbody></table></div>'; d.innerHTML = h;
+    }
+
+    function renderResumoSemanal(semana, execSemana) {
+      var box = document.getElementById('weekly-summary-box');
+      if (!semana || !execSemana || execSemana.length === 0) { box.innerHTML = ''; return }
+      var porServico = {};
+      execSemana.forEach(function (x) {
+        if (!porServico[x.Servico]) porServico[x.Servico] = { celulas: new Set(), camadas: 0 };
+        porServico[x.Servico].celulas.add(normalizarEstaca(x.Estaca || 0));
+        porServico[x.Servico].camadas += (x.NumCamadasExecutadas || 1);
+      });
+      var html = '<div class="weekly-box"><div class="card-title">Resumo da semana selecionada</div><div class="grid-stats">';
+      Object.keys(porServico).forEach(function (sv) {
+        var cells = porServico[sv].celulas.size;
+        var metros = cells * CELULA_ESTACAS * 20;
+        html += '<div class="stat-card" style="border-left-color:' + (CORES[sv] || '#ddd') + '"><div class="stat-label">' + (NOMES[sv] || sv) + '</div><div class="stat-value" style="color:' + (CORES[sv] || '#333') + '">' + (metros >= 1000 ? (metros / 1000).toFixed(1) + ' km' : metros + ' m') + '</div><div style="font-size:11px;color:#999">' + cells + ' célula(s)</div></div>';
+      });
+      html += '</div></div>';
+      box.innerHTML = html;
+    }
+
+    async function excluirExecucao(itemId) {
+      if (!confirm('Tem certeza que deseja excluir este registro?')) return;
+      try { await SP.deletarItem(LISTA_EXECUCAO, itemId); await carregarDadosObra(); renderHistorico() } catch (e) { alert('Erro ao excluir: ' + e.message) }
+    }
+
+    function toggleAllHist(checked) {
+      document.querySelectorAll('.h-check').forEach(function (c) { c.checked = checked });
+    }
+
+    async function excluirLoteHistorico() {
+      var checks = document.querySelectorAll('.h-check:checked');
+      if (checks.length === 0) { alert('Selecione ao menos um registro.'); return }
+      if (!confirm('Excluir ' + checks.length + ' registro(s) selecionado(s)?')) return;
+      var ids = []; checks.forEach(function (c) { ids.push(parseInt(c.value)) });
+      try {
+        for (var i = 0; i < ids.length; i += 5) {
+          var lote = [];
+          for (var j = i; j < Math.min(i + 5, ids.length); j++)lote.push(SP.deletarItem(LISTA_EXECUCAO, ids[j]));
+          await Promise.all(lote);
+          if (i + 5 < ids.length) await new Promise(function (r) { setTimeout(r, 500) });
+        }
+        await carregarDadosObra(); renderHistorico();
+        alert(ids.length + ' registro(s) excluído(s).');
+      } catch (e) { alert('Erro: ' + e.message) }
+    }
+
+    /* =================================================================
+       EVENTOS / OUTROS SERVIÇOS
+       ================================================================= */
+    function renderEventos() {
+      var d = document.getElementById('eventos-lista');
+      if (!d) return;
+      if (APP.eventos.length === 0) { d.innerHTML = '<div style="color:#999;padding:20px;text-align:center">Nenhum serviço cadastrado.</div>'; return }
+      var l = APP.eventos.slice().sort(function (a, b) { return a.EstacaInicial - b.EstacaInicial });
+      var hoje = new Date().toISOString().slice(0, 10);
+      var h = '<div style="overflow-x:auto"><table><thead><tr><th>Tipo</th><th>Trecho</th><th>Observação</th><th>Status</th><th>Data de execução</th><th></th></tr></thead><tbody>';
+      l.forEach(function (ev) {
+        var status = ev.Status || 'indicativo';
+        var cor = CORES_EVENTO[ev.TipoEvento] || '#666';
+        var kmIni = estakaParaKm(ev.EstacaInicial || 0);
+        var kmFim = estakaParaKm(ev.EstacaFinal || ev.EstacaInicial || 0);
+        var trecho = ev.EstacaFinal && ev.EstacaFinal !== ev.EstacaInicial ? (kmIni + ' — ' + kmFim) : kmIni;
+        var dataExec = (ev.DataExecucao || '').substring(0, 10);
+        var execCol;
+        if (status === 'executado') {
+          var dtLabel = dataExec ? dataExec.split('-').reverse().join('/') : 'sem data';
+          execCol = '<span style="color:#3A9C4E;font-size:12px;font-weight:600">✓ ' + dtLabel + '</span>' +
+            ' <button onclick="mostrarFormExecucaoEvento(' + ev.Id + ')" class="secondary" style="font-size:10px;padding:2px 6px;color:#888;margin-left:4px">Editar data</button>' +
+            '<div id="ev-exec-form-' + ev.Id + '" style="display:none;margin-top:6px;display:flex;gap:4px;align-items:center">' +
+            '<input type="date" id="ev-exec-date-' + ev.Id + '" value="' + dataExec + '" style="font-size:12px;padding:4px 6px;border:1px solid #ccc;border-radius:4px">' +
+            '<button onclick="salvarExecucaoEvento(' + ev.Id + ')" class="primary" style="font-size:11px;padding:4px 10px">Salvar</button>' +
+            '<button onclick="cancelarFormExecucaoEvento(' + ev.Id + ')" class="secondary" style="font-size:11px;padding:4px 8px">✕</button>' +
+            '</div>';
+        } else {
+          execCol = '<button id="ev-exec-btn-' + ev.Id + '" onclick="mostrarFormExecucaoEvento(' + ev.Id + ')" class="secondary" style="font-size:11px;padding:5px 10px;background:#f0f7ff;border-color:#bae0ff;color:#0050a0">+ Registrar</button>' +
+            '<div id="ev-exec-form-' + ev.Id + '" style="display:none;margin-top:6px">' +
+            '<div style="display:flex;gap:4px;align-items:center">' +
+            '<input type="date" id="ev-exec-date-' + ev.Id + '" value="' + hoje + '" style="font-size:12px;padding:4px 6px;border:1px solid #ccc;border-radius:4px">' +
+            '<button onclick="salvarExecucaoEvento(' + ev.Id + ')" class="primary" style="font-size:11px;padding:4px 10px">Salvar</button>' +
+            '<button onclick="cancelarFormExecucaoEvento(' + ev.Id + ')" class="secondary" style="font-size:11px;padding:4px 8px">✕</button>' +
+            '</div>' +
+            '</div>';
+        }
+        h += '<tr>' +
+          '<td><span style="display:inline-block;width:10px;height:10px;background:' + cor + ';border-radius:50%;margin-right:6px"></span>' + (NOMES_EVENTO[ev.TipoEvento] || ev.TipoEvento) + '</td>' +
+          '<td style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:12px;color:#0078d4">' + trecho + '<br><span style="color:#999;font-weight:400">E.' + ev.EstacaInicial + (ev.EstacaFinal && ev.EstacaFinal !== ev.EstacaInicial ? ' a E.' + ev.EstacaFinal : '') + '</span></td>' +
+          '<td>' + (ev.Observacao || '-') + '</td>' +
+          '<td><select class="ev-status-sel" style="font-size:12px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;background:#fff" onchange="atualizarStatusEvento(' + ev.Id + ',this.value)">' +
+          STATUS_EVENTO.map(function (s) { return '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + STATUS_EVENTO_NOMES[s] + '</option>' }).join('') +
+          '</select></td>' +
+          '<td>' + execCol + '</td>' +
+          '<td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirEvento(' + ev.Id + ')">Excluir</button></td>' +
+          '</tr>';
+      });
+      h += '</tbody></table></div>'; d.innerHTML = h;
+    }
+
+    function mostrarFormExecucaoEvento(id) {
+      var btn = document.getElementById('ev-exec-btn-' + id);
+      var form = document.getElementById('ev-exec-form-' + id);
+      if (btn) btn.style.display = 'none';
+      if (form) form.style.display = 'block';
+    }
+    function cancelarFormExecucaoEvento(id) {
+      var btn = document.getElementById('ev-exec-btn-' + id);
+      var form = document.getElementById('ev-exec-form-' + id);
+      if (btn) btn.style.display = '';
+      if (form) form.style.display = 'none';
+    }
+    async function salvarExecucaoEvento(id) {
+      var dateEl = document.getElementById('ev-exec-date-' + id);
+      var data = dateEl ? dateEl.value : '';
+      var ev = APP.eventos.find(function (e) { return e.Id === id });
+      var statusAnt = ev ? ev.Status : null;
+      var dataAnt = ev ? (ev.DataExecucao || null) : null;
+      if (ev) { ev.Status = 'executado'; ev.DataExecucao = data; }
+      renderEventos(); renderGraficoFaixas(); renderLegend();
+      try {
+        await DataAPI.atualizarEvento(id, { Status: 'executado', DataExecucao: data || null });
+      } catch (e) {
+        if (ev) { ev.Status = statusAnt; ev.DataExecucao = dataAnt; }
+        renderEventos(); renderGraficoFaixas(); renderLegend();
+        var msg = document.getElementById('ev-msg');
+        if (msg) msg.innerHTML = '<div class="alert alert-err">Erro ao salvar execução: ' + e.message + '</div>';
+      }
+    }
+
+    async function atualizarStatusEvento(itemId, novoStatus) {
+      var ev = APP.eventos.find(function (e) { return e.Id === itemId });
+      var statusAnterior = ev ? ev.Status : null;
+      if (ev) ev.Status = novoStatus;
+      renderGraficoFaixas();
+      renderLegend();
+      try {
+        await DataAPI.atualizarEvento(itemId, { Status: novoStatus });
+      } catch (e) {
+        if (ev) ev.Status = statusAnterior;
+        renderGraficoFaixas(); renderLegend();
+        var msg = document.getElementById('ev-msg');
+        if (msg) msg.innerHTML = '<div class="alert alert-err">Erro ao salvar status: ' + e.message + '</div>';
+      }
+    }
+
+    async function excluirEvento(itemId) {
+      if (!confirm('Excluir este item?')) return;
+      try { await DataAPI.deletarEvento(itemId); await carregarDadosObra(); renderEventos() } catch (e) { alert('Erro: ' + e.message) }
+    }
+
+    function popularSelectEventos() {
+      var sel = document.getElementById('ev-tipo');
+      if (!sel) return;
+      sel.innerHTML = TIPOS_EVENTO.map(function (t) { return '<option value="' + t + '">' + (NOMES_EVENTO[t] || t) + '</option>' }).join('');
+    }
+
+    function atualizarKmHints() {
+      var campos = [
+        { inp: 'r-est', hint: 'r-est-km' },
+        { inp: 'p-ini', hint: 'p-ini-km' }, { inp: 'p-fim', hint: 'p-fim-km' },
+        { inp: 'ev-ini', hint: 'ev-ini-km' }, { inp: 'ev-fim', hint: 'ev-fim-km' }
+      ];
+      campos.forEach(function (c) {
+        var inp = document.getElementById(c.inp), hint = document.getElementById(c.hint);
+        if (!inp || !hint) return;
+        var v = parseInt(inp.value);
+        if (!isNaN(v)) hint.textContent = estakaParaKm(v); else hint.textContent = '';
+      });
+      // r-est-fim: mostra o limite final da última célula (gsFim + 5 estacas)
+      var fimEl = document.getElementById('r-est-fim'), fimHint = document.getElementById('r-est-fim-km');
+      if (fimEl && fimHint) {
+        var vFim = parseInt(fimEl.value);
+        if (!isNaN(vFim)) {
+          var gsFim = normalizarEstaca(vFim);
+          var numCelH = (gsFim - normalizarEstaca(parseInt(document.getElementById('r-est').value) || 0)) / CELULA_ESTACAS + 1;
+          fimHint.textContent = '→ até ' + estakaParaKm(gsFim + CELULA_ESTACAS) + ' (' + numCelH + ' célula(s) = ' + numCelH * 100 + 'm)';
+        } else fimHint.textContent = '';
+      }
+    }
+
+    /* =================================================================
+       PROJETO — TABELA
+       ================================================================= */
+    function renderProjeto() {
+      var d = document.getElementById('proj-lista'), fS = document.getElementById('pf-serv').value;
+      var lista = APP.projeto.slice();
+      if (fS) lista = lista.filter(function (x) { return x.Servico === fS });
+      if (lista.length === 0) { d.innerHTML = '<div style="color:#999;padding:20px;text-align:center">Nenhuma célula cadastrada.</div>'; return }
+      lista.sort(function (a, b) { return a.Estaca - b.Estaca });
+      var h = '<div style="overflow-x:auto"><table><thead><tr><th>Trecho (100m)</th><th>Estaca</th><th>Serviço</th><th>Camadas Proj.</th><th>Executadas</th><th>%</th><th></th></tr></thead><tbody>';
+      lista.forEach(function (p) {
+        var f = camadasExec(p.Estaca, p.Servico), pc = p.NumCamadas > 0 ? Math.round(f / p.NumCamadas * 100) : 0;
+        var kmStr = estakaParaKm(p.Estaca) + ' – ' + estakaParaKm(p.Estaca + CELULA_ESTACAS);
+        h += '<tr><td style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:12px;color:#0078d4">' + kmStr + '</td><td>E.' + p.Estaca + '</td><td><span class="badge badge-' + p.Servico + '">' + NOMES[p.Servico] + '</span></td><td>' + p.NumCamadas + '</td><td>' + f + '</td><td>' + pc + '%</td><td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirEstaca(' + p.Id + ')">Excluir</button></td></tr>';
+      });
+      h += '</tbody></table></div>'; d.innerHTML = h;
+    }
+
+    async function excluirEstaca(itemId) {
+      if (!confirm('Excluir esta célula do projeto?')) return;
+      try { await SP.deletarItem(LISTA_PROJETO, itemId); await carregarDadosObra(); renderProjeto() } catch (e) { alert('Erro: ' + e.message) }
+    }
+
+    /* =================================================================
+       SERVIÇOS DA OBRA — COM REORDENAÇÃO
+       ================================================================= */
+    function renderServicosObra() {
+      var container = document.getElementById('servicos-obra');
+      var atuais = getServicosObra();
+      // garante que terra seja sempre o primeiro na ordem
+      var ordem = getOrdemServicos();
+      var idxTerra = ordem.indexOf('terra');
+      if (idxTerra > 0) { ordem.splice(idxTerra, 1); ordem.unshift('terra'); }
+
+      var seqNum = 0;
+      var html = '<div class="servicos-ordem-list">';
+      ordem.forEach(function (s, i) {
+        var ativo = atuais.indexOf(s) >= 0;
+        var isTerra = s === 'terra';
+        var checked = ativo ? 'checked' : '';
+        if (ativo) seqNum++;
+        var seqLabel = ativo
+          ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#0078d4;color:#fff;font-size:11px;font-weight:700;flex-shrink:0">' + seqNum + '</span>'
+          : '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e0e0e0;color:#999;font-size:11px;flex-shrink:0">&mdash;</span>';
+        var reqLabel = ativo && seqNum > 1 ? ' <span style="font-size:11px;color:#888">(requer ' + NOMES[ordem[i - 1]] + ')</span>' : '';
+        var lockBadge = isTerra ? '<span style="font-size:10px;color:#888;padding:1px 6px;border:1px solid #ddd;border-radius:4px;margin-left:6px">1ª sempre</span>' : '';
+        var reorderBtns = isTerra
+          ? '<span style="font-size:10px;color:#bbb;padding:2px 8px">fixo</span>'
+          : (
+            (i > 1 ? '<button class="secondary" style="padding:2px 8px;font-size:12px;line-height:1" onclick="moverServico(\'' + s + '\',-1)">↑</button>' : '<button class="secondary" style="padding:2px 8px;font-size:12px;line-height:1;visibility:hidden">↑</button>') +
+            (i < ordem.length - 1 ? '<button class="secondary" style="padding:2px 8px;font-size:12px;line-height:1" onclick="moverServico(\'' + s + '\',1)">↓</button>' : '<button class="secondary" style="padding:2px 8px;font-size:12px;line-height:1;visibility:hidden">↓</button>')
+          );
+        html += '<div class="servico-item" style="' + (ativo ? 'border-left:3px solid ' + CORES[s] + ';' : 'opacity:.65;') + (isTerra ? 'background:#fffdf5;' : '') + '">' +
+          seqLabel +
+          '<label style="flex:1"><input type="checkbox" value="' + s + '" ' + checked + (isTerra ? ' disabled checked' : '') + '>' +
+          '<span style="width:14px;height:14px;background:' + CORES[s] + ';display:inline-block;border-radius:3px;border:1px solid rgba(0,0,0,.1);vertical-align:middle;margin:0 4px"></span>' +
+          '<strong>' + NOMES[s] + '</strong>' + lockBadge + reqLabel +
+          '</label>' +
+          '<div class="reorder-btns">' + reorderBtns + '</div></div>';
+      });
+      html += '</div><div style="margin-top:10px;font-size:12px;color:#888">O número em azul indica a sequência de pré-requisito. Terraplanagem é sempre o primeiro serviço (fundação da via). Use ↑↓ para ajustar a ordem dos demais. A Imprimação pode ser posicionada livremente.</div>';
+      container.innerHTML = html;
+      // Garante que terra esteja sempre nos selecionados
+      var terraCheck = container.querySelector('input[value="terra"]');
+      if (terraCheck) terraCheck.checked = true;
+    }
+
+    function moverServico(sv, dir) {
+      if (sv === 'terra') return; // terra é sempre primeira, não pode ser movida
+      var ordem = getOrdemServicos();
+      // garante terra no índice 0
+      var idxT = ordem.indexOf('terra'); if (idxT > 0) { ordem.splice(idxT, 1); ordem.unshift('terra'); }
+      var idx = ordem.indexOf(sv); if (idx < 0) return;
+      var ni = idx + dir;
+      if (ni <= 0 || ni >= ordem.length) return; // não pode ultrapassar terra (posição 0)
+      ordem.splice(idx, 1); ordem.splice(ni, 0, sv);
+      if (!APP.obraAtual) return;
+      APP.obraAtual.OrdemServicos = ordem.join(';');
+      renderServicosObra();
+    }
+
+    /* =================================================================
+       SUB-TABS
+       ================================================================= */
+    function switchSubTab(btn) {
+      var tabs = document.querySelectorAll('#tab-projeto > div[id^="sub-"]');
+      tabs.forEach(function (t) { t.style.display = 'none' });
+      document.getElementById(btn.dataset.subtab).style.display = 'block';
+      var btns = btn.parentElement.querySelectorAll('.sub-tab-btn');
+      btns.forEach(function (b) { b.classList.remove('active') });
+      btn.classList.add('active');
+      if (btn.dataset.subtab === 'sub-estacas') { popularSelects(); renderProjeto() }
+      if (btn.dataset.subtab === 'sub-eventos') { popularSelectEventos(); renderEventos() }
+      if (btn.dataset.subtab === 'sub-servicos') renderServicosObra();
+    }
+
+    /* =================================================================
+       INFO BOX REGISTRO
+       ================================================================= */
+    function atualizarInfoRegistro() {
+      var estIni = parseInt(document.getElementById('r-est').value);
+      var estFim = parseInt(document.getElementById('r-est-fim').value);
+      var sv = document.getElementById('r-serv').value;
+      var info = document.getElementById('r-info');
+      var ci = document.getElementById('r-cam');
+      atualizarKmHints();
+      info.className = 'info-box';
+      if (isNaN(estIni) || !sv) { info.textContent = 'Informe a estaca e o serviço.'; return }
+      var gsIni = normalizarEstaca(estIni);
+      var gsFim = isNaN(estFim) ? gsIni : normalizarEstaca(estFim);
+      if (gsFim < gsIni) gsFim = gsIni;
+      var numCel = (gsFim - gsIni) / CELULA_ESTACAS + 1;
+      var semProj = 0;
+      for (var e = gsIni; e <= gsFim; e += CELULA_ESTACAS) { if (camadasProj(e, sv) === 0) semProj++ }
+      if (semProj === numCel) { info.className = 'info-box block'; info.innerHTML = '<strong>Trecho ' + estakaParaKm(gsIni) + ' a ' + estakaParaKm(gsFim + CELULA_ESTACAS) + ':</strong> ' + NOMES[sv] + ' não cadastrado nestas células.'; ci.disabled = true; return }
+      ci.disabled = false;
+      var pre = preReqOK(sv, gsIni);
+      if (!pre.ok) { info.className = 'info-box block'; info.innerHTML = '<strong>Atenção:</strong> ' + pre.falta + ' não concluída em parte do trecho. O registro só será feito onde o pré-requisito estiver OK.' }
+      else {
+        var km1 = estakaParaKm(gsIni), km2 = estakaParaKm(gsFim + CELULA_ESTACAS);
+        info.innerHTML = '<strong>' + km1 + ' a ' + km2 + ' — ' + NOMES[sv] + ':</strong> ' + numCel + ' célula(s) = ' + numCel * 100 + 'm' + (semProj > 0 ? ' (' + semProj + ' sem projeto)' : '') + '.';
+      }
+    }
+
+    /* =================================================================
+       EVENTS
+       ================================================================= */
+    function bindEvents() {
+      document.querySelectorAll('.tab-btn[data-tab]').forEach(function (b) { b.onclick = function () { document.querySelectorAll('.tab-btn[data-tab]').forEach(function (x) { x.classList.remove('active') }); b.classList.add('active');['dashboard', 'registrar', 'historico', 'projeto'].forEach(function (t) { document.getElementById('tab-' + t).style.display = t === b.dataset.tab ? 'block' : 'none' }); if (b.dataset.tab === 'historico') renderHistorico(); if (b.dataset.tab === 'projeto') { renderProjeto(); renderServicosObra(); renderEventos(); popularSelectEventos() } if (b.dataset.tab === 'registrar') { popularSelects(); verificarPermissaoUI() } } });
+
+      document.getElementById('obra-sel').onchange = function (ev) { var id = parseInt(ev.target.value); APP.obraAtual = APP.obras.find(function (o) { return o.Id === id }); carregarDadosObra().then(function () { verificarPermissaoUI() }) };
+      document.getElementById('btn-reload').onclick = function () { carregarDadosObra().then(function () { popularSelects(); verificarPermissaoUI() }) };
+      document.getElementById('g-data-ini').onchange = renderGraficoFaixas;
+      document.getElementById('g-data-fim').onchange = renderGraficoFaixas;
+      document.getElementById('g-data-limpar').onclick = function () { document.getElementById('g-data-ini').value = ''; document.getElementById('g-data-fim').value = ''; renderGraficoFaixas() };
+      document.getElementById('btn-debug').onclick = function () { debugVisible = !debugVisible; if (!debugVisible) document.getElementById('debug-area').innerHTML = ''; else renderDebug() };
+
+      // Estaca início — habilita e configura estaca fim ao digitar
+      document.getElementById('r-est').oninput = function () {
+        var estIni = parseInt(this.value);
+        var fim = document.getElementById('r-est-fim');
+        var fimKm = document.getElementById('r-est-fim-km');
+        if (!isNaN(estIni) && estIni >= 0 && estIni % CELULA_ESTACAS === 0) {
+          fim.disabled = false;
+          var minFim = estIni + CELULA_ESTACAS - 1; // primeiro fim válido: início+4
+          fim.min = minFim;
+          fim.step = CELULA_ESTACAS; // passo de 5: 4, 9, 14, 19...
+          // só redefine o valor se estiver vazio ou menor que o mínimo
+          if (!fim.value || parseInt(fim.value) < minFim) { fim.value = minFim; }
+        } else {
+          fim.disabled = true; fim.value = ''; fimKm.textContent = '';
+        }
+        atualizarKmHints(); atualizarInfoRegistro();
+      };
+      document.getElementById('r-est-fim').oninput = function () { atualizarKmHints(); atualizarInfoRegistro() };
+      // Km hints para outros campos
+      ['p-ini', 'p-fim', 'ev-ini', 'ev-fim'].forEach(function (id) {
+        var el = document.getElementById(id); if (el) el.oninput = function () { atualizarKmHints(); };
+      });
+      document.getElementById('r-serv').onchange = atualizarInfoRegistro;
+      document.getElementById('pf-serv').onchange = renderProjeto;
+      document.getElementById('btn-excluir-lote').onclick = excluirLoteHistorico;
+
+      // Histórico filters
+      ['h-serv', 'h-dt-ini', 'h-dt-fim'].forEach(function (id) { document.getElementById(id).onchange = renderHistorico });
+      document.getElementById('h-semana').onchange = renderHistorico;
+
+      // Salvar serviços da obra
+      document.getElementById('btn-salvar-servicos').onclick = async function () {
+        var checks = document.querySelectorAll('#servicos-obra input[type=checkbox]');
+        var selecionados = [];
+        checks.forEach(function (c) { if (c.checked) selecionados.push(c.value) });
+        if (selecionados.length === 0) { document.getElementById('serv-msg').innerHTML = '<div class="alert alert-err">Selecione ao menos um serviço.</div>'; return }
+        var ordem = getOrdemServicos();
+        var btn = this; btn.disabled = true; btn.textContent = 'Salvando...';
+        try {
+          await DataAPI.atualizarObra(APP.obraAtual.Id, { Servicos: selecionados.join(';'), OrdemServicos: ordem.join(';') });
+          APP.obraAtual.Servicos = selecionados.join(';'); APP.obraAtual.OrdemServicos = ordem.join(';');
+          popularSelects(); renderStats(); renderLegend(); renderGraficoFaixas();
+          document.getElementById('serv-msg').innerHTML = '<div class="alert alert-ok">✓ Serviços atualizados: ' + selecionados.map(function (s) { return NOMES[s] }).join(', ') + '.</div>';
+        } catch (e) { document.getElementById('serv-msg').innerHTML = '<div class="alert alert-err">Erro: ' + e.message + '</div>' }
+        finally { btn.disabled = false; btn.textContent = 'Salvar serviços da obra' }
+      };
+
+      // Registrar execução
+      document.getElementById('btn-reg').onclick = async function () {
+        var data = document.getElementById('r-data').value;
+        var estIni = parseInt(document.getElementById('r-est').value);
+        var estFim = parseInt(document.getElementById('r-est-fim').value);
+        var sv = document.getElementById('r-serv').value;
+        var cam = parseInt(document.getElementById('r-cam').value);
+        var obs = document.getElementById('r-obs').value;
+        var msg = document.getElementById('r-msg');
+        msg.innerHTML = '';
+        if (!podeRegistrar()) { msg.innerHTML = '<div class="alert alert-err">Sem permissão.</div>'; return }
+        if (!data) { msg.innerHTML = '<div class="alert alert-err">Informe a data.</div>'; return }
+        if (isNaN(estIni)) { msg.innerHTML = '<div class="alert alert-err">Informe a estaca início.</div>'; return }
+        if (isNaN(estFim) || estFim < estIni + CELULA_ESTACAS - 1) { msg.innerHTML = '<div class="alert alert-err">Informe a estaca fim (mín. início+' + (CELULA_ESTACAS - 1) + ' = ' + (estIni + CELULA_ESTACAS - 1) + ').</div>'; return }
+        if ((estFim - estIni + 1) % CELULA_ESTACAS !== 0) { msg.innerHTML = '<div class="alert alert-err">Estaca fim inválida. Para início=' + estIni + ' os valores válidos são: ' + (estIni + CELULA_ESTACAS - 1) + ', ' + (estIni + 2 * CELULA_ESTACAS - 1) + ', ' + (estIni + 3 * CELULA_ESTACAS - 1) + '... (incrementos de ' + CELULA_ESTACAS + ').</div>'; return }
+        var gsIni = normalizarEstaca(estIni);
+        var gsFim = normalizarEstaca(estFim);
+        if (gsFim < gsIni) { msg.innerHTML = '<div class="alert alert-err">Estaca fim menor que início.</div>'; return }
+        if (!sv) { msg.innerHTML = '<div class="alert alert-err">Selecione o serviço.</div>'; return }
+        var btn = document.getElementById('btn-reg'); btn.disabled = true; btn.textContent = 'Salvando...';
+        var ok = 0, pulos = 0, bloqs = 0;
+        var totalCel = (gsFim - gsIni) / CELULA_ESTACAS + 1;
+        try {
+          for (var e = gsIni; e <= gsFim; e += CELULA_ESTACAS * 5) {
+            var lote = [];
+            for (var j = e; j <= Math.min(e + CELULA_ESTACAS * 4, gsFim); j += CELULA_ESTACAS) {
+              var n = camadasProj(j, sv);
+              if (n === 0) { pulos++; continue }
+              var f = camadasExec(j, sv);
+              if (f >= n) { pulos++; continue }
+              var pre = preReqOK(sv, j);
+              if (!pre.ok) { bloqs++; continue }
+              var registrar = Math.min(cam, n - f);
+              lote.push(DataAPI.salvarExecucao(APP.obraAtual.Id, data, j, sv, registrar, APP.usuario.nome, obs));
+              ok++;
+            }
+            if (lote.length > 0) await Promise.all(lote);
+            var prog = Math.min(e + CELULA_ESTACAS * 5, gsFim + 1);
+            msg.innerHTML = '<div class="alert alert-warn">Registrando... ' + Math.round((prog - gsIni) / CELULA_ESTACAS) + ' de ' + totalCel + ' células.</div>';
+            if (e + CELULA_ESTACAS * 5 <= gsFim) await new Promise(function (r) { setTimeout(r, 500) });
+          }
+          await carregarDadosObra();
+          var resumo = '<div class="alert alert-ok">✓ <strong>' + ok + '</strong> célula(s) registrada(s) com sucesso.';
+          if (pulos > 0) resumo += '<br>' + pulos + ' célula(s) ignorada(s) (sem projeto ou já concluída).';
+          if (bloqs > 0) resumo += '<br>' + bloqs + ' célula(s) bloqueada(s) (pré-requisito não cumprido).';
+          resumo += '</div>';
+          msg.innerHTML = resumo;
+          document.getElementById('r-obs').value = '';
+          atualizarInfoRegistro();
+        } catch (e) { msg.innerHTML = '<div class="alert alert-err">Erro: ' + e.message + '</div>' }
+        finally { btn.disabled = false; btn.textContent = 'Salvar' }
+      };
+
+      // Cadastro de projeto (células)
+      document.getElementById('btn-proj').onclick = async function () {
+        var sv = document.getElementById('p-serv').value;
+        var ini = normalizarEstaca(parseInt(document.getElementById('p-ini').value));
+        var fim = normalizarEstaca(parseInt(document.getElementById('p-fim').value));
+        var cam = parseInt(document.getElementById('p-cam').value);
+        var pm = document.getElementById('p-msg');
+        if (!sv) { pm.innerHTML = '<div class="alert alert-err">Selecione o serviço.</div>'; return }
+        if (isNaN(ini) || isNaN(fim) || ini > fim) { pm.innerHTML = '<div class="alert alert-err">Intervalo inválido.</div>'; return }
+        if (isNaN(cam) || cam < 1) { pm.innerHTML = '<div class="alert alert-err">Nº de camadas inválido.</div>'; return }
+        var btn = this; btn.disabled = true; btn.textContent = 'Salvando...';
+        var total = (fim - ini) / CELULA_ESTACAS + 1, feito = 0;
+        try {
+          for (var e = ini; e <= fim; e += CELULA_ESTACAS * 5) {
+            var lote = [];
+            for (var j = e; j <= Math.min(e + CELULA_ESTACAS * 4, fim); j += CELULA_ESTACAS)lote.push(DataAPI.salvarProjeto(APP.obraAtual.Id, j, sv, cam));
+            await Promise.all(lote); feito += lote.length;
+            pm.innerHTML = '<div class="alert alert-warn">Salvando... ' + feito + ' de ' + total + ' células (' + Math.round(feito / total * 100) + '%)</div>';
+            await new Promise(function (r) { setTimeout(r, 800) });
+          }
+          await carregarDadosObra();
+          pm.innerHTML = '<div class="alert alert-ok">✓ ' + NOMES[sv] + ': ' + estakaParaKm(ini) + ' a ' + estakaParaKm(fim + CELULA_ESTACAS) + ' com ' + cam + ' camada(s).</div>';
+          renderProjeto();
+        } catch (e) { pm.innerHTML = '<div class="alert alert-err">Erro: ' + e.message + '</div>' }
+        finally { btn.disabled = false; btn.textContent = 'Aplicar ao intervalo' }
+      };
+
+      // Cadastro de evento
+      document.getElementById('btn-evento').onclick = async function () {
+        var tipo = document.getElementById('ev-tipo').value;
+        var ini = parseInt(document.getElementById('ev-ini').value);
+        var fim = parseInt(document.getElementById('ev-fim').value);
+        var obs = document.getElementById('ev-obs').value;
+        var msg = document.getElementById('ev-msg'); msg.innerHTML = '';
+        if (!tipo) { msg.innerHTML = '<div class="alert alert-err">Selecione o tipo.</div>'; return }
+        if (isNaN(ini)) { msg.innerHTML = '<div class="alert alert-err">Informe a estaca início.</div>'; return }
+        if (isNaN(fim) || fim < ini) fim = ini;
+        var btn = this; btn.disabled = true; btn.textContent = 'Salvando...';
+        try {
+          await DataAPI.salvarEvento(APP.obraAtual.Id, ini, fim, tipo, obs);
+          await carregarDadosObra(); renderEventos();
+          msg.innerHTML = '<div class="alert alert-ok">✓ ' + (NOMES_EVENTO[tipo] || tipo) + ' — ' + estakaParaKm(ini) + (fim > ini ? ' a ' + estakaParaKm(fim) : '') + '.</div>';
+          document.getElementById('ev-obs').value = '';
+        } catch (e) { msg.innerHTML = '<div class="alert alert-err">Erro: ' + e.message + '</div>' }
+        finally { btn.disabled = false; btn.textContent = 'Adicionar' }
+      };
+
+      // Exportar CSV
+      document.getElementById('btn-exportar').onclick = function () {
+        var l = APP.execucao.slice().sort(function (a, b) { return (a.DataExecucao || '').localeCompare(b.DataExecucao || '') });
+        if (l.length === 0) { alert('Nada para exportar.'); return }
+        var csv = 'Data;Trecho(km);Estaca;Servico;NumCamadas;Responsavel;Observacao\n';
+        l.forEach(function (r) {
+          var gs = normalizarEstaca(r.Estaca || 0);
+          csv += (r.DataExecucao || '').substring(0, 10) + ';' + estakaParaKm(gs) + ' - ' + estakaParaKm(gs + CELULA_ESTACAS) + ';E.' + gs + ';' + (NOMES[r.Servico] || r.Servico) + ';' + (r.NumCamadasExecutadas || 1) + ';' + (r.Responsavel || '') + ';' + ((r.Observacao || '').replace(/;/g, ',')) + '\n';
+        });
+        var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }), url = URL.createObjectURL(blob), a = document.createElement('a');
+        a.href = url; a.download = 'execucao_' + ((APP.obraAtual || {}).Title || 'obra') + '_' + new Date().toISOString().slice(0, 10) + '.csv'; a.click(); URL.revokeObjectURL(url);
+      };
+
+      document.getElementById('btn-logout').onclick = function () { msalApp.logoutPopup().then(function () { location.reload() }) };
+
+      function verificarPermissaoUI() {
+        var d = document.getElementById('r-perm'), b = document.getElementById('btn-reg');
+        if (!podeRegistrar()) { d.style.display = 'block'; d.innerHTML = '<div class="alert alert-err">Sem permissão nesta obra.</div>'; b.disabled = true }
+        else { d.style.display = 'none'; b.disabled = false }
+      }
+      window.verificarPermissaoUI = verificarPermissaoUI;
+    }
+
+    /* =================================================================
+       CARREGAMENTO
+       ================================================================= */
+    async function carregarDadosObra() {
+      if (!APP.obraAtual) return;
+      dbg('Carregando obra: ' + APP.obraAtual.Title + '...');
+      var results = await Promise.all([DataAPI.listarProjeto(APP.obraAtual.Id), DataAPI.listarExecucao(APP.obraAtual.Id), DataAPI.listarEventos(APP.obraAtual.Id)]);
+      APP.projeto = results[0]; APP.execucao = results[1]; APP.eventos = results[2];
+      dbg('Projeto: ' + APP.projeto.length + ' | Execução: ' + APP.execucao.length + ' | Eventos: ' + APP.eventos.length, 'ok');
+      popularSelects(); renderStats(); renderLegend(); renderGraficoFaixas();
+      if (document.getElementById('tab-historico').style.display !== 'none') renderHistorico();
+      if (document.getElementById('tab-projeto').style.display !== 'none') { renderProjeto(); renderServicosObra() }
       atualizarInfoRegistro();
-    }catch(e){msg.innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
-    finally{btn.disabled=false;btn.textContent='Salvar'}
-  };
+    }
 
-  // Cadastro de projeto (células)
-  document.getElementById('btn-proj').onclick=async function(){
-    var sv=document.getElementById('p-serv').value;
-    var ini=normalizarEstaca(parseInt(document.getElementById('p-ini').value));
-    var fim=normalizarEstaca(parseInt(document.getElementById('p-fim').value));
-    var cam=parseInt(document.getElementById('p-cam').value);
-    var pm=document.getElementById('p-msg');
-    if(!sv){pm.innerHTML='<div class="alert alert-err">Selecione o serviço.</div>';return}
-    if(isNaN(ini)||isNaN(fim)||ini>fim){pm.innerHTML='<div class="alert alert-err">Intervalo inválido.</div>';return}
-    if(isNaN(cam)||cam<1){pm.innerHTML='<div class="alert alert-err">Nº de camadas inválido.</div>';return}
-    var btn=this;btn.disabled=true;btn.textContent='Salvando...';
-    var total=(fim-ini)/CELULA_ESTACAS+1,feito=0;
-    try{
-      for(var e=ini;e<=fim;e+=CELULA_ESTACAS*5){
-        var lote=[];
-        for(var j=e;j<=Math.min(e+CELULA_ESTACAS*4,fim);j+=CELULA_ESTACAS)lote.push(DataAPI.salvarProjeto(APP.obraAtual.Id,j,sv,cam));
-        await Promise.all(lote);feito+=lote.length;
-        pm.innerHTML='<div class="alert alert-warn">Salvando... '+feito+' de '+total+' células ('+Math.round(feito/total*100)+'%)</div>';
-        await new Promise(function(r){setTimeout(r,800)});
-      }
-      await carregarDadosObra();
-      pm.innerHTML='<div class="alert alert-ok">✓ '+NOMES[sv]+': '+estakaParaKm(ini)+' a '+estakaParaKm(fim+CELULA_ESTACAS)+' com '+cam+' camada(s).</div>';
-      renderProjeto();
-    }catch(e){pm.innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
-    finally{btn.disabled=false;btn.textContent='Aplicar ao intervalo'}
-  };
+    async function iniciarApp() {
+      dbg('Autenticado. Carregando dados...');
+      APP.usuario = { nome: currentAccount.name, email: currentAccount.username };
+      document.getElementById('user-info').textContent = currentAccount.name;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-main').style.display = 'block';
+      try {
+        var todasObras = await DataAPI.listarObras();
+        APP.obras = todasObras.filter(function (o) {
+          if (!o.Responsaveis || o.Responsaveis.trim() === '') return true;
+          var emails = o.Responsaveis.toLowerCase().split(';').map(function (e) { return e.trim() });
+          return emails.indexOf((APP.usuario.email || '').toLowerCase()) >= 0;
+        });
+        var sel = document.getElementById('obra-sel');
+        if (APP.obras.length === 0) { sel.innerHTML = '<option>Nenhuma obra cadastrada</option>'; dbg('Lista Obras vazia.', 'err') }
+        else { sel.innerHTML = APP.obras.map(function (o) { return '<option value="' + o.Id + '">' + o.Title + '</option>' }).join(''); APP.obraAtual = APP.obras[0]; sel.value = APP.obraAtual.Id }
+        document.getElementById('r-data').value = new Date().toISOString().slice(0, 10);
+        // Mostrar botão Debug apenas para administradores
+        var isAdmin = ADMIN_EMAILS.some(function (e) { return e.toLowerCase() === (APP.usuario.email || '').toLowerCase() });
+        if (isAdmin) document.getElementById('btn-debug').style.display = '';
+        bindEvents();
+        await carregarDadosObra();
+        var banner = document.getElementById('mode-banner'); banner.textContent = 'Conectado ao SharePoint'; banner.style.display = 'block'; setTimeout(function () { banner.style.display = 'none' }, 3000);
+      } catch (e) { dbg('Erro: ' + e.message, 'err'); document.querySelector('.container').innerHTML = '<div class="alert alert-err" style="margin-top:20px"><strong>Erro ao iniciar</strong><br>' + e.message + '</div>' }
+    }
 
-  // Cadastro de evento
-  document.getElementById('btn-evento').onclick=async function(){
-    var tipo=document.getElementById('ev-tipo').value;
-    var ini=parseInt(document.getElementById('ev-ini').value);
-    var fim=parseInt(document.getElementById('ev-fim').value);
-    var obs=document.getElementById('ev-obs').value;
-    var msg=document.getElementById('ev-msg');msg.innerHTML='';
-    if(!tipo){msg.innerHTML='<div class="alert alert-err">Selecione o tipo.</div>';return}
-    if(isNaN(ini)){msg.innerHTML='<div class="alert alert-err">Informe a estaca início.</div>';return}
-    if(isNaN(fim)||fim<ini)fim=ini;
-    var btn=this;btn.disabled=true;btn.textContent='Salvando...';
-    try{
-      await DataAPI.salvarEvento(APP.obraAtual.Id,ini,fim,tipo,obs);
-      await carregarDadosObra();renderEventos();
-      msg.innerHTML='<div class="alert alert-ok">✓ '+(NOMES_EVENTO[tipo]||tipo)+' — '+estakaParaKm(ini)+(fim>ini?' a '+estakaParaKm(fim):'')+'.</div>';
-      document.getElementById('ev-obs').value='';
-    }catch(e){msg.innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
-    finally{btn.disabled=false;btn.textContent='Adicionar'}
-  };
-
-  // Exportar CSV
-  document.getElementById('btn-exportar').onclick=function(){
-    var l=APP.execucao.slice().sort(function(a,b){return(a.DataExecucao||'').localeCompare(b.DataExecucao||'')});
-    if(l.length===0){alert('Nada para exportar.');return}
-    var csv='Data;Trecho(km);Estaca;Servico;NumCamadas;Responsavel;Observacao\n';
-    l.forEach(function(r){
-      var gs=normalizarEstaca(r.Estaca||0);
-      csv+=(r.DataExecucao||'').substring(0,10)+';'+estakaParaKm(gs)+' - '+estakaParaKm(gs+CELULA_ESTACAS)+';E.'+gs+';'+(NOMES[r.Servico]||r.Servico)+';'+(r.NumCamadasExecutadas||1)+';'+(r.Responsavel||'')+';'+((r.Observacao||'').replace(/;/g,','))+'\n';
-    });
-    var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download='execucao_'+((APP.obraAtual||{}).Title||'obra')+'_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
-  };
-
-  document.getElementById('btn-logout').onclick=function(){msalApp.logoutPopup().then(function(){location.reload()})};
-
-  function verificarPermissaoUI(){
-    var d=document.getElementById('r-perm'),b=document.getElementById('btn-reg');
-    if(!podeRegistrar()){d.style.display='block';d.innerHTML='<div class="alert alert-err">Sem permissão nesta obra.</div>';b.disabled=true}
-    else{d.style.display='none';b.disabled=false}
-  }
-  window.verificarPermissaoUI=verificarPermissaoUI;
-}
-
-/* =================================================================
-   CARREGAMENTO
-   ================================================================= */
-async function carregarDadosObra(){
-  if(!APP.obraAtual)return;
-  dbg('Carregando obra: '+APP.obraAtual.Title+'...');
-  var results=await Promise.all([DataAPI.listarProjeto(APP.obraAtual.Id),DataAPI.listarExecucao(APP.obraAtual.Id),DataAPI.listarEventos(APP.obraAtual.Id)]);
-  APP.projeto=results[0];APP.execucao=results[1];APP.eventos=results[2];
-  dbg('Projeto: '+APP.projeto.length+' | Execução: '+APP.execucao.length+' | Eventos: '+APP.eventos.length,'ok');
-  popularSelects();renderStats();renderLegend();renderGraficoFaixas();
-  if(document.getElementById('tab-historico').style.display!=='none')renderHistorico();
-  if(document.getElementById('tab-projeto').style.display!=='none'){renderProjeto();renderServicosObra()}
-  atualizarInfoRegistro();
-}
-
-async function iniciarApp(){
-  dbg('Autenticado. Carregando dados...');
-  APP.usuario={nome:currentAccount.name,email:currentAccount.username};
-  document.getElementById('user-info').textContent=currentAccount.name;
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app-main').style.display='block';
-  try{
-    var todasObras=await DataAPI.listarObras();
-    APP.obras=todasObras.filter(function(o){
-      if(!o.Responsaveis||o.Responsaveis.trim()==='')return true;
-      var emails=o.Responsaveis.toLowerCase().split(';').map(function(e){return e.trim()});
-      return emails.indexOf((APP.usuario.email||'').toLowerCase())>=0;
-    });
-    var sel=document.getElementById('obra-sel');
-    if(APP.obras.length===0){sel.innerHTML='<option>Nenhuma obra cadastrada</option>';dbg('Lista Obras vazia.','err')}
-    else{sel.innerHTML=APP.obras.map(function(o){return'<option value="'+o.Id+'">'+o.Title+'</option>'}).join('');APP.obraAtual=APP.obras[0];sel.value=APP.obraAtual.Id}
-    document.getElementById('r-data').value=new Date().toISOString().slice(0,10);
-    // Mostrar botão Debug apenas para administradores
-    var isAdmin=ADMIN_EMAILS.some(function(e){return e.toLowerCase()===(APP.usuario.email||'').toLowerCase()});
-    if(isAdmin)document.getElementById('btn-debug').style.display='';
-    bindEvents();
-    await carregarDadosObra();
-    var banner=document.getElementById('mode-banner');banner.textContent='Conectado ao SharePoint';banner.style.display='block';setTimeout(function(){banner.style.display='none'},3000);
-  }catch(e){dbg('Erro: '+e.message,'err');document.querySelector('.container').innerHTML='<div class="alert alert-err" style="margin-top:20px"><strong>Erro ao iniciar</strong><br>'+e.message+'</div>'}
-}
-
-async function boot(){
-  try{
-    msalApp=new msal.PublicClientApplication(msalConfig);
-    if(typeof msalApp.initialize==='function')await msalApp.initialize();
-    var resp=await msalApp.handleRedirectPromise();
-    handleLoginResponse(resp);
-    if(currentAccount){await iniciarApp()}
-    else{document.getElementById('btn-login').onclick=function(){msalApp.loginRedirect(loginRequest)}}
-  }catch(e){document.getElementById('login-err').innerHTML='<div class="alert alert-err">Erro: '+e.message+'</div>'}
-}
-boot();
-</script>
+    async function boot() {
+      try {
+        msalApp = new msal.PublicClientApplication(msalConfig);
+        if (typeof msalApp.initialize === 'function') await msalApp.initialize();
+        var resp = await msalApp.handleRedirectPromise();
+        handleLoginResponse(resp);
+        if (currentAccount) { await iniciarApp() }
+        else { document.getElementById('btn-login').onclick = function () { msalApp.loginRedirect(loginRequest) } }
+      } catch (e) { document.getElementById('login-err').innerHTML = '<div class="alert alert-err">Erro: ' + e.message + '</div>' }
+    }
+    boot();
+  </script>
 </body>
+
 </html>
