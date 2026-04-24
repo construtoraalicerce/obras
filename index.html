@@ -478,19 +478,26 @@
     /* Diário de Obra */
     .diario-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px}
     .diario-cal-header{font-size:9px;color:#888;text-align:center;font-weight:700;padding:2px 0}
-    .diario-cal-cell{text-align:center;font-size:10px;font-weight:600;border-radius:4px;padding:4px 2px;cursor:pointer;transition:opacity .15s;font-family:'Barlow Condensed',sans-serif;border:2px solid transparent;min-height:28px;display:flex;align-items:center;justify-content:center}
-    .diario-cal-cell:hover{opacity:.8;border-color:rgba(0,0,0,.15)}
+    .diario-cal-cell{text-align:center;border-radius:5px;padding:3px 2px;cursor:pointer;transition:opacity .15s;font-family:'Barlow Condensed',sans-serif;border:2px solid transparent;min-height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;gap:1px}
+    .diario-cal-cell:hover{opacity:.82;border-color:rgba(0,0,0,.2)}
     .diario-cal-cell.selected{box-shadow:0 0 0 2px #0078d4,0 0 0 4px #fff,0 0 0 6px #0078d4}
-    .diario-cal-cell.vazio{background:#f5f5f5;color:#bbb;cursor:pointer}
+    .diario-cal-cell.vazio{background:#f5f5f5;color:#bbb}
     .diario-cal-cell.fds-auto{background:#BDBDBD;color:#fff}
-    .diario-cal-cell.normal{background:#3A9C4E;color:#fff}
-    .diario-cal-cell.chuva{background:#1565C0;color:#fff}
-    .diario-cal-cell.parcial{background:#78909C;color:#fff}
-    .diario-cal-cell.feriado{background:#BDBDBD;color:#fff}
-    .diario-cal-cell.futuro{opacity:.35;cursor:not-allowed}
-    .diario-clima-btn{padding:5px 10px;border-radius:5px;border:2px solid #ddd;background:#f5f5f5;color:#555;font-size:12px;cursor:pointer;transition:all .15s;font-weight:600}
-    .diario-clima-btn.active{border-color:currentColor;opacity:1}
-    .diario-ficha{border:2px solid #0078d4;border-radius:8px;padding:14px;margin-top:12px;background:#fff;animation:fadeIn .2s}
+    .diario-cal-cell.praticavel{background:#3A9C4E;color:#fff}
+    .diario-cal-cell.semi{background:#F9A825;color:#fff}
+    .diario-cal-cell.impraticavel{background:#E65100;color:#fff}
+    .diario-cal-cell.fds-reg{background:#78909C;color:#fff}
+    .diario-cal-cell.futuro{opacity:.3;cursor:not-allowed;pointer-events:none}
+    .diario-cel-num{font-size:13px;font-weight:700;line-height:1}
+    .diario-cel-sym{font-size:8px;line-height:1;opacity:.9}
+    .diario-cel-sym.sem-dados{color:#ccc}
+    .diario-periodo-btn{padding:5px 10px;border-radius:5px;border:2px solid #ddd;background:#f5f5f5;color:#555;font-size:12px;cursor:pointer;transition:all .15s;font-weight:600;white-space:nowrap}
+    .diario-periodo-btn:hover{background:#e8e8e8}
+    .diario-ficha{border:2px solid #0078d4;border-radius:8px;padding:16px;margin-top:14px;background:#fff;animation:fadeIn .2s}
+    .diario-secao{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid #f0f0f0}
+    .diario-periodo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
+    .diario-periodo-label{font-size:11px;font-weight:700;color:#0078d4;margin-bottom:5px}
+    .diario-eq-row{display:grid;grid-template-columns:1fr 1.5fr auto;gap:6px;align-items:start;margin-bottom:6px}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
     /* Strip chart */
     .strip-wrap {
@@ -736,7 +743,19 @@
     <div id="mode-banner" class="mode-banner ok" style="display:none"></div>
     <div class="header">
       <h1>Acompanhamento de Obras — Pavimentação</h1>
-      <div class="user"><span id="user-info"></span><button class="logout" id="btn-logout">Sair</button></div>
+      <div class="user" style="gap:12px">
+        <button id="notif-badge" onclick="abrirPainelNotificacoes()" style="display:none;background:#E65100;color:#fff;border:none;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;cursor:pointer;gap:5px;align-items:center"></button>
+        <span id="user-info"></span>
+        <button class="logout" id="btn-logout">Sair</button>
+      </div>
+      <!-- Painel de notificações -->
+      <div id="notif-painel" style="display:none;position:fixed;top:60px;right:20px;width:380px;background:#fff;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:1000;max-height:70vh;overflow-y:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #f0f0f0">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:#E65100">📋 Solicitações de Equipamento</span>
+          <button onclick="fecharPainelNotificacoes()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#999;line-height:1">✕</button>
+        </div>
+        <div id="notif-lista" style="padding:12px 16px"></div>
+      </div>
     </div>
     <div class="container">
       <div id="debug-area"></div>
@@ -772,15 +791,17 @@
             <div>
               <div id="diario-cal-unico"></div>
               <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;align-items:center">
-                <span style="font-size:10px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.3px">Clima:</span>
-                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:12px;height:12px;border-radius:2px;background:#3A9C4E;display:inline-block"></span>Normal</span>
-                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:12px;height:12px;border-radius:2px;background:#1565C0;display:inline-block"></span>Chuva</span>
-                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:12px;height:12px;border-radius:2px;background:#78909C;display:inline-block"></span>Parcial</span>
-                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:12px;height:12px;border-radius:2px;background:#BDBDBD;display:inline-block"></span>Feriado/FS</span>
+                <span style="font-size:10px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.3px">Condição:</span>
+                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:12px;height:12px;border-radius:2px;background:#3A9C4E;display:inline-block"></span>Praticável</span>
+                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:12px;height:12px;border-radius:2px;background:#F9A825;display:inline-block"></span>Parcial</span>
+                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:12px;height:12px;border-radius:2px;background:#E65100;display:inline-block"></span>Impraticável</span>
+                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:12px;height:12px;border-radius:2px;background:#78909C;display:inline-block"></span>FS/Feriado</span>
                 <span style="color:#ccc">|</span>
-                <span style="font-size:10px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.3px">Intercorrência:</span>
-                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:#E65100;display:inline-block;border:1px solid #fff"></span>Máquina</span>
-                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:#F9A825;display:inline-block;border:1px solid #fff"></span>Material</span>
+                <span style="font-size:10px">☀ Claro &nbsp;🌧 Chuva</span>
+                <span style="color:#ccc">|</span>
+                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:#E65100;display:inline-block"></span>Equip.</span>
+                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:#F9A825;display:inline-block"></span>Material</span>
+                <span style="display:flex;align-items:center;gap:3px;font-size:10px"><span style="font-size:9px">📋</span>Solicitação</span>
               </div>
             </div>
             <div id="diario-resumo" style="background:#f5f7fa;border:1px solid #e0e0e0;border-radius:8px;padding:14px"></div>
@@ -980,10 +1001,12 @@
     var LISTA_EXECUCAO = 'Execucao';
     var LISTA_EVENTOS = 'Eventos';
     var LISTA_DIARIO = 'Diario';
+    var LISTA_DIARIO_EQ = 'DiarioEquipamentos';
 
     // Estado do calendário do Diário
     var mesDiario = new Date().getMonth();
     var anoDiario = new Date().getFullYear();
+    var _diarioEqsRemovidos = []; // IDs de equipamentos removidos na ficha aberta
 
     /* =================================================================
        CONSTANTES DE SERVIÇOS
@@ -1070,9 +1093,15 @@
         var title = obraId + '-' + data;
         var ex = await SP.listarItens(LISTA_DIARIO, "ObraId eq " + obraId + " and Title eq '" + title + "'");
         var payload = Object.assign({ Title: title, ObraId: obraId, Data: data }, campos);
-        if (ex.length > 0) return SP.atualizarItem(LISTA_DIARIO, ex[0].Id, campos);
-        return SP.criarItem(LISTA_DIARIO, payload);
+        if (ex.length > 0) { await SP.atualizarItem(LISTA_DIARIO, ex[0].Id, campos); return ex[0].Id; }
+        var r = await SP.criarItem(LISTA_DIARIO, payload); return r.Id || r.d && r.d.Id;
       },
+      async marcarSolicitacaoLida(diarioId) { return SP.atualizarItem(LISTA_DIARIO, diarioId, {SolicitacaoLida: true}) },
+      async listarDiarioEq(obraId) { return SP.listarItens(LISTA_DIARIO_EQ, 'ObraId eq ' + obraId) },
+      async criarEquipamentoQuebrado(obraId, data, eq, desc, n) {
+        return SP.criarItem(LISTA_DIARIO_EQ, {Title: obraId+'-'+data+'-'+n, ObraId: obraId, Data: data, Equipamento: eq, Descricao: desc});
+      },
+      async deletarEquipamentoQuebrado(id) { return SP.deletarItem(LISTA_DIARIO_EQ, id) },
       async salvarEvento(obraId, estIni, estFim, tipo, obs) {
         return SP.criarItem(LISTA_EVENTOS, { Title: obraId + '-' + tipo + '-E' + estIni, ObraId: obraId, EstacaInicial: estIni, EstacaFinal: estFim || estIni, TipoEvento: tipo, Status: 'indicativo', Observacao: obs || '' })
       },
@@ -1980,6 +2009,26 @@
       renderDiario();
     }
 
+    function _periodoBtn(grupo, periodo, val, label, cor, atual) {
+      var ativo = atual === val;
+      return '<button class="diario-periodo-btn" data-grupo="'+grupo+'" data-periodo="'+periodo+'" data-val="'+val+'" onclick="selecionarPeriodo(this)" style="'+(ativo?'background:'+cor+';color:#fff;border-color:'+cor:'')+'">'+label+'</button>';
+    }
+
+    function selecionarPeriodo(el) {
+      var grupo = el.dataset.grupo, periodo = el.dataset.periodo;
+      document.querySelectorAll('.diario-periodo-btn[data-grupo="'+grupo+'"][data-periodo="'+periodo+'"]').forEach(function(b) { b.removeAttribute('style'); });
+      el.style.background = el.dataset.val === 'claro' ? '#F9A825' : '#1565C0';
+      el.style.color = '#fff';
+      el.style.borderColor = el.style.background;
+    }
+
+    function getPeriodoVal(grupo, periodo) {
+      var btns = document.querySelectorAll('.diario-periodo-btn[data-grupo="'+grupo+'"][data-periodo="'+periodo+'"]');
+      var ativo = null;
+      btns.forEach(function(b) { if (b.style.background && b.style.background !== '') ativo = b.dataset.val; });
+      return ativo;
+    }
+
     function renderDiario() {
       var calUnico = document.getElementById('diario-cal-unico');
       var resumoEl = document.getElementById('diario-resumo');
@@ -1988,19 +2037,16 @@
 
       var nomesMes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
       lblMes.textContent = nomesMes[mesDiario] + ' ' + anoDiario;
-
       var hoje = new Date(); hoje.setHours(0,0,0,0);
 
-      // Índice de fichas por data YYYY-MM-DD
       var fichas = {};
-      (APP.diario || []).forEach(function(f) {
-        var d = (f.Data || '').substring(0, 10);
-        if (d) fichas[d] = f;
-      });
+      (APP.diario || []).forEach(function(f) { var d=(f.Data||'').substring(0,10); if(d) fichas[d]=f; });
 
-      // Contadores para o resumo
-      var cont = {normal:0, chuva:0, parcial:0, feriado:0, maquina:0, material:0};
+      // Índice de equipamentos quebrados por data
+      var eqPorData = {};
+      (APP.diarioEq || []).forEach(function(e) { var d=(e.Data||'').substring(0,10); if(d){if(!eqPorData[d])eqPorData[d]=0; eqPorData[d]++;} });
 
+      var cont = {praticavel:0, semi:0, impraticavel:0, fdsReg:0, maqDias:0, matDias:0, solicitacoes:0, dieselTotal:0, dieselEstoque:null};
       var diasSemana = ['D','S','T','Q','Q','S','S'];
       var primeiroDia = new Date(anoDiario, mesDiario, 1).getDay();
       var totalDias = new Date(anoDiario, mesDiario + 1, 0).getDate();
@@ -2010,220 +2056,356 @@
       for (var i = 0; i < primeiroDia; i++) html += '<div></div>';
 
       for (var dia = 1; dia <= totalDias; dia++) {
-        var mm = String(mesDiario + 1).padStart(2, '0');
-        var dd2 = String(dia).padStart(2, '0');
-        var dataStr = anoDiario + '-' + mm + '-' + dd2;
+        var mm = String(mesDiario+1).padStart(2,'0'), dd2 = String(dia).padStart(2,'0');
+        var dataStr = anoDiario+'-'+mm+'-'+dd2;
         var diaDate = new Date(anoDiario, mesDiario, dia);
-        var dow = diaDate.getDay();
-        var fds = (dow === 0 || dow === 6);
-        var futuro = diaDate > hoje;
+        var dow = diaDate.getDay(), fds = (dow===0||dow===6), futuro = diaDate > hoje;
         var ficha = fichas[dataStr];
+        var temEq = eqPorData[dataStr] > 0;
+        var mat = ficha && (ficha.IntercorrenciaMaterial===true||ficha.IntercorrenciaMaterial==='true'||ficha.IntercorrenciaMaterial===1);
+        var temSol = ficha && ficha.SolicitacaoEquipamento && ficha.SolicitacaoEquipamento.trim() !== '';
 
-        var maq = ficha && (ficha.IntercorrenciaMaquina === true || ficha.IntercorrenciaMaquina === 'true' || ficha.IntercorrenciaMaquina === 1);
-        var mat = ficha && (ficha.IntercorrenciaMaterial === true || ficha.IntercorrenciaMaterial === 'true' || ficha.IntercorrenciaMaterial === 1);
-
-        // Cor de fundo (clima)
-        var cls;
-        if (ficha && ficha.ClimaStatus) {
-          cls = ficha.ClimaStatus;
-          if (cont[ficha.ClimaStatus] !== undefined) cont[ficha.ClimaStatus]++;
-        } else {
-          cls = fds ? 'fds-auto' : 'vazio';
+        // Contadores
+        if (ficha) {
+          var cM = ficha.CondicaoManha, cT = ficha.CondicaoTarde;
+          if (fds) cont.fdsReg++;
+          else if (cM==='impraticavel'&&cT==='impraticavel') cont.impraticavel++;
+          else if (cM==='impraticavel'||cT==='impraticavel') cont.semi++;
+          else if (cM||cT) cont.praticavel++;
+          if (temEq) cont.maqDias++;
+          if (mat) cont.matDias++;
+          if (temSol) cont.solicitacoes++;
+          if (ficha.DieselConsumo) cont.dieselTotal += parseFloat(ficha.DieselConsumo)||0;
+          if (ficha.DieselEstoque) cont.dieselEstoque = parseFloat(ficha.DieselEstoque)||0;
         }
-        if (maq) cont.maquina++;
-        if (mat) cont.material++;
+
+        // Classe de cor
+        var cls;
+        if (!ficha) { cls = fds ? 'fds-auto' : 'vazio'; }
+        else if (fds) { cls = 'fds-reg'; }
+        else {
+          var cM2=ficha.CondicaoManha, cT2=ficha.CondicaoTarde;
+          if (cM2==='impraticavel'&&cT2==='impraticavel') cls='impraticavel';
+          else if (cM2==='impraticavel'||cT2==='impraticavel') cls='semi';
+          else cls='praticavel';
+        }
+        if (futuro) cls += ' futuro';
+
+        // Símbolos de clima
+        var symM = ficha&&ficha.ClimaManha ? (ficha.ClimaManha==='claro'?'☀':'🌧') : '';
+        var symT = ficha&&ficha.ClimaTarde ? (ficha.ClimaTarde==='claro'?'☀':'🌧') : '';
+        var symHtml = (symM||symT) ? '<span class="diario-cel-sym">'+(symM||'·')+'|'+(symT||'·')+'</span>' : '<span class="diario-cel-sym sem-dados"> </span>';
+
+        // Dots de intercorrência
+        var dots = '';
+        if (temEq) dots += '<span style="position:absolute;bottom:2px;right:2px;width:6px;height:6px;border-radius:50%;background:#E65100;border:1px solid rgba(255,255,255,.8)"></span>';
+        if (mat) dots += '<span style="position:absolute;bottom:2px;right:'+(temEq?'10':'2')+'px;width:6px;height:6px;border-radius:50%;background:#F9A825;border:1px solid rgba(255,255,255,.8)"></span>';
+        if (temSol) dots += '<span style="position:absolute;top:1px;right:2px;font-size:7px;line-height:1">📋</span>';
 
         // Tooltip
-        var tooltipParts = [];
-        if (ficha && ficha.ClimaStatus) tooltipParts.push({normal:'Dia normal',chuva:'Chuva/Clima',parcial:'Dia parcial',feriado:'Feriado/FS'}[ficha.ClimaStatus] || ficha.ClimaStatus);
-        if (maq) tooltipParts.push('🔧 Máquina');
-        if (mat) tooltipParts.push('📦 Material');
-        if (ficha && ficha.Observacao) tooltipParts.push(ficha.Observacao.substring(0, 60));
-        var title = tooltipParts.join(' | ');
+        var tip = [];
+        if (ficha && ficha.CondicaoManha) tip.push('Manhã: '+ficha.CondicaoManha);
+        if (ficha && ficha.CondicaoTarde) tip.push('Tarde: '+ficha.CondicaoTarde);
+        if (temEq) tip.push('🔧 '+eqPorData[dataStr]+' equip.');
+        if (mat) tip.push('📦 Ag. material');
+        if (temSol) tip.push('📋 Solicitação');
+        if (ficha && ficha.AtividadesRealizadas) tip.push(ficha.AtividadesRealizadas.substring(0,50));
+        var titleAttr = tip.length ? ' title="'+tip.join(' | ').replace(/"/g,'&quot;')+'"' : '';
 
-        // Indicador de intercorrência (ponto no canto)
-        var dotHtml = '';
-        if (maq && mat) dotHtml = '<span style="position:absolute;bottom:2px;right:2px;width:6px;height:6px;border-radius:50%;background:#E65100;border:1px solid rgba(255,255,255,.8)"></span><span style="position:absolute;bottom:2px;right:9px;width:6px;height:6px;border-radius:50%;background:#F9A825;border:1px solid rgba(255,255,255,.8)"></span>';
-        else if (maq) dotHtml = '<span style="position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;background:#E65100;border:1px solid rgba(255,255,255,.8)"></span>';
-        else if (mat) dotHtml = '<span style="position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;background:#F9A825;border:1px solid rgba(255,255,255,.8)"></span>';
-
-        // Estilo extra para futuro e para dia bloqueado
-        var extraStyle = futuro ? 'opacity:.35;cursor:not-allowed;' : '';
-        var onclick = futuro ? '' : 'onclick="abrirFichaDia(\'' + dataStr + '\')"';
-
-        html += '<div class="diario-cal-cell ' + cls + '" ' + onclick +
-          ' style="position:relative;' + extraStyle + '"' +
-          (title ? ' title="' + title.replace(/"/g, '&quot;') + '"' : '') + '>' +
-          dia + dotHtml + '</div>';
+        var onclick = futuro ? '' : ' onclick="abrirFichaDia(\''+dataStr+'\')"';
+        html += '<div class="diario-cal-cell '+cls+'"'+onclick+titleAttr+'>'+symHtml+'<span class="diario-cel-num">'+dia+'</span>'+dots+'</div>';
       }
       html += '</div>';
       calUnico.innerHTML = html;
 
       // Destacar dia aberto
-      var fichaWrap = document.getElementById('diario-ficha-wrap');
-      var dataAberta = fichaWrap && fichaWrap.dataset.dataAberta;
-      if (dataAberta) {
+      var fw = document.getElementById('diario-ficha-wrap');
+      var da = fw && fw.dataset.dataAberta;
+      if (da) {
         document.querySelectorAll('.diario-cal-cell').forEach(function(el) {
-          var oc = el.getAttribute('onclick') || '';
-          if (oc.includes(dataAberta)) el.classList.add('selected');
-          else el.classList.remove('selected');
+          var oc = el.getAttribute('onclick')||'';
+          if (oc.includes(da)) el.classList.add('selected'); else el.classList.remove('selected');
         });
       }
 
       // Painel de resumo
       if (resumoEl) {
-        var totalRegistrados = cont.normal + cont.chuva + cont.parcial + cont.feriado;
-        var itens = [
-          {cor:'#3A9C4E', label:'Dias normais', val:cont.normal},
-          {cor:'#1565C0', label:'Com chuva', val:cont.chuva},
-          {cor:'#78909C', label:'Parciais', val:cont.parcial},
-          {cor:'#BDBDBD', label:'Feriado/FS', val:cont.feriado},
-        ];
-        var intercItens = [
-          {cor:'#E65100', label:'Máquina parada', val:cont.maquina},
-          {cor:'#F9A825', label:'Ag. material', val:cont.material},
-        ];
-        var rHtml = '<div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Resumo do mês</div>';
-        rHtml += '<div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:600">CLIMA</div>';
-        itens.forEach(function(it) {
-          rHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">' +
-            '<span style="display:flex;align-items:center;gap:5px;font-size:12px"><span style="width:10px;height:10px;border-radius:2px;background:' + it.cor + ';display:inline-block;flex-shrink:0"></span>' + it.label + '</span>' +
-            '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;font-weight:700;color:#222">' + it.val + '</span>' +
-            '</div>';
-        });
-        rHtml += '<div style="border-top:1px solid #e0e0e0;margin:10px 0"></div>';
-        rHtml += '<div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:600">INTERCORRÊNCIAS</div>';
-        intercItens.forEach(function(it) {
-          rHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">' +
-            '<span style="display:flex;align-items:center;gap:5px;font-size:12px"><span style="width:10px;height:10px;border-radius:50%;background:' + it.cor + ';display:inline-block;flex-shrink:0"></span>' + it.label + '</span>' +
-            '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;font-weight:700;color:#222">' + it.val + '</span>' +
-            '</div>';
-        });
-        rHtml += '<div style="border-top:1px solid #e0e0e0;margin:10px 0"></div>';
-        rHtml += '<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:#888">Registrados</span><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:16px;font-weight:700;color:#0078d4">' + totalRegistrados + ' dias</span></div>';
-        resumoEl.innerHTML = rHtml;
+        function linhaCont(cor, label, val, circulo) {
+          return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">'+
+            '<span style="display:flex;align-items:center;gap:5px;font-size:12px">'+
+            '<span style="width:10px;height:10px;border-radius:'+(circulo?'50%':'2px')+';background:'+cor+';display:inline-block;flex-shrink:0"></span>'+label+'</span>'+
+            '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;font-weight:700;color:#222">'+val+'</span></div>';
+        }
+        var r = '<div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Resumo do mês</div>';
+        r += '<div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:600">CONDIÇÃO</div>';
+        r += linhaCont('#3A9C4E','Praticável',cont.praticavel);
+        r += linhaCont('#F9A825','Parcial',cont.semi);
+        r += linhaCont('#E65100','Impraticável',cont.impraticavel);
+        r += linhaCont('#78909C','FS / Feriado',cont.fdsReg);
+        r += '<div style="border-top:1px solid #e0e0e0;margin:10px 0"></div>';
+        r += '<div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:600">INTERCORRÊNCIAS</div>';
+        r += linhaCont('#E65100','Equip. parado',cont.maqDias,true);
+        r += linhaCont('#F9A825','Ag. material',cont.matDias,true);
+        r += '<div style="border-top:1px solid #e0e0e0;margin:10px 0"></div>';
+        r += '<div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:600">DIESEL</div>';
+        r += '<div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px">Consumo total</span><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:16px;font-weight:700">'+cont.dieselTotal.toFixed(0)+' L</span></div>';
+        r += '<div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="font-size:12px">Estoque atual</span><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:16px;font-weight:700;color:#0078d4">'+(cont.dieselEstoque!==null?cont.dieselEstoque.toFixed(0)+' L':'—')+'</span></div>';
+        if (cont.solicitacoes > 0) {
+          r += '<div style="background:#fff3cd;border:1px solid #ffc069;border-radius:5px;padding:6px 8px;font-size:11px;color:#7c5a00;text-align:center">📋 '+cont.solicitacoes+' solicitação(ões) de equip.</div>';
+        }
+        resumoEl.innerHTML = r;
       }
     }
 
     function abrirFichaDia(dataStr) {
-      // Bloquear datas futuras
       var hoje = new Date(); hoje.setHours(0,0,0,0);
-      var diaDate = new Date(dataStr + 'T12:00:00');
-      if (diaDate > hoje) return;
+      if (new Date(dataStr+'T12:00:00') > hoje) return;
+      _diarioEqsRemovidos = [];
 
-      var fichaWrap = document.getElementById('diario-ficha-wrap');
-      fichaWrap.dataset.dataAberta = dataStr;
-
-      // Marcar célula selecionada nos dois calendários
+      var fw = document.getElementById('diario-ficha-wrap');
+      fw.dataset.dataAberta = dataStr;
       document.querySelectorAll('.diario-cal-cell').forEach(function(el) { el.classList.remove('selected'); });
       document.querySelectorAll('.diario-cal-cell').forEach(function(el) {
-        if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(dataStr)) el.classList.add('selected');
+        if ((el.getAttribute('onclick')||'').includes(dataStr)) el.classList.add('selected');
       });
 
-      var ficha = (APP.diario || []).find(function(f) { return (f.Data || '').substring(0, 10) === dataStr; });
-      var clima = (ficha && ficha.ClimaStatus) || '';
-      var maq = ficha && (ficha.IntercorrenciaMaquina === true || ficha.IntercorrenciaMaquina === 'true' || ficha.IntercorrenciaMaquina === 1);
-      var mat = ficha && (ficha.IntercorrenciaMaterial === true || ficha.IntercorrenciaMaterial === 'true' || ficha.IntercorrenciaMaterial === 1);
-      var obs = (ficha && ficha.Observacao) || '';
-
-      var d = new Date(dataStr + 'T12:00:00');
-      var dow = d.getDay();
-      var fds = (dow === 0 || dow === 6);
+      var ficha = (APP.diario||[]).find(function(f){return (f.Data||'').substring(0,10)===dataStr;});
+      var eqsDia = (APP.diarioEq||[]).filter(function(e){return (e.Data||'').substring(0,10)===dataStr;});
+      var d = new Date(dataStr+'T12:00:00');
+      var dow = d.getDay(), fds = (dow===0||dow===6);
       var nomeDia = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][dow];
-      var dtLabel = dd(d.getDate()) + '/' + dd(d.getMonth() + 1) + '/' + d.getFullYear();
-      function dd(n) { return String(n).padStart(2,'0'); }
+      function dz(n){return String(n).padStart(2,'0');}
+      var dtLabel = dz(d.getDate())+'/'+dz(d.getMonth()+1)+'/'+d.getFullYear();
 
-      if (!clima) clima = fds ? 'feriado' : '';
+      var cliMa=(ficha&&ficha.ClimaManha)||'', cliTa=(ficha&&ficha.ClimaTarde)||'';
+      var conMa=(ficha&&ficha.CondicaoManha)||'', conTa=(ficha&&ficha.CondicaoTarde)||'';
+      var mat = ficha&&(ficha.IntercorrenciaMaterial===true||ficha.IntercorrenciaMaterial==='true'||ficha.IntercorrenciaMaterial===1);
+      var diesel = (ficha&&ficha.DieselConsumo)||'', estoque=(ficha&&ficha.DieselEstoque)||'';
+      var atividades = (ficha&&ficha.AtividadesRealizadas)||'';
+      var solicitacao = (ficha&&ficha.SolicitacaoEquipamento)||'';
+      var obs = (ficha&&ficha.Observacao)||'';
 
-      var avisoFds = fds ? '<div style="background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:6px 10px;font-size:12px;color:#7c5a00;margin-bottom:10px">⚠ ' + (dow === 0 ? 'Domingo' : 'Sábado') + ' — marcado como folga por padrão. Preencha apenas se houve trabalho.</div>' : '';
+      var avisoFds = fds ? '<div style="background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:6px 10px;font-size:12px;color:#7c5a00;margin-bottom:4px">⚠ '+(dow===0?'Domingo':'Sábado')+' — preencha apenas se houve trabalho.</div>' : '';
 
-      var optsClima = [
-        {v:'normal', label:'✓ Normal', cor:'#3A9C4E'},
-        {v:'chuva', label:'☔ Chuva', cor:'#1565C0'},
-        {v:'parcial', label:'⚡ Parcial', cor:'#78909C'},
-        {v:'feriado', label:'📅 Feriado/FS', cor:'#BDBDBD'}
-      ];
+      function btnsClimaPeriodo(periodo, atual) {
+        return _periodoBtn('clima',periodo,'claro','☀ Claro','#F9A825',atual)+
+               _periodoBtn('clima',periodo,'chuvoso','🌧 Chuvoso','#1565C0',atual);
+      }
+      function btnsCondicaoPeriodo(periodo, atual) {
+        return _periodoBtn('cond',periodo,'praticavel','✓ Praticável','#3A9C4E',atual)+
+               _periodoBtn('cond',periodo,'impraticavel','✕ Impraticável','#E65100',atual);
+      }
 
-      var btnsClima = optsClima.map(function(o) {
-        var active = clima === o.v ? 'style="background:' + o.cor + ';color:#fff;border-color:' + o.cor + '"' : '';
-        return '<button class="diario-clima-btn" data-clima="' + o.v + '" ' + active + ' onclick="selecionarClimaDiario(this,\'' + dataStr + '\')" style="' + (clima === o.v ? 'background:' + o.cor + ';color:#fff;border-color:' + o.cor : '') + '">' + o.label + '</button>';
-      }).join('');
+      function eqRowHtml(spId, eq, desc) {
+        return '<div class="diario-eq-row" data-sp-id="'+(spId||'')+'">'+
+          '<input type="text" placeholder="Equipamento" value="'+eq.replace(/"/g,'&quot;')+'" style="padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:12px">'+
+          '<input type="text" placeholder="O que aconteceu" value="'+desc.replace(/"/g,'&quot;')+'" style="padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:12px">'+
+          '<button onclick="removerEqRow(this)" style="background:#fde7e9;border:1px solid #ffa39e;color:#a8071a;border-radius:4px;padding:5px 8px;cursor:pointer;font-size:12px;white-space:nowrap">✕</button>'+
+          '</div>';
+      }
 
-      fichaWrap.innerHTML =
-        '<div class="diario-ficha" id="diario-ficha">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
-            '<span style="font-size:14px;font-weight:700;color:#0078d4;font-family:\'Barlow Condensed\',sans-serif">📝 ' + nomeDia + ', ' + dtLabel + '</span>' +
-            '<button onclick="fecharFichaDiario()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#999;line-height:1">✕</button>' +
-          '</div>' +
-          avisoFds +
-          '<div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Clima do dia</div>' +
-          '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="diario-clima-btns">' + btnsClima + '</div>' +
-          '<div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Intercorrências <span style="font-weight:400;color:#999">(marque se houver)</span></div>' +
-          '<div style="display:flex;gap:20px;margin-bottom:14px">' +
-            '<label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="diario-maq" style="accent-color:#E65100;width:15px;height:15px"' + (maq ? ' checked' : '') + '> 🔧 Quebra de máquina</label>' +
-            '<label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="diario-mat" style="accent-color:#F9A825;width:15px;height:15px"' + (mat ? ' checked' : '') + '> 📦 Aguardando material</label>' +
-          '</div>' +
-          '<div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Relato do dia</div>' +
-          '<textarea id="diario-obs" rows="3" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;font-family:inherit;resize:vertical;margin-bottom:12px" placeholder="Ex: Trabalho normal, 2 motoniveladoras operando. Chuva das 14h às 16h...">' + obs + '</textarea>' +
-          '<div style="display:flex;gap:8px">' +
-            '<button class="primary" onclick="salvarFichaDiario(\'' + dataStr + '\')" id="btn-salvar-ficha">Salvar ficha</button>' +
-          '</div>' +
-          '<div id="diario-msg" style="margin-top:8px"></div>' +
+      var eqsHtml = eqsDia.map(function(e){ return eqRowHtml(e.Id, e.Equipamento||'', e.Descricao||''); }).join('');
+
+      fw.innerHTML =
+        '<div class="diario-ficha" id="diario-ficha">'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+            '<span style="font-size:15px;font-weight:700;color:#0078d4;font-family:\'Barlow Condensed\',sans-serif">📝 '+nomeDia+', '+dtLabel+'</span>'+
+            '<button onclick="fecharFichaDiario()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#999;line-height:1">✕</button>'+
+          '</div>'+
+          avisoFds+
+
+          '<div class="diario-secao">Condições de Trabalho</div>'+
+          '<div class="diario-periodo-grid">'+
+            '<div>'+
+              '<div class="diario-periodo-label">Manhã</div>'+
+              '<div style="margin-bottom:5px"><span style="font-size:11px;color:#888;display:block;margin-bottom:3px">Clima</span>'+
+              '<div style="display:flex;gap:5px">'+btnsClimaPeriodo('manha',cliMa)+'</div></div>'+
+              '<div><span style="font-size:11px;color:#888;display:block;margin-bottom:3px">Condição</span>'+
+              '<div style="display:flex;gap:5px">'+btnsCondicaoPeriodo('manha',conMa)+'</div></div>'+
+            '</div>'+
+            '<div>'+
+              '<div class="diario-periodo-label">Tarde</div>'+
+              '<div style="margin-bottom:5px"><span style="font-size:11px;color:#888;display:block;margin-bottom:3px">Clima</span>'+
+              '<div style="display:flex;gap:5px">'+btnsClimaPeriodo('tarde',cliTa)+'</div></div>'+
+              '<div><span style="font-size:11px;color:#888;display:block;margin-bottom:3px">Condição</span>'+
+              '<div style="display:flex;gap:5px">'+btnsCondicaoPeriodo('tarde',conTa)+'</div></div>'+
+            '</div>'+
+          '</div>'+
+
+          '<div class="diario-secao">Atividades Realizadas</div>'+
+          '<textarea id="diario-atividades" rows="3" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;font-family:inherit;resize:vertical" placeholder="Ex: Terraplanagem de 500m no trecho km 3+000. Base concluída entre E.150 e E.200...">'+atividades+'</textarea>'+
+
+          '<div class="diario-secao">Diesel</div>'+
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px">'+
+            '<div><label style="font-size:11px;color:#888;display:block;margin-bottom:3px">Consumo do dia (litros)</label>'+
+            '<input type="number" id="diario-diesel-cons" min="0" step="1" value="'+diesel+'" style="width:100%;padding:7px 9px;border:1px solid #ccc;border-radius:5px;font-size:13px"></div>'+
+            '<div><label style="font-size:11px;color:#888;display:block;margin-bottom:3px">Estoque atual (litros)</label>'+
+            '<input type="number" id="diario-diesel-esq" min="0" step="1" value="'+estoque+'" style="width:100%;padding:7px 9px;border:1px solid #ccc;border-radius:5px;font-size:13px"></div>'+
+          '</div>'+
+
+          '<div class="diario-secao">Equipamentos com Defeito</div>'+
+          '<div id="diario-eqs-lista">'+eqsHtml+'</div>'+
+          '<button onclick="adicionarEqRow()" class="secondary" style="font-size:12px;padding:5px 12px;margin-top:4px">+ Adicionar equipamento</button>'+
+
+          '<div class="diario-secao">Aguardando Material</div>'+
+          '<label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:4px">'+
+            '<input type="checkbox" id="diario-mat" style="accent-color:#F9A825;width:15px;height:15px"'+(mat?' checked':'')+'>'+
+            '📦 Há material aguardando entrega</label>'+
+
+          '<div class="diario-secao">Solicitação de Equipamento à Diretoria</div>'+
+          '<textarea id="diario-solicitacao" rows="2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;font-family:inherit;resize:vertical" placeholder="Descreva o equipamento necessário e a justificativa...">'+solicitacao+'</textarea>'+
+          '<div style="font-size:11px;color:#888;margin-top:3px">📋 Se preenchido, aparece como notificação para a diretoria no cabeçalho do app.</div>'+
+
+          '<div class="diario-secao">Observações Gerais</div>'+
+          '<textarea id="diario-obs" rows="2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;font-family:inherit;resize:vertical" placeholder="Outras observações do dia...">'+obs+'</textarea>'+
+
+          '<div style="margin-top:14px;display:flex;gap:8px">'+
+            '<button class="primary" onclick="salvarFichaDiario(\''+dataStr+'\')" id="btn-salvar-ficha">Salvar ficha</button>'+
+          '</div>'+
+          '<div id="diario-msg" style="margin-top:8px"></div>'+
         '</div>';
 
-      // Guardar clima atual no botão ativo para leitura no save
-      fichaWrap.dataset.climaSel = clima;
-      fichaWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      fw.scrollIntoView({behavior:'smooth', block:'nearest'});
     }
 
-    function selecionarClimaDiario(el, dataStr) {
-      document.querySelectorAll('#diario-clima-btns .diario-clima-btn').forEach(function(b) {
-        b.removeAttribute('style');
-      });
-      var cores = {normal:'#3A9C4E', chuva:'#1565C0', parcial:'#78909C', feriado:'#BDBDBD'};
-      var v = el.dataset.clima;
-      var cor = cores[v] || '#555';
-      el.style.background = cor; el.style.color = '#fff'; el.style.borderColor = cor;
-      document.getElementById('diario-ficha-wrap').dataset.climaSel = v;
+    function adicionarEqRow() {
+      var lista = document.getElementById('diario-eqs-lista');
+      var div = document.createElement('div');
+      div.className = 'diario-eq-row';
+      div.dataset.spId = '';
+      div.innerHTML = '<input type="text" placeholder="Equipamento" style="padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:12px">'+
+        '<input type="text" placeholder="O que aconteceu" style="padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:12px">'+
+        '<button onclick="removerEqRow(this)" style="background:#fde7e9;border:1px solid #ffa39e;color:#a8071a;border-radius:4px;padding:5px 8px;cursor:pointer;font-size:12px">✕</button>';
+      lista.appendChild(div);
+    }
+
+    function removerEqRow(btn) {
+      var row = btn.parentElement;
+      var spId = row.dataset.spId;
+      if (spId) _diarioEqsRemovidos.push(parseInt(spId));
+      row.remove();
     }
 
     function fecharFichaDiario() {
       var w = document.getElementById('diario-ficha-wrap');
       w.innerHTML = ''; w.dataset.dataAberta = '';
-      document.querySelectorAll('.diario-cal-cell').forEach(function(el) { el.classList.remove('selected'); });
+      _diarioEqsRemovidos = [];
+      document.querySelectorAll('.diario-cal-cell').forEach(function(el){el.classList.remove('selected');});
     }
 
     async function salvarFichaDiario(dataStr) {
       var hoje = new Date(); hoje.setHours(0,0,0,0);
-      if (new Date(dataStr + 'T12:00:00') > hoje) return;
-      var w = document.getElementById('diario-ficha-wrap');
-      var clima = w.dataset.climaSel || 'normal';
-      var maq = document.getElementById('diario-maq').checked;
-      var mat = document.getElementById('diario-mat').checked;
-      var obs = document.getElementById('diario-obs').value;
+      if (new Date(dataStr+'T12:00:00') > hoje) return;
       var btn = document.getElementById('btn-salvar-ficha');
       var msg = document.getElementById('diario-msg');
       btn.disabled = true; btn.textContent = 'Salvando...';
       try {
-        await DataAPI.salvarDiario(APP.obraAtual.Id, dataStr, {
-          ClimaStatus: clima,
-          IntercorrenciaMaquina: maq,
-          IntercorrenciaMaterial: mat,
-          Observacao: obs
+        var campos = {
+          ClimaManha: getPeriodoVal('clima','manha') || null,
+          ClimaTarde: getPeriodoVal('clima','tarde') || null,
+          CondicaoManha: getPeriodoVal('cond','manha') || null,
+          CondicaoTarde: getPeriodoVal('cond','tarde') || null,
+          IntercorrenciaMaterial: document.getElementById('diario-mat').checked,
+          DieselConsumo: parseFloat(document.getElementById('diario-diesel-cons').value)||null,
+          DieselEstoque: parseFloat(document.getElementById('diario-diesel-esq').value)||null,
+          AtividadesRealizadas: document.getElementById('diario-atividades').value,
+          SolicitacaoEquipamento: document.getElementById('diario-solicitacao').value,
+          SolicitacaoLida: false,
+          Observacao: document.getElementById('diario-obs').value
+        };
+        await DataAPI.salvarDiario(APP.obraAtual.Id, dataStr, campos);
+
+        // Deletar equipamentos removidos
+        for (var i=0; i<_diarioEqsRemovidos.length; i++) {
+          try { await DataAPI.deletarEquipamentoQuebrado(_diarioEqsRemovidos[i]); } catch(e2){}
+        }
+
+        // Criar novos equipamentos
+        var rows = document.querySelectorAll('#diario-eqs-lista .diario-eq-row');
+        var novosEqs = [];
+        rows.forEach(function(row) {
+          if (!row.dataset.spId) {
+            var inputs = row.querySelectorAll('input[type=text]');
+            var eq = inputs[0] && inputs[0].value.trim();
+            var desc = inputs[1] && inputs[1].value.trim();
+            if (eq) novosEqs.push({eq:eq, desc:desc});
+          }
         });
-        // Atualiza APP.diario em memória
-        var idx = (APP.diario || []).findIndex(function(f) { return (f.Data || '').substring(0, 10) === dataStr; });
-        var novaFicha = { Data: dataStr, ClimaStatus: clima, IntercorrenciaMaquina: maq, IntercorrenciaMaterial: mat, Observacao: obs };
-        if (idx >= 0) Object.assign(APP.diario[idx], novaFicha);
-        else APP.diario.push(novaFicha);
+        var existentes = (APP.diarioEq||[]).filter(function(e){return (e.Data||'').substring(0,10)===dataStr&&_diarioEqsRemovidos.indexOf(e.Id)<0;}).length;
+        for (var j=0; j<novosEqs.length; j++) {
+          await DataAPI.criarEquipamentoQuebrado(APP.obraAtual.Id, dataStr, novosEqs[j].eq, novosEqs[j].desc, existentes+j+1);
+        }
+
+        // Atualiza memória
+        var idx = (APP.diario||[]).findIndex(function(f){return (f.Data||'').substring(0,10)===dataStr;});
+        var nf = Object.assign({Data:dataStr}, campos);
+        if (idx>=0) Object.assign(APP.diario[idx], nf); else APP.diario.push(nf);
+        APP.diarioEq = (APP.diarioEq||[]).filter(function(e){return _diarioEqsRemovidos.indexOf(e.Id)<0;});
+        novosEqs.forEach(function(ne,j){ APP.diarioEq.push({Data:dataStr, Equipamento:ne.eq, Descricao:ne.desc, ObraId:APP.obraAtual.Id}); });
+        _diarioEqsRemovidos = [];
+
         renderDiario();
-        msg.innerHTML = '<div class="alert alert-ok">✓ Ficha salva com sucesso.</div>';
-        setTimeout(function() { if (msg) msg.innerHTML = ''; }, 2500);
+        renderBadgeNotificacoes();
+        msg.innerHTML = '<div class="alert alert-ok">✓ Ficha salva.</div>';
+        setTimeout(function(){if(msg)msg.innerHTML='';}, 2500);
       } catch(e) {
-        msg.innerHTML = '<div class="alert alert-err">Erro ao salvar: ' + e.message + '</div>';
+        msg.innerHTML = '<div class="alert alert-err">Erro ao salvar: '+e.message+'</div>';
       } finally {
-        btn.disabled = false; btn.textContent = 'Salvar ficha';
+        btn.disabled=false; btn.textContent='Salvar ficha';
       }
+    }
+
+    function renderBadgeNotificacoes() {
+      var badge = document.getElementById('notif-badge');
+      if (!badge) return;
+      var pendentes = (APP.diario||[]).filter(function(f){
+        return f.SolicitacaoEquipamento && f.SolicitacaoEquipamento.trim()!=='' && !f.SolicitacaoLida;
+      });
+      if (pendentes.length > 0) {
+        badge.style.display = 'inline-flex';
+        badge.textContent = '📋 '+pendentes.length;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function abrirPainelNotificacoes() {
+      var painel = document.getElementById('notif-painel');
+      if (!painel) return;
+      var lista = document.getElementById('notif-lista');
+      var pendentes = (APP.diario||[]).filter(function(f){
+        return f.SolicitacaoEquipamento && f.SolicitacaoEquipamento.trim()!=='' && !f.SolicitacaoLida;
+      }).sort(function(a,b){return (b.Data||'').localeCompare(a.Data||'');});
+      if (pendentes.length === 0) { lista.innerHTML = '<div style="color:#999;padding:10px;text-align:center">Nenhuma solicitação pendente.</div>'; }
+      else {
+        lista.innerHTML = pendentes.map(function(f){
+          var dt=(f.Data||'').substring(0,10).split('-').reverse().join('/');
+          return '<div style="border:1px solid #f0f0f0;border-radius:6px;padding:10px;margin-bottom:8px">'+
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">'+
+              '<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;color:#0078d4">'+dt+'</span>'+
+              '<button onclick="marcarLidaNotif('+f.Id+')" class="secondary" style="font-size:11px;padding:3px 8px;color:#3A9C4E">✓ Marcar como visto</button>'+
+            '</div>'+
+            '<p style="margin:0;font-size:13px;color:#333">'+f.SolicitacaoEquipamento+'</p>'+
+            '</div>';
+        }).join('');
+      }
+      painel.style.display = painel.style.display==='none' ? 'block' : 'none';
+    }
+
+    function fecharPainelNotificacoes() {
+      var painel = document.getElementById('notif-painel');
+      if (painel) painel.style.display = 'none';
+    }
+
+    async function marcarLidaNotif(diarioId) {
+      try {
+        await DataAPI.marcarSolicitacaoLida(diarioId);
+        var f = (APP.diario||[]).find(function(x){return x.Id===diarioId;});
+        if (f) f.SolicitacaoLida = true;
+        renderBadgeNotificacoes();
+        abrirPainelNotificacoes();
+        renderDiario();
+      } catch(e) { alert('Erro: '+e.message); }
     }
 
     /* =================================================================
@@ -2232,10 +2414,10 @@
     async function carregarDadosObra() {
       if (!APP.obraAtual) return;
       dbg('Carregando obra: ' + APP.obraAtual.Title + '...');
-      var results = await Promise.all([DataAPI.listarProjeto(APP.obraAtual.Id), DataAPI.listarExecucao(APP.obraAtual.Id), DataAPI.listarEventos(APP.obraAtual.Id), DataAPI.listarDiario(APP.obraAtual.Id)]);
-      APP.projeto = results[0]; APP.execucao = results[1]; APP.eventos = results[2]; APP.diario = results[3];
-      dbg('Projeto: ' + APP.projeto.length + ' | Execução: ' + APP.execucao.length + ' | Eventos: ' + APP.eventos.length + ' | Diário: ' + APP.diario.length, 'ok');
-      popularSelects(); renderStats(); renderLegend(); renderGraficoFaixas(); renderDiario();
+      var results = await Promise.all([DataAPI.listarProjeto(APP.obraAtual.Id), DataAPI.listarExecucao(APP.obraAtual.Id), DataAPI.listarEventos(APP.obraAtual.Id), DataAPI.listarDiario(APP.obraAtual.Id), DataAPI.listarDiarioEq(APP.obraAtual.Id)]);
+      APP.projeto = results[0]; APP.execucao = results[1]; APP.eventos = results[2]; APP.diario = results[3]; APP.diarioEq = results[4];
+      dbg('Projeto: '+APP.projeto.length+' | Execução: '+APP.execucao.length+' | Eventos: '+APP.eventos.length+' | Diário: '+APP.diario.length+' | DiárioEq: '+APP.diarioEq.length, 'ok');
+      popularSelects(); renderStats(); renderLegend(); renderGraficoFaixas(); renderDiario(); renderBadgeNotificacoes();
       if (document.getElementById('tab-historico').style.display !== 'none') renderHistorico();
       if (document.getElementById('tab-projeto').style.display !== 'none') { renderProjeto(); renderServicosObra() }
       atualizarInfoRegistro();
