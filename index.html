@@ -509,6 +509,42 @@
     .diario-periodo-label{font-size:11px;font-weight:700;color:#0078d4;margin-bottom:5px}
     .diario-eq-row{display:grid;grid-template-columns:1fr 1.5fr auto;gap:6px;align-items:start;margin-bottom:6px}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+    /* Outros Serviços — execução */
+    .ev-exec-card{border:1px solid #e8e8e8;border-radius:8px;padding:12px 14px;margin-bottom:10px;transition:box-shadow .15s}
+    .ev-exec-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    .ev-exec-card.status-emexecucao-card{border-left:4px solid #D4A017}
+    .ev-exec-card.status-executado-card{border-left:4px solid #3A9C4E}
+    .ev-exec-card.status-indicativo-card{border-left:4px solid #ccc}
+    /* Fotos */
+    .foto-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:8px}
+    .foto-thumb{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:1;cursor:pointer;background:#f0f0f0}
+    .foto-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .15s}
+    .foto-thumb:hover img{filter:brightness(.8)}
+    .foto-thumb-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+    .foto-upload-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:2px dashed #bae0ff;border-radius:6px;background:#f0f7ff;color:#0078d4;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+    .foto-upload-btn:hover{background:#d9eeff;border-color:#0078d4}
+    /* Galeria */
+    .galeria-grupo{margin-bottom:24px}
+    .galeria-grupo-header{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#0078d4;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #e8e8e8}
+    .galeria-grupo-sub{font-size:11px;color:#888;font-weight:400;margin-left:8px}
+    .galeria-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+    .galeria-item{position:relative;border-radius:7px;overflow:hidden;aspect-ratio:1;cursor:pointer;background:#f0f2f5}
+    .galeria-item img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .15s,transform .15s}
+    .galeria-item:hover img{filter:brightness(.85);transform:scale(1.03)}
+    /* Lightbox */
+    #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:10000;display:none;flex-direction:column;align-items:center;justify-content:center}
+    #lightbox.open{display:flex}
+    #lightbox-img{max-width:90vw;max-height:78vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+    #lightbox-info{color:#ccc;font-size:13px;margin-top:12px;text-align:center;max-width:600px}
+    #lightbox-nav-prev,#lightbox-nav-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:24px;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center}
+    #lightbox-nav-prev{left:16px} #lightbox-nav-next{right:16px}
+    #lightbox-nav-prev:hover,#lightbox-nav-next:hover{background:rgba(255,255,255,.25)}
+    #lightbox-close{position:absolute;top:14px;right:18px;background:none;border:none;color:#fff;font-size:26px;cursor:pointer;opacity:.7;line-height:1}
+    #lightbox-close:hover{opacity:1}
+    #lightbox-dl{position:absolute;top:14px;right:58px;background:none;border:none;color:#ccc;font-size:13px;cursor:pointer;opacity:.8}
+    #lightbox-dl:hover{color:#fff;opacity:1}
+    #lightbox-counter{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:#999;font-size:12px}
+    @media print{.tab-btn,.header .user,button,.filters,#notif-badge{display:none!important}.galeria-grid{grid-template-columns:repeat(4,1fr)!important}}
     /* Strip chart */
     .strip-wrap {
       margin-bottom: 12px;
@@ -781,6 +817,7 @@
         <button class="tab-btn active" data-tab="dashboard">Perfil unifilar</button>
         <button class="tab-btn" data-tab="registrar">Registrar execução</button>
         <button class="tab-btn" data-tab="historico">Histórico</button>
+        <button class="tab-btn" data-tab="fotos">Fotos</button>
         <button class="tab-btn" data-tab="projeto">Cadastro do projeto</button>
       </div>
 
@@ -875,6 +912,11 @@
           <div style="margin-top:16px"><button class="primary" id="btn-reg">Salvar</button></div>
           <div id="r-msg"></div>
         </div>
+        <div class="card" id="card-outros-servicos">
+          <div class="card-title">Outros Serviços</div>
+          <p style="font-size:13px;color:#666;margin:0 0 14px">Registre o início e a conclusão dos serviços cadastrados no projeto. Clique no ícone do serviço no Perfil Unifilar para ir direto à conclusão.</p>
+          <div id="outros-servicos-exec-lista"><div style="color:#999;text-align:center;padding:20px">Selecione uma obra para ver os serviços.</div></div>
+        </div>
       </div>
 
       <!-- HISTÓRICO -->
@@ -893,6 +935,24 @@
           </div>
           <div id="weekly-summary-box"></div>
           <div id="hist-lista"></div>
+        </div>
+      </div>
+
+      <!-- FOTOS -->
+      <div id="tab-fotos" style="display:none">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <div class="card-title" style="margin-bottom:0">Fotos da Obra</div>
+            <button onclick="window.print()" class="secondary" style="display:flex;align-items:center;gap:6px;font-size:13px">🖨 Imprimir</button>
+          </div>
+          <div class="filters" style="flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <div class="form-field" style="min-width:220px"><label>Filtrar por</label><select id="fotos-filtro-tipo" style="width:100%"><option value="">Todos os registros</option></select></div>
+            <div class="form-field"><label>De</label><input type="date" id="fotos-dt-ini"></div>
+            <div class="form-field"><label>Até</label><input type="date" id="fotos-dt-fim"></div>
+            <div style="display:flex;align-items:flex-end"><button class="primary" onclick="carregarGaleriaFotos()">🔍 Buscar</button></div>
+          </div>
+          <div id="fotos-contador" style="font-size:13px;color:#666;margin-bottom:16px"></div>
+          <div id="fotos-galeria"><div style="color:#999;text-align:center;padding:40px">Clique em "Buscar" para carregar as fotos.</div></div>
         </div>
       </div>
 
@@ -1080,7 +1140,17 @@
       async listarItens(l, f) { var ep = "/web/lists/getbytitle('" + l + "')/items?$top=5000"; if (f) ep += '&$filter=' + encodeURIComponent(f); var d = await this.spFetch(ep); return d.value || [] },
       async criarItem(l, c) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items", { method: 'POST', headers: { 'X-RequestDigest': dg }, body: JSON.stringify(c) }) },
       async atualizarItem(l, id, c) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items(" + id + ")", { method: 'POST', headers: { 'X-RequestDigest': dg, 'X-HTTP-Method': 'MERGE', 'If-Match': '*' }, body: JSON.stringify(c) }) },
-      async deletarItem(l, id) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items(" + id + ")", { method: 'POST', headers: { 'X-RequestDigest': dg, 'X-HTTP-Method': 'DELETE', 'If-Match': '*' } }) }
+      async deletarItem(l, id) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items(" + id + ")", { method: 'POST', headers: { 'X-RequestDigest': dg, 'X-HTTP-Method': 'DELETE', 'If-Match': '*' } }) },
+      async listarAnexos(l, id) { var d = await this.spFetch("/web/lists/getbytitle('" + l + "')/items(" + id + ")/AttachmentFiles"); return d ? (d.value || []) : [] },
+      async uploadAnexo(l, id, fileName, buffer) {
+        var tk = await getToken(); var dg = await this.getDigest();
+        var url = SHAREPOINT_SITE_URL + "/_api/web/lists/getbytitle('" + l + "')/items(" + id + ")/AttachmentFiles/add(FileName='" + encodeURIComponent(fileName) + "')";
+        dbg('POST attachment ' + fileName);
+        var r = await fetch(url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + tk, 'X-RequestDigest': dg }, body: buffer });
+        if (!r.ok) { var t = await r.text(); throw new Error('SP erro ' + r.status + ': ' + t.substring(0,200)) }
+        return r.json();
+      },
+      async deletarAnexo(l, id, fileName) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items(" + id + ")/AttachmentFiles/getByFileName('" + encodeURIComponent(fileName) + "')", { method: 'POST', headers: { 'X-RequestDigest': dg, 'X-HTTP-Method': 'DELETE', 'If-Match': '*' } }) }
     };
 
     /* =================================================================
@@ -1118,7 +1188,12 @@
         return SP.criarItem(LISTA_EVENTOS, { Title: obraId + '-' + tipo + '-E' + estIni, ObraId: obraId, EstacaInicial: estIni, EstacaFinal: estFim || estIni, TipoEvento: tipo, Status: 'indicativo', Observacao: obs || '' })
       },
       async atualizarEvento(id, campos) { return SP.atualizarItem(LISTA_EVENTOS, id, campos) },
-      async deletarEvento(id) { return SP.deletarItem(LISTA_EVENTOS, id) }
+      async deletarEvento(id) { return SP.deletarItem(LISTA_EVENTOS, id) },
+      async registrarInicioEvento(id, dataInicio, obs) { return SP.atualizarItem(LISTA_EVENTOS, id, { Status: 'emexecucao', DataInicio: dataInicio || null, ObsExecucao: obs || '' }) },
+      async registrarFimEvento(id, dataFim, obs) { return SP.atualizarItem(LISTA_EVENTOS, id, { Status: 'executado', DataFim: dataFim || null, ObsExecucao: obs || '' }) },
+      async listarAnexos(lista, itemId) { return SP.listarAnexos(lista, itemId) },
+      async uploadAnexo(lista, itemId, fileName, buffer) { return SP.uploadAnexo(lista, itemId, fileName, buffer) },
+      async deletarAnexo(lista, itemId, fileName) { return SP.deletarAnexo(lista, itemId, fileName) }
     };
 
     /* =================================================================
@@ -1413,19 +1488,24 @@
           for (var x = eCI; x <= eCF; x++)evtSlots[x + '-' + slot] = true;
           var evtY = EVT_START + 14 + slot * 28;
 
+          var evId = ev.Id;
+          var isClickable = status !== 'executado';
+          var clickStyle = isClickable ? 'cursor:pointer' : 'cursor:default';
           if (eCF > eCI) {
             var x1 = L + (eCI - celIni) * CW + CW / 2, x2 = L + (eCF - celIni) * CW + CW / 2;
             var bar = document.createElementNS(ns, 'rect'); bar.setAttribute('x', x1 - 2); bar.setAttribute('y', evtY - 4); bar.setAttribute('width', x2 - x1 + 4); bar.setAttribute('height', 8); bar.setAttribute('fill', cor); bar.setAttribute('opacity', '0.25'); bar.setAttribute('rx', '3'); svg.appendChild(bar);
-            var c1 = document.createElementNS(ns, 'circle'); c1.setAttribute('cx', x1); c1.setAttribute('cy', evtY); c1.setAttribute('r', 5); c1.setAttribute('fill', cor); svg.appendChild(c1);
-            var c2 = document.createElementNS(ns, 'circle'); c2.setAttribute('cx', x2); c2.setAttribute('cy', evtY); c2.setAttribute('r', 5); c2.setAttribute('fill', cor); svg.appendChild(c2);
-            var lbl = document.createElementNS(ns, 'text'); lbl.setAttribute('x', (x1 + x2) / 2); lbl.setAttribute('y', evtY - 8); lbl.setAttribute('text-anchor', 'middle'); lbl.setAttribute('font-size', '9'); lbl.setAttribute('fill', cor); lbl.setAttribute('font-weight', '600'); lbl.textContent = (NOMES_EVENTO[ev.TipoEvento] || '') + (ev.Observacao ? ' — ' + ev.Observacao : ''); svg.appendChild(lbl);
+            var c1 = document.createElementNS(ns, 'circle'); c1.setAttribute('cx', x1); c1.setAttribute('cy', evtY); c1.setAttribute('r', 6); c1.setAttribute('fill', cor); c1.setAttribute('style', clickStyle); if(isClickable)(function(id){c1.addEventListener('click',function(){irParaExecucaoEvento(id);})})(evId); svg.appendChild(c1);
+            var c2 = document.createElementNS(ns, 'circle'); c2.setAttribute('cx', x2); c2.setAttribute('cy', evtY); c2.setAttribute('r', 6); c2.setAttribute('fill', cor); c2.setAttribute('style', clickStyle); if(isClickable)(function(id){c2.addEventListener('click',function(){irParaExecucaoEvento(id);})})(evId); svg.appendChild(c2);
+            var lbl = document.createElementNS(ns, 'text'); lbl.setAttribute('x', (x1 + x2) / 2); lbl.setAttribute('y', evtY - 9); lbl.setAttribute('text-anchor', 'middle'); lbl.setAttribute('font-size', '9'); lbl.setAttribute('fill', cor); lbl.setAttribute('font-weight', '600'); lbl.textContent = (NOMES_EVENTO[ev.TipoEvento] || '') + (ev.Observacao ? ' — ' + ev.Observacao : ''); svg.appendChild(lbl);
           } else {
             var ex = L + (eCI - celIni) * CW + CW / 2;
             var isSq = ev.TipoEvento === 'corte' || ev.TipoEvento === 'zona_urbana';
-            if (isSq) { var sq = document.createElementNS(ns, 'rect'); sq.setAttribute('x', ex - 5); sq.setAttribute('y', evtY - 5); sq.setAttribute('width', 10); sq.setAttribute('height', 10); sq.setAttribute('rx', '2'); sq.setAttribute('fill', cor); svg.appendChild(sq) }
-            else { var ci = document.createElementNS(ns, 'circle'); ci.setAttribute('cx', ex); ci.setAttribute('cy', evtY); ci.setAttribute('r', 5); ci.setAttribute('fill', cor); svg.appendChild(ci) }
-            var tk = document.createElementNS(ns, 'line'); tk.setAttribute('x1', ex); tk.setAttribute('y1', evtY + 6); tk.setAttribute('x2', ex); tk.setAttribute('y2', KM_LABEL_Y - 14); tk.setAttribute('stroke', cor); tk.setAttribute('stroke-width', '0.8'); tk.setAttribute('stroke-dasharray', '3,3'); svg.appendChild(tk);
-            var lbl2 = document.createElementNS(ns, 'text'); lbl2.setAttribute('x', ex); lbl2.setAttribute('y', evtY - 8); lbl2.setAttribute('text-anchor', 'middle'); lbl2.setAttribute('font-size', '9'); lbl2.setAttribute('fill', cor); lbl2.setAttribute('font-weight', '600'); lbl2.textContent = (NOMES_EVENTO[ev.TipoEvento] || '') + (ev.Observacao ? ' — ' + ev.Observacao : ''); svg.appendChild(lbl2);
+            var shape;
+            if (isSq) { shape = document.createElementNS(ns, 'rect'); shape.setAttribute('x', ex - 6); shape.setAttribute('y', evtY - 6); shape.setAttribute('width', 12); shape.setAttribute('height', 12); shape.setAttribute('rx', '2'); shape.setAttribute('fill', cor); }
+            else { shape = document.createElementNS(ns, 'circle'); shape.setAttribute('cx', ex); shape.setAttribute('cy', evtY); shape.setAttribute('r', 6); shape.setAttribute('fill', cor); }
+            shape.setAttribute('style', clickStyle); if(isClickable)(function(id){shape.addEventListener('click',function(){irParaExecucaoEvento(id);})})(evId); svg.appendChild(shape);
+            var tk = document.createElementNS(ns, 'line'); tk.setAttribute('x1', ex); tk.setAttribute('y1', evtY + 7); tk.setAttribute('x2', ex); tk.setAttribute('y2', KM_LABEL_Y - 14); tk.setAttribute('stroke', cor); tk.setAttribute('stroke-width', '0.8'); tk.setAttribute('stroke-dasharray', '3,3'); svg.appendChild(tk);
+            var lbl2 = document.createElementNS(ns, 'text'); lbl2.setAttribute('x', ex); lbl2.setAttribute('y', evtY - 9); lbl2.setAttribute('text-anchor', 'middle'); lbl2.setAttribute('font-size', '9'); lbl2.setAttribute('fill', cor); lbl2.setAttribute('font-weight', '600'); lbl2.textContent = (NOMES_EVENTO[ev.TipoEvento] || '') + (ev.Observacao ? ' — ' + ev.Observacao : ''); svg.appendChild(lbl2);
           }
         });
         var sepEv = document.createElementNS(ns, 'line'); sepEv.setAttribute('x1', L - 10); sepEv.setAttribute('y1', EVT_START + EVT_ZONE_H + 4); sepEv.setAttribute('x2', W - 4); sepEv.setAttribute('y2', EVT_START + EVT_ZONE_H + 4); sepEv.setAttribute('stroke', '#ccc'); sepEv.setAttribute('stroke-width', '1'); sepEv.setAttribute('stroke-dasharray', '6,4'); svg.appendChild(sepEv);
@@ -1580,42 +1660,24 @@
       if (APP.eventos.length === 0) { d.innerHTML = '<div style="color:#999;padding:20px;text-align:center">Nenhum serviço cadastrado.</div>'; return }
       var l = APP.eventos.slice().sort(function (a, b) { return a.EstacaInicial - b.EstacaInicial });
       var hoje = new Date().toISOString().slice(0, 10);
-      var h = '<div style="overflow-x:auto"><table><thead><tr><th>Tipo</th><th>Trecho</th><th>Observação</th><th>Status</th><th>Data de execução</th><th></th></tr></thead><tbody>';
+      var h = '<div style="overflow-x:auto"><table><thead><tr><th>Tipo</th><th>Trecho</th><th>Observação</th><th>Status</th><th></th></tr></thead><tbody>';
       l.forEach(function (ev) {
         var status = ev.Status || 'indicativo';
         var cor = CORES_EVENTO[ev.TipoEvento] || '#666';
         var kmIni = estakaParaKm(ev.EstacaInicial || 0);
         var kmFim = estakaParaKm(ev.EstacaFinal || ev.EstacaInicial || 0);
         var trecho = ev.EstacaFinal && ev.EstacaFinal !== ev.EstacaInicial ? (kmIni + ' — ' + kmFim) : kmIni;
-        var dataExec = (ev.DataExecucao || '').substring(0, 10);
-        var execCol;
-        if (status === 'executado') {
-          var dtLabel = dataExec ? dataExec.split('-').reverse().join('/') : 'sem data';
-          execCol = '<span style="color:#3A9C4E;font-size:12px;font-weight:600">✓ ' + dtLabel + '</span>' +
-            ' <button onclick="mostrarFormExecucaoEvento(' + ev.Id + ')" class="secondary" style="font-size:10px;padding:2px 6px;color:#888;margin-left:4px">Editar data</button>' +
-            '<div id="ev-exec-form-' + ev.Id + '" style="display:none;margin-top:6px;display:flex;gap:4px;align-items:center">' +
-            '<input type="date" id="ev-exec-date-' + ev.Id + '" value="' + dataExec + '" style="font-size:12px;padding:4px 6px;border:1px solid #ccc;border-radius:4px">' +
-            '<button onclick="salvarExecucaoEvento(' + ev.Id + ')" class="primary" style="font-size:11px;padding:4px 10px">Salvar</button>' +
-            '<button onclick="cancelarFormExecucaoEvento(' + ev.Id + ')" class="secondary" style="font-size:11px;padding:4px 8px">✕</button>' +
-            '</div>';
-        } else {
-          execCol = '<button id="ev-exec-btn-' + ev.Id + '" onclick="mostrarFormExecucaoEvento(' + ev.Id + ')" class="secondary" style="font-size:11px;padding:5px 10px;background:#f0f7ff;border-color:#bae0ff;color:#0050a0">+ Registrar</button>' +
-            '<div id="ev-exec-form-' + ev.Id + '" style="display:none;margin-top:6px">' +
-            '<div style="display:flex;gap:4px;align-items:center">' +
-            '<input type="date" id="ev-exec-date-' + ev.Id + '" value="' + hoje + '" style="font-size:12px;padding:4px 6px;border:1px solid #ccc;border-radius:4px">' +
-            '<button onclick="salvarExecucaoEvento(' + ev.Id + ')" class="primary" style="font-size:11px;padding:4px 10px">Salvar</button>' +
-            '<button onclick="cancelarFormExecucaoEvento(' + ev.Id + ')" class="secondary" style="font-size:11px;padding:4px 8px">✕</button>' +
-            '</div>' +
-            '</div>';
-        }
+        var dataIni = (ev.DataInicio || '').substring(0,10);
+        var dataFim2 = (ev.DataFim || '').substring(0,10);
+        var statusLabel;
+        if (status==='executado') statusLabel='<span class="status-pill status-executado"><span class="status-dot dot-executado"></span>Executado'+(dataFim2?' — '+dataFim2.split('-').reverse().join('/'):'')+'</span>';
+        else if (status==='emexecucao') statusLabel='<span class="status-pill status-emexecucao"><span class="status-dot dot-emexecucao"></span>Em execução'+(dataIni?' desde '+dataIni.split('-').reverse().join('/'):'')+'</span>';
+        else statusLabel='<span class="status-pill status-indicativo"><span class="status-dot dot-indicativo"></span>Indicativo</span>';
         h += '<tr>' +
           '<td><span style="display:inline-block;width:10px;height:10px;background:' + cor + ';border-radius:50%;margin-right:6px"></span>' + (NOMES_EVENTO[ev.TipoEvento] || ev.TipoEvento) + '</td>' +
           '<td style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:12px;color:#0078d4">' + trecho + '<br><span style="color:#999;font-weight:400">E.' + ev.EstacaInicial + (ev.EstacaFinal && ev.EstacaFinal !== ev.EstacaInicial ? ' a E.' + ev.EstacaFinal : '') + '</span></td>' +
           '<td>' + (ev.Observacao || '-') + '</td>' +
-          '<td><select class="ev-status-sel" style="font-size:12px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;background:#fff" onchange="atualizarStatusEvento(' + ev.Id + ',this.value)">' +
-          STATUS_EVENTO.map(function (s) { return '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + STATUS_EVENTO_NOMES[s] + '</option>' }).join('') +
-          '</select></td>' +
-          '<td>' + execCol + '</td>' +
+          '<td>' + statusLabel + '</td>' +
           '<td><button class="secondary" style="color:#a8071a;font-size:11px;padding:4px 8px" onclick="excluirEvento(' + ev.Id + ')">Excluir</button></td>' +
           '</tr>';
       });
@@ -1831,7 +1893,7 @@
        EVENTS
        ================================================================= */
     function bindEvents() {
-      document.querySelectorAll('.tab-btn[data-tab]').forEach(function (b) { b.onclick = function () { document.querySelectorAll('.tab-btn[data-tab]').forEach(function (x) { x.classList.remove('active') }); b.classList.add('active');['dashboard', 'registrar', 'historico', 'projeto'].forEach(function (t) { document.getElementById('tab-' + t).style.display = t === b.dataset.tab ? 'block' : 'none' }); if (b.dataset.tab === 'historico') renderHistorico(); if (b.dataset.tab === 'projeto') { renderProjeto(); renderServicosObra(); renderEventos(); popularSelectEventos() } if (b.dataset.tab === 'registrar') { popularSelects(); verificarPermissaoUI() } } });
+      document.querySelectorAll('.tab-btn[data-tab]').forEach(function (b) { b.onclick = function () { document.querySelectorAll('.tab-btn[data-tab]').forEach(function (x) { x.classList.remove('active') }); b.classList.add('active');['dashboard', 'registrar', 'historico', 'fotos', 'projeto'].forEach(function (t) { var el = document.getElementById('tab-' + t); if(el) el.style.display = t === b.dataset.tab ? 'block' : 'none' }); if (b.dataset.tab === 'historico') renderHistorico(); if (b.dataset.tab === 'projeto') { renderProjeto(); renderServicosObra(); renderEventos(); popularSelectEventos() } if (b.dataset.tab === 'registrar') { popularSelects(); verificarPermissaoUI(); renderOutrosServicosExecucao(); } if (b.dataset.tab === 'fotos') { popularFiltrosGaleria(); } } });
 
       document.getElementById('obra-sel').onchange = function (ev) { var id = parseInt(ev.target.value); APP.obraAtual = APP.obras.find(function (o) { return o.Id === id }); carregarDadosObra().then(function () { verificarPermissaoUI() }) };
       document.getElementById('btn-reload').onclick = function () { carregarDadosObra().then(function () { popularSelects(); verificarPermissaoUI() }) };
@@ -2269,9 +2331,14 @@
             '<button class="primary" onclick="salvarFichaDiario(\''+dataStr+'\')" id="btn-salvar-ficha">Salvar ficha</button>'+
           '</div>'+
           '<div id="diario-msg" style="margin-top:8px"></div>'+
+          (ficha&&ficha.Id
+            ? '<div class="diario-secao" style="margin-top:16px">📷 Fotos do dia</div><div id="diario-fotos-sec">Carregando...</div>'
+            : '<div style="margin-top:14px;background:#f5f7fa;border:1px dashed #ccc;border-radius:6px;padding:10px;font-size:12px;color:#aaa;text-align:center">Salve a ficha primeiro para adicionar fotos.</div>'
+          )+
         '</div>';
 
       fw.scrollIntoView({behavior:'smooth', block:'nearest'});
+      if (ficha&&ficha.Id) setTimeout(function(){loadFotosDiario(ficha.Id);},50);
     }
 
     function adicionarEqRow() {
@@ -2355,7 +2422,12 @@
 
         renderDiario();
         renderBadgeNotificacoes();
-        fecharFichaDiario();
+        // Se era uma ficha nova, reabre para mostrar seção de fotos
+        if (savedId && idx < 0) {
+          abrirFichaDia(dataStr);
+        } else {
+          fecharFichaDiario();
+        }
       } catch(e) {
         msg.innerHTML = '<div class="alert alert-err">Erro ao salvar: '+e.message+'</div>';
       } finally {
@@ -2401,6 +2473,314 @@
       var tip=document.getElementById('diario-tooltip');
       if(tip) tip.style.display='none';
     }
+
+    /* =================================================================
+       OUTROS SERVIÇOS — EXECUÇÃO
+       ================================================================= */
+    function renderOutrosServicosExecucao() {
+      var el = document.getElementById('outros-servicos-exec-lista');
+      if (!el) return;
+      if (!APP.obraAtual || !APP.eventos || APP.eventos.length === 0) {
+        el.innerHTML = '<div style="color:#999;text-align:center;padding:20px">Nenhum serviço cadastrado nesta obra.</div>'; return;
+      }
+      var grupos = { emexecucao: [], indicativo: [], executado: [] };
+      APP.eventos.forEach(function(ev) { var s = ev.Status || 'indicativo'; if (!grupos[s]) grupos[s] = []; grupos[s].push(ev); });
+      var html = '';
+      var ordemGrupos = ['emexecucao', 'indicativo', 'executado'];
+      var titulos = { emexecucao: '🟡 Em execução', indicativo: '⚪ Indicativos', executado: '✅ Executados' };
+      ordemGrupos.forEach(function(g) {
+        if (grupos[g].length === 0) return;
+        html += '<div style="margin-bottom:18px"><div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #f0f0f0">'+titulos[g]+'</div>';
+        grupos[g].forEach(function(ev) {
+          var cor = CORES_EVENTO[ev.TipoEvento] || '#666';
+          var kmIni = estakaParaKm(ev.EstacaInicial||0);
+          var kmFim = estakaParaKm(ev.EstacaFinal||ev.EstacaInicial||0);
+          var trecho = (ev.EstacaFinal&&ev.EstacaFinal!==ev.EstacaInicial) ? kmIni+' — '+kmFim : kmIni;
+          var dataIni = (ev.DataInicio||'').substring(0,10);
+          var dataFim2 = (ev.DataFim||'').substring(0,10);
+          var statusClass = 'status-'+g+'-card';
+          var acoes = '';
+          if (g === 'indicativo') acoes = '<button class="primary" style="font-size:12px;padding:6px 14px" onclick="abrirFormInicioEvento('+ev.Id+')">▶ Iniciar execução</button>';
+          else if (g === 'emexecucao') acoes = '<button class="primary" style="font-size:12px;padding:6px 14px;background:#3A9C4E;border-color:#2d7a3e" onclick="abrirFormFimEvento('+ev.Id+')">✓ Registrar conclusão</button>';
+          else acoes = '<span style="font-size:12px;color:#888">Concluído em '+(dataFim2?dataFim2.split('-').reverse().join('/'):'—')+'</span>';
+          html += '<div class="ev-exec-card '+statusClass+'" id="ev-exec-card-'+ev.Id+'">';
+          html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">';
+          html += '<div><div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><span style="width:10px;height:10px;border-radius:50%;background:'+cor+';display:inline-block;flex-shrink:0"></span><span style="font-weight:700;font-size:14px">'+(NOMES_EVENTO[ev.TipoEvento]||ev.TipoEvento)+'</span></div>';
+          html += '<div style="font-size:12px;color:#0078d4;font-family:\'Barlow Condensed\',sans-serif;font-weight:600">'+trecho+'</div>';
+          if (ev.Observacao) html += '<div style="font-size:12px;color:#666;margin-top:2px">'+ev.Observacao+'</div>';
+          if (dataIni&&g!=='indicativo') html += '<div style="font-size:11px;color:#888;margin-top:3px">Início: '+dataIni.split('-').reverse().join('/')+'</div>';
+          html += '</div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'+acoes+'</div></div>';
+          html += '<div id="ev-form-inicio-'+ev.Id+'" style="display:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px">'+formInicioHtml(ev.Id)+'</div>';
+          html += '<div id="ev-form-fim-'+ev.Id+'" style="display:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px">'+formFimHtml(ev.Id, dataFim2)+'</div>';
+          html += '<div id="ev-fotos-sec-'+ev.Id+'" style="display:none;margin-top:10px;border-top:1px solid #f0f0f0;padding-top:10px"></div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+      el.innerHTML = html;
+    }
+
+    function formInicioHtml(id) {
+      var hoje = new Date().toISOString().slice(0,10);
+      return '<div style="display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;max-width:500px">'+
+        '<div class="form-field"><label>Data de início</label><input type="date" id="ev-ini-data-'+id+'" value="'+hoje+'"></div>'+
+        '<div class="form-field"><label>Observações</label><input type="text" id="ev-ini-obs-'+id+'" placeholder="Equipes, condições..."></div>'+
+        '</div>'+
+        '<div style="margin-top:8px;display:flex;gap:8px;align-items:center">'+
+        '<button class="primary" onclick="salvarInicioEvento('+id+')">Salvar início</button>'+
+        '<button class="secondary" onclick="fecharFormInicioEvento('+id+')">Cancelar</button>'+
+        '<span id="ev-ini-msg-'+id+'" style="font-size:12px"></span></div>';
+    }
+
+    function formFimHtml(id, dataFimAtual) {
+      var hoje = new Date().toISOString().slice(0,10);
+      return '<div style="display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;max-width:500px">'+
+        '<div class="form-field"><label>Data de conclusão</label><input type="date" id="ev-fim-data-'+id+'" value="'+(dataFimAtual||hoje)+'"></div>'+
+        '<div class="form-field"><label>Observações</label><input type="text" id="ev-fim-obs-'+id+'" placeholder="Como foi concluído..."></div>'+
+        '</div>'+
+        '<div style="margin-top:8px;display:flex;gap:8px;align-items:center">'+
+        '<button class="primary" style="background:#3A9C4E;border-color:#2d7a3e" onclick="salvarFimEvento('+id+')">Salvar conclusão</button>'+
+        '<button class="secondary" onclick="fecharFormFimEvento('+id+')">Cancelar</button>'+
+        '<span id="ev-fim-msg-'+id+'" style="font-size:12px"></span></div>';
+    }
+
+    function abrirFormInicioEvento(id) {
+      var f = document.getElementById('ev-form-inicio-'+id);
+      var ff = document.getElementById('ev-form-fim-'+id);
+      if(f) f.style.display='block'; if(ff) ff.style.display='none';
+    }
+    function fecharFormInicioEvento(id) { var f=document.getElementById('ev-form-inicio-'+id); if(f) f.style.display='none'; }
+    function abrirFormFimEvento(id) {
+      var f = document.getElementById('ev-form-fim-'+id);
+      var fi = document.getElementById('ev-form-inicio-'+id);
+      if(f) f.style.display='block'; if(fi) fi.style.display='none';
+    }
+    function fecharFormFimEvento(id) { var f=document.getElementById('ev-form-fim-'+id); if(f) f.style.display='none'; }
+
+    async function salvarInicioEvento(id) {
+      var dataEl=document.getElementById('ev-ini-data-'+id), obsEl=document.getElementById('ev-ini-obs-'+id);
+      var msg=document.getElementById('ev-ini-msg-'+id);
+      if(!dataEl||!dataEl.value){if(msg)msg.innerHTML='<span style="color:#E65100">Informe a data.</span>'; return;}
+      if(msg) msg.innerHTML='Salvando...';
+      var ev=APP.eventos.find(function(e){return e.Id===id;});
+      var statusAnt=ev?ev.Status:null;
+      if(ev){ev.Status='emexecucao';ev.DataInicio=dataEl.value;}
+      renderGraficoFaixas(); renderLegend();
+      try {
+        await DataAPI.registrarInicioEvento(id, dataEl.value, obsEl?obsEl.value:'');
+        if(msg) msg.innerHTML='<span style="color:#3A9C4E">✓ Salvo!</span>';
+        setTimeout(function(){renderOutrosServicosExecucao();renderEventos();},600);
+      } catch(e) {
+        if(ev){ev.Status=statusAnt;ev.DataInicio=null;} renderGraficoFaixas(); renderLegend();
+        if(msg) msg.innerHTML='<span style="color:#E65100">Erro: '+e.message+'</span>';
+      }
+    }
+
+    async function salvarFimEvento(id) {
+      var dataEl=document.getElementById('ev-fim-data-'+id), obsEl=document.getElementById('ev-fim-obs-'+id);
+      var msg=document.getElementById('ev-fim-msg-'+id);
+      if(!dataEl||!dataEl.value){if(msg)msg.innerHTML='<span style="color:#E65100">Informe a data.</span>'; return;}
+      if(msg) msg.innerHTML='Salvando...';
+      var ev=APP.eventos.find(function(e){return e.Id===id;});
+      var statusAnt=ev?ev.Status:null;
+      if(ev){ev.Status='executado';ev.DataFim=dataEl.value;}
+      renderGraficoFaixas(); renderLegend();
+      try {
+        await DataAPI.registrarFimEvento(id, dataEl.value, obsEl?obsEl.value:'');
+        if(msg) msg.innerHTML='<span style="color:#3A9C4E">✓ Concluído!</span>';
+        setTimeout(function(){renderOutrosServicosExecucao();renderEventos();},600);
+      } catch(e) {
+        if(ev){ev.Status=statusAnt;ev.DataFim=null;} renderGraficoFaixas(); renderLegend();
+        if(msg) msg.innerHTML='<span style="color:#E65100">Erro: '+e.message+'</span>';
+      }
+    }
+
+    function irParaExecucaoEvento(id) {
+      document.querySelectorAll('.tab-btn[data-tab]').forEach(function(x){x.classList.remove('active');});
+      var btn=document.querySelector('.tab-btn[data-tab="registrar"]'); if(btn) btn.classList.add('active');
+      ['dashboard','registrar','historico','fotos','projeto'].forEach(function(t){var el=document.getElementById('tab-'+t);if(el)el.style.display=t==='registrar'?'block':'none';});
+      popularSelects(); verificarPermissaoUI(); renderOutrosServicosExecucao();
+      setTimeout(function(){
+        var card=document.getElementById('ev-exec-card-'+id);
+        if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.style.transition='box-shadow .3s';card.style.boxShadow='0 0 0 3px #0078d4,0 4px 20px rgba(0,120,212,.25)';setTimeout(function(){card.style.boxShadow='';},2000);}
+        var ev=APP.eventos.find(function(e){return e.Id===id;});
+        if(ev&&ev.Status!=='executado'){if(ev.Status==='emexecucao')abrirFormFimEvento(id);else abrirFormInicioEvento(id);}
+      },200);
+    }
+
+    /* =================================================================
+       FOTOS — UPLOAD / DELETE / RENDER
+       ================================================================= */
+    var _lightboxFotos = [], _lightboxIdx = 0;
+
+    async function uploadFotos(lista, itemId, files, onDone) {
+      var erros = [];
+      for (var i=0; i<files.length; i++) {
+        var file = files[i];
+        var buf = await file.arrayBuffer();
+        var nome = Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+        try { await DataAPI.uploadAnexo(lista, itemId, nome, buf); }
+        catch(e) { erros.push(file.name+': '+e.message); }
+      }
+      if(onDone) onDone(erros);
+    }
+
+    async function deletarFoto(lista, itemId, fileName, onDone) {
+      if(!confirm('Remover esta foto?')) return;
+      try { await DataAPI.deletarAnexo(lista, itemId, fileName); if(onDone) onDone(); }
+      catch(e) { alert('Erro ao remover: '+e.message); }
+    }
+
+    function renderThumbGrid(anexos, lista, itemId, onDelete) {
+      if(!anexos||!anexos.length) return '<div style="color:#bbb;font-size:12px;padding:6px 0">Nenhuma foto.</div>';
+      var h='<div class="foto-thumb-grid">';
+      anexos.forEach(function(a,idx){
+        var url=SHAREPOINT_SITE_URL+a.ServerRelativeUrl;
+        h+='<div class="foto-thumb" onclick="abrirLightbox(window._lbFotos_'+itemId+','+idx+')" title="'+a.FileName+'">';
+        h+='<img src="'+url+'" loading="lazy" alt="'+a.FileName+'">';
+        h+='<button class="foto-thumb-del" onclick="event.stopPropagation();deletarFoto(\''+lista+'\','+itemId+',\''+a.FileName+'\',function(){'+onDelete+'})">✕</button>';
+        h+='</div>';
+      });
+      h+='</div>';
+      return h;
+    }
+
+    /* Fotos na ficha do Diário */
+    async function loadFotosDiario(fichaId) {
+      var sec = document.getElementById('diario-fotos-sec');
+      if(!sec||!fichaId) return;
+      sec.innerHTML = '<div style="color:#aaa;font-size:12px">Carregando fotos...</div>';
+      try {
+        var anexos = await DataAPI.listarAnexos(LISTA_DIARIO, fichaId);
+        window['_lbFotos_'+fichaId] = anexos.map(function(a){return {url:SHAREPOINT_SITE_URL+a.ServerRelativeUrl,nome:a.FileName,data:'',tipo:'Diário de Obra'};});
+        var onDel = 'loadFotosDiario('+fichaId+')';
+        sec.innerHTML = renderThumbGrid(anexos, LISTA_DIARIO, fichaId, onDel)+
+          '<label class="foto-upload-btn" style="margin-top:8px;display:inline-flex">📷 Adicionar fotos<input type="file" multiple accept="image/*" style="display:none" onchange="uploadFotosDiarioEl(this,'+fichaId+')"></label>'+
+          '<span id="diario-fotos-msg" style="font-size:12px;margin-left:8px"></span>';
+      } catch(e) {
+        sec.innerHTML = '<div style="color:#E65100;font-size:12px">Erro ao carregar fotos: '+e.message+'</div>';
+      }
+    }
+
+    async function uploadFotosDiarioEl(input, fichaId) {
+      var msg = document.getElementById('diario-fotos-msg');
+      if(msg) msg.textContent='Enviando '+input.files.length+' foto(s)...';
+      await uploadFotos(LISTA_DIARIO, fichaId, input.files, function(erros){
+        if(msg) msg.textContent = erros.length ? 'Erros: '+erros.join(', ') : '';
+        loadFotosDiario(fichaId);
+      });
+      input.value='';
+    }
+
+    /* =================================================================
+       GALERIA CENTRAL
+       ================================================================= */
+    function popularFiltrosGaleria() {
+      var sel = document.getElementById('fotos-filtro-tipo');
+      if(!sel) return;
+      var opts = '<option value="">Todos os registros</option><option value="diario">Diário de Obra</option><option value="eventos">Outros Serviços (todos)</option>';
+      (APP.eventos||[]).forEach(function(ev){
+        var nome=(NOMES_EVENTO[ev.TipoEvento]||ev.TipoEvento)+' — '+estakaParaKm(ev.EstacaInicial||0)+(ev.Observacao?' ('+ev.Observacao+')':'');
+        opts+='<option value="ev_'+ev.Id+'">'+nome+'</option>';
+      });
+      sel.innerHTML = opts;
+    }
+
+    async function carregarGaleriaFotos() {
+      var galeria = document.getElementById('fotos-galeria');
+      var contador = document.getElementById('fotos-contador');
+      var filtroTipo = (document.getElementById('fotos-filtro-tipo')||{}).value||'';
+      var dtIni = (document.getElementById('fotos-dt-ini')||{}).value||'';
+      var dtFim = (document.getElementById('fotos-dt-fim')||{}).value||'';
+      if(!APP.obraAtual){ galeria.innerHTML='<div style="color:#999;text-align:center;padding:40px">Selecione uma obra.</div>'; return; }
+      galeria.innerHTML='<div style="color:#999;text-align:center;padding:40px">Carregando fotos...</div>';
+      contador.textContent='';
+      var grupos = [];
+      try {
+        // --- DIÁRIO ---
+        if (!filtroTipo || filtroTipo==='diario') {
+          var diarioFilt = (APP.diario||[]).filter(function(f){
+            if(!f.Id) return false;
+            var d=(f.Data||'').substring(0,10);
+            if(dtIni && d<dtIni) return false;
+            if(dtFim && d>dtFim) return false;
+            return true;
+          });
+          var diarioReqs = diarioFilt.map(function(f){ return DataAPI.listarAnexos(LISTA_DIARIO,f.Id).then(function(a){return{ficha:f,anexos:a};}); });
+          var diarioRes = await Promise.all(diarioReqs);
+          diarioRes.forEach(function(r){
+            if(!r.anexos||!r.anexos.length) return;
+            var d=(r.ficha.Data||'').substring(0,10);
+            grupos.push({data:d,titulo:d.split('-').reverse().join('/'),subtitulo:'Diário de Obra',lista:LISTA_DIARIO,itemId:r.ficha.Id,anexos:r.anexos});
+          });
+        }
+        // --- EVENTOS ---
+        if (!filtroTipo || filtroTipo==='eventos' || filtroTipo.indexOf('ev_')===0) {
+          var evFilt=(APP.eventos||[]).filter(function(ev){
+            if(!ev.Id) return false;
+            if(filtroTipo.indexOf('ev_')===0 && ev.Id!==parseInt(filtroTipo.substring(3))) return false;
+            if(filtroTipo==='diario') return false;
+            var d=(ev.DataInicio||ev.DataFim||'').substring(0,10);
+            if(dtIni&&d&&d<dtIni) return false;
+            if(dtFim&&d&&d>dtFim) return false;
+            return true;
+          });
+          var evReqs=evFilt.map(function(ev){ return DataAPI.listarAnexos(LISTA_EVENTOS,ev.Id).then(function(a){return{ev:ev,anexos:a};}); });
+          var evRes=await Promise.all(evReqs);
+          evRes.forEach(function(r){
+            if(!r.anexos||!r.anexos.length) return;
+            var d=(r.ev.DataInicio||r.ev.DataFim||'').substring(0,10);
+            var nome=(NOMES_EVENTO[r.ev.TipoEvento]||r.ev.TipoEvento)+' — '+estakaParaKm(r.ev.EstacaInicial||0);
+            grupos.push({data:d,titulo:d?d.split('-').reverse().join('/'):'Sem data',subtitulo:'Outros Serviços: '+nome,lista:LISTA_EVENTOS,itemId:r.ev.Id,anexos:r.anexos});
+          });
+        }
+        grupos.sort(function(a,b){return (b.data||'').localeCompare(a.data||'');});
+        var total=grupos.reduce(function(s,g){return s+g.anexos.length;},0);
+        contador.textContent=total+' foto(s) encontrada(s)';
+        if(grupos.length===0){galeria.innerHTML='<div style="color:#999;text-align:center;padding:40px">Nenhuma foto encontrada.</div>';return;}
+        var allFotos=[];
+        var html='';
+        grupos.forEach(function(g){
+          var offset=allFotos.length;
+          g.anexos.forEach(function(a){allFotos.push({url:SHAREPOINT_SITE_URL+a.ServerRelativeUrl,nome:a.FileName,data:g.titulo,tipo:g.subtitulo});});
+          html+='<div class="galeria-grupo"><div class="galeria-grupo-header">'+g.titulo+'<span class="galeria-grupo-sub">'+g.subtitulo+'</span></div><div class="galeria-grid">';
+          g.anexos.forEach(function(a,i){
+            var url=SHAREPOINT_SITE_URL+a.ServerRelativeUrl;
+            html+='<div class="galeria-item" onclick="abrirLightbox(_galeriaFotos,'+(offset+i)+')"><img src="'+url+'" loading="lazy" alt="'+a.FileName+'"></div>';
+          });
+          html+='</div></div>';
+        });
+        window._galeriaFotos=allFotos;
+        galeria.innerHTML=html;
+      } catch(e) {
+        galeria.innerHTML='<div style="color:#E65100;text-align:center;padding:40px">Erro: '+e.message+'</div>';
+      }
+    }
+
+    /* =================================================================
+       LIGHTBOX
+       ================================================================= */
+    function abrirLightbox(fotos, idx) {
+      _lightboxFotos=fotos||[]; _lightboxIdx=idx||0;
+      var lb=document.getElementById('lightbox');
+      if(!lb||!_lightboxFotos.length) return;
+      lb.classList.add('open');
+      _renderLightbox();
+    }
+    function _renderLightbox() {
+      var f=_lightboxFotos[_lightboxIdx]||{};
+      var img=document.getElementById('lightbox-img'); if(img) img.src=f.url||'';
+      var info=document.getElementById('lightbox-info'); if(info) info.textContent=(f.data?f.data+' — ':'')+f.tipo+(f.nome?' — '+f.nome:'');
+      var cnt=document.getElementById('lightbox-counter'); if(cnt) cnt.textContent=(_lightboxIdx+1)+' / '+_lightboxFotos.length;
+      var dl=document.getElementById('lightbox-dl'); if(dl){dl.href=f.url||'#';dl.download=f.nome||'foto';}
+      var prev=document.getElementById('lightbox-nav-prev'),next=document.getElementById('lightbox-nav-next');
+      if(prev) prev.style.display=_lightboxFotos.length>1?'flex':'none';
+      if(next) next.style.display=_lightboxFotos.length>1?'flex':'none';
+    }
+    function navegarLightbox(delta) { _lightboxIdx=(_lightboxIdx+delta+_lightboxFotos.length)%_lightboxFotos.length; _renderLightbox(); }
+    function fecharLightbox() { var lb=document.getElementById('lightbox'); if(lb) lb.classList.remove('open'); }
+    function fecharLightboxFora(e) { if(e.target===document.getElementById('lightbox')) fecharLightbox(); }
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')fecharLightbox();if(e.key==='ArrowLeft')navegarLightbox(-1);if(e.key==='ArrowRight')navegarLightbox(1);});
 
     function renderBadgeNotificacoes() {
       var badge = document.getElementById('notif-badge');
@@ -2513,6 +2893,15 @@
     boot();
   </script>
   <div id="diario-tooltip"></div>
+  <div id="lightbox" onclick="fecharLightboxFora(event)">
+    <button id="lightbox-close" onclick="fecharLightbox()">✕</button>
+    <a id="lightbox-dl" target="_blank" title="Download">⬇ Download</a>
+    <button id="lightbox-nav-prev" onclick="navegarLightbox(-1)">‹</button>
+    <img id="lightbox-img" src="" alt="">
+    <button id="lightbox-nav-next" onclick="navegarLightbox(1)">›</button>
+    <div id="lightbox-info"></div>
+    <div id="lightbox-counter"></div>
+  </div>
 </body>
 
 </html>
