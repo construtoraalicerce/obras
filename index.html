@@ -1149,9 +1149,9 @@
         var tk = await getToken(); var dg = await this.getDigest();
         var url = SHAREPOINT_SITE_URL + "/_api/web/lists/getbytitle('" + l + "')/items(" + id + ")/AttachmentFiles/add(FileName='" + encodeURIComponent(fileName) + "')";
         dbg('POST attachment ' + fileName);
-        var r = await fetch(url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + tk, 'X-RequestDigest': dg }, body: buffer });
+        var r = await fetch(url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + tk, 'X-RequestDigest': dg, 'Accept': 'application/json;odata=verbose' }, body: buffer });
         if (!r.ok) { var t = await r.text(); throw new Error('SP erro ' + r.status + ': ' + t.substring(0,200)) }
-        return r.json();
+        return;
       },
       async deletarAnexo(l, id, fileName) { var dg = await this.getDigest(); return await this.spFetch("/web/lists/getbytitle('" + l + "')/items(" + id + ")/AttachmentFiles/getByFileName('" + encodeURIComponent(fileName) + "')", { method: 'POST', headers: { 'X-RequestDigest': dg, 'X-HTTP-Method': 'DELETE', 'If-Match': '*' } }) }
     };
