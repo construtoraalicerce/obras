@@ -476,21 +476,27 @@
     }
 
     /* Diário de Obra */
-    .diario-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px}
-    .diario-cal-header{font-size:9px;color:#888;text-align:center;font-weight:700;padding:2px 0}
-    .diario-cal-cell{text-align:center;border-radius:5px;padding:3px 2px;cursor:pointer;transition:opacity .15s;font-family:'Barlow Condensed',sans-serif;border:2px solid transparent;min-height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;gap:1px}
-    .diario-cal-cell:hover{opacity:.82;border-color:rgba(0,0,0,.2)}
+    .diario-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+    .diario-cal-header{font-size:11px;color:#555;text-align:center;font-weight:700;padding:3px 0}
+    .diario-cal-cell{text-align:center;border-radius:7px;padding:6px 2px 5px;cursor:pointer;transition:filter .12s,border-color .12s;font-family:'Barlow Condensed',sans-serif;border:2px solid transparent;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;position:relative;gap:3px}
+    .diario-cal-cell:hover{filter:brightness(.88);border-color:rgba(0,0,0,.25)}
     .diario-cal-cell.selected{box-shadow:0 0 0 2px #0078d4,0 0 0 4px #fff,0 0 0 6px #0078d4}
-    .diario-cal-cell.vazio{background:#f5f5f5;color:#bbb}
-    .diario-cal-cell.fds-auto{background:#BDBDBD;color:#fff}
+    .diario-cal-cell.vazio{background:#f0f2f5;color:#bbb}
+    .diario-cal-cell.vazio:hover{filter:brightness(.96)}
+    .diario-cal-cell.fds-auto{background:#dde0e4;color:#999}
     .diario-cal-cell.praticavel{background:#3A9C4E;color:#fff}
     .diario-cal-cell.semi{background:#F9A825;color:#fff}
     .diario-cal-cell.impraticavel{background:#E65100;color:#fff}
     .diario-cal-cell.fds-reg{background:#78909C;color:#fff}
-    .diario-cal-cell.futuro{opacity:.3;cursor:not-allowed;pointer-events:none}
-    .diario-cel-num{font-size:13px;font-weight:700;line-height:1}
-    .diario-cel-sym{font-size:8px;line-height:1;opacity:.9}
-    .diario-cel-sym.sem-dados{color:#ccc}
+    .diario-cal-cell.futuro{opacity:.25;cursor:not-allowed;pointer-events:none}
+    .diario-cel-num{font-size:18px;font-weight:700;line-height:1}
+    .diario-cel-sym{font-size:13px;line-height:1;letter-spacing:3px}
+    .diario-cel-sym.sem-dados{opacity:0;font-size:13px}
+    #diario-tooltip{position:fixed;background:#1c2333;color:#e8eef8;border-radius:10px;padding:11px 14px;font-size:12px;line-height:1.65;max-width:250px;box-shadow:0 8px 28px rgba(0,0,0,.4);pointer-events:none;z-index:9999;display:none;border:1px solid rgba(255,255,255,.1)}
+    #diario-tooltip .tt-date{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#7ec8f8;margin-bottom:7px;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:6px}
+    #diario-tooltip .tt-row{display:flex;align-items:flex-start;gap:5px;font-size:11px;margin-bottom:2px}
+    #diario-tooltip .tt-lbl{opacity:.55;min-width:38px;font-size:10px;padding-top:1px}
+    #diario-tooltip .tt-sep{border-top:1px solid rgba(255,255,255,.12);margin:6px 0}
     .diario-periodo-btn{padding:5px 10px;border-radius:5px;border:2px solid #ddd;background:#f5f5f5;color:#555;font-size:12px;cursor:pointer;transition:all .15s;font-weight:600;white-space:nowrap}
     .diario-periodo-btn:hover{background:#e8e8e8}
     .diario-ficha{border:2px solid #0078d4;border-radius:8px;padding:16px;margin-top:14px;background:#fff;animation:fadeIn .2s}
@@ -988,6 +994,8 @@
        ================================================================= */
     // Emails com acesso ao painel de Debug — adicione os emails dos administradores
     var ADMIN_EMAILS = ['administrador@construtoraalicerceceara.onmicrosoft.com'];
+    // Emails da diretoria — apenas esses usuários podem marcar solicitações de equipamento como lidas
+    var DIRETORIA_EMAILS = ['administrador@construtoraalicerceceara.onmicrosoft.com'];
 
     var MSAL_CLIENT_ID = '13e6d132-d14c-4e07-9f7c-0aab1a7ef672';
     var MSAL_TENANT_ID = '808cc4d8-fcde-4703-abb7-b0e9aa5aeb2b';
@@ -2094,7 +2102,7 @@
         // Símbolos de clima
         var symM = ficha&&ficha.ClimaManha ? (ficha.ClimaManha==='claro'?'☀':'🌧') : '';
         var symT = ficha&&ficha.ClimaTarde ? (ficha.ClimaTarde==='claro'?'☀':'🌧') : '';
-        var symHtml = (symM||symT) ? '<span class="diario-cel-sym">'+(symM||'·')+'|'+(symT||'·')+'</span>' : '<span class="diario-cel-sym sem-dados"> </span>';
+        var symHtml = (symM||symT) ? '<span class="diario-cel-sym">'+(symM||'·')+' '+(symT||'·')+'</span>' : '<span class="diario-cel-sym sem-dados">·</span>';
 
         // Dots de intercorrência
         var dots = '';
@@ -2102,18 +2110,8 @@
         if (mat) dots += '<span style="position:absolute;bottom:2px;right:'+(temEq?'10':'2')+'px;width:6px;height:6px;border-radius:50%;background:#F9A825;border:1px solid rgba(255,255,255,.8)"></span>';
         if (temSol) dots += '<span style="position:absolute;top:1px;right:2px;font-size:7px;line-height:1">📋</span>';
 
-        // Tooltip
-        var tip = [];
-        if (ficha && ficha.CondicaoManha) tip.push('Manhã: '+ficha.CondicaoManha);
-        if (ficha && ficha.CondicaoTarde) tip.push('Tarde: '+ficha.CondicaoTarde);
-        if (temEq) tip.push('🔧 '+eqPorData[dataStr]+' equip.');
-        if (mat) tip.push('📦 Ag. material');
-        if (temSol) tip.push('📋 Solicitação');
-        if (ficha && ficha.AtividadesRealizadas) tip.push(ficha.AtividadesRealizadas.substring(0,50));
-        var titleAttr = tip.length ? ' title="'+tip.join(' | ').replace(/"/g,'&quot;')+'"' : '';
-
-        var onclick = futuro ? '' : ' onclick="abrirFichaDia(\''+dataStr+'\')"';
-        html += '<div class="diario-cal-cell '+cls+'"'+onclick+titleAttr+'>'+symHtml+'<span class="diario-cel-num">'+dia+'</span>'+dots+'</div>';
+        var evts = futuro ? '' : ' onclick="abrirFichaDia(\''+dataStr+'\')" onmouseenter="mostrarTooltipDiario(event,\''+dataStr+'\')" onmouseleave="ocultarTooltipDiario()"';
+        html += '<div class="diario-cal-cell '+cls+'"'+evts+'><span class="diario-cel-num">'+dia+'</span>'+symHtml+dots+'</div>';
       }
       html += '</div>';
       calUnico.innerHTML = html;
@@ -2315,7 +2313,7 @@
           SolicitacaoLida: false,
           Observacao: document.getElementById('diario-obs').value
         };
-        await DataAPI.salvarDiario(APP.obraAtual.Id, dataStr, campos);
+        var savedId = await DataAPI.salvarDiario(APP.obraAtual.Id, dataStr, campos);
 
         // Deletar equipamentos removidos
         for (var i=0; i<_diarioEqsRemovidos.length; i++) {
@@ -2338,23 +2336,63 @@
           await DataAPI.criarEquipamentoQuebrado(APP.obraAtual.Id, dataStr, novosEqs[j].eq, novosEqs[j].desc, existentes+j+1);
         }
 
-        // Atualiza memória
+        // Atualiza memória (guarda ID para que notificações possam ser marcadas como lidas)
         var idx = (APP.diario||[]).findIndex(function(f){return (f.Data||'').substring(0,10)===dataStr;});
         var nf = Object.assign({Data:dataStr}, campos);
-        if (idx>=0) Object.assign(APP.diario[idx], nf); else APP.diario.push(nf);
+        if (savedId) nf.Id = savedId;
+        if (idx>=0) { if (savedId) APP.diario[idx].Id = savedId; Object.assign(APP.diario[idx], nf); }
+        else APP.diario.push(nf);
         APP.diarioEq = (APP.diarioEq||[]).filter(function(e){return _diarioEqsRemovidos.indexOf(e.Id)<0;});
         novosEqs.forEach(function(ne,j){ APP.diarioEq.push({Data:dataStr, Equipamento:ne.eq, Descricao:ne.desc, ObraId:APP.obraAtual.Id}); });
         _diarioEqsRemovidos = [];
 
         renderDiario();
         renderBadgeNotificacoes();
-        msg.innerHTML = '<div class="alert alert-ok">✓ Ficha salva.</div>';
-        setTimeout(function(){if(msg)msg.innerHTML='';}, 2500);
+        fecharFichaDiario();
       } catch(e) {
         msg.innerHTML = '<div class="alert alert-err">Erro ao salvar: '+e.message+'</div>';
       } finally {
         btn.disabled=false; btn.textContent='Salvar ficha';
       }
+    }
+
+    function mostrarTooltipDiario(e, dataStr) {
+      var fichaMap = {};
+      (APP.diario||[]).forEach(function(f){ var d=(f.Data||'').substring(0,10); if(d) fichaMap[d]=f; });
+      var ficha = fichaMap[dataStr];
+      if (!ficha) return;
+      var eqCont = 0;
+      (APP.diarioEq||[]).forEach(function(eq){ if((eq.Data||'').substring(0,10)===dataStr) eqCont++; });
+      var parts = dataStr.split('-');
+      var dtLabel = parts[2]+'/'+parts[1]+'/'+parts[0];
+      var cNomes = {claro:'☀ Claro', chuvoso:'🌧 Chuvoso'};
+      var dNomes = {praticavel:'Praticável', impraticavel:'Impraticável'};
+      var rows = '';
+      var cM=ficha.ClimaManha, cT=ficha.ClimaTarde, dM=ficha.CondicaoManha, dT=ficha.CondicaoTarde;
+      if (cM||dM) rows+='<div class="tt-row"><span class="tt-lbl">Manhã</span><span>'+(cNomes[cM]||'')+(dM?' — '+(dNomes[dM]||dM):'')+'</span></div>';
+      if (cT||dT) rows+='<div class="tt-row"><span class="tt-lbl">Tarde</span><span>'+(cNomes[cT]||'')+(dT?' — '+(dNomes[dT]||dT):'')+'</span></div>';
+      var extras = [];
+      if (eqCont) extras.push('🔧 '+eqCont+' equip. parado'+(eqCont>1?'s':''));
+      var mat=ficha.IntercorrenciaMaterial===true||ficha.IntercorrenciaMaterial==='true'||ficha.IntercorrenciaMaterial===1;
+      if (mat) extras.push('📦 Aguardando material');
+      if (ficha.DieselConsumo) extras.push('⛽ '+ficha.DieselConsumo+' L consumidos');
+      if (ficha.AtividadesRealizadas&&ficha.AtividadesRealizadas.trim()) extras.push(ficha.AtividadesRealizadas.substring(0,75)+(ficha.AtividadesRealizadas.length>75?'…':''));
+      if (ficha.SolicitacaoEquipamento&&ficha.SolicitacaoEquipamento.trim()) extras.push('📋 '+ficha.SolicitacaoEquipamento.substring(0,55)+(ficha.SolicitacaoEquipamento.length>55?'…':''));
+      if (extras.length&&rows) rows+='<div class="tt-sep"></div>';
+      extras.forEach(function(ex){ rows+='<div class="tt-row">'+ex+'</div>'; });
+      if (!rows) return;
+      var tip=document.getElementById('diario-tooltip');
+      tip.innerHTML='<div class="tt-date">'+dtLabel+'</div>'+rows;
+      tip.style.display='block';
+      var x=e.clientX+14, y=e.clientY+14;
+      if (x+260>window.innerWidth) x=e.clientX-270;
+      if (y+tip.offsetHeight+10>window.innerHeight) y=e.clientY-tip.offsetHeight-10;
+      tip.style.left=x+'px'; tip.style.top=y+'px';
+    }
+
+    function ocultarTooltipDiario() {
+      var tip=document.getElementById('diario-tooltip');
+      if(tip) tip.style.display='none';
     }
 
     function renderBadgeNotificacoes() {
@@ -2375,6 +2413,7 @@
       var painel = document.getElementById('notif-painel');
       if (!painel) return;
       var lista = document.getElementById('notif-lista');
+      var isDiretoria = DIRETORIA_EMAILS.some(function(e){ return e.toLowerCase()===(APP.usuario&&APP.usuario.email||'').toLowerCase(); });
       var pendentes = (APP.diario||[]).filter(function(f){
         return f.SolicitacaoEquipamento && f.SolicitacaoEquipamento.trim()!=='' && !f.SolicitacaoLida;
       }).sort(function(a,b){return (b.Data||'').localeCompare(a.Data||'');});
@@ -2382,10 +2421,13 @@
       else {
         lista.innerHTML = pendentes.map(function(f){
           var dt=(f.Data||'').substring(0,10).split('-').reverse().join('/');
+          var btnMarcar = isDiretoria
+            ? '<button onclick="marcarLidaNotif('+f.Id+')" class="secondary" style="font-size:11px;padding:3px 8px;color:#3A9C4E">✓ Marcar como visto</button>'
+            : '<span style="font-size:10px;color:#aaa;font-style:italic">Aguardando diretoria</span>';
           return '<div style="border:1px solid #f0f0f0;border-radius:6px;padding:10px;margin-bottom:8px">'+
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">'+
               '<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;color:#0078d4">'+dt+'</span>'+
-              '<button onclick="marcarLidaNotif('+f.Id+')" class="secondary" style="font-size:11px;padding:3px 8px;color:#3A9C4E">✓ Marcar como visto</button>'+
+              btnMarcar+
             '</div>'+
             '<p style="margin:0;font-size:13px;color:#333">'+f.SolicitacaoEquipamento+'</p>'+
             '</div>';
@@ -2463,6 +2505,7 @@
     }
     boot();
   </script>
+  <div id="diario-tooltip"></div>
 </body>
 
 </html>
