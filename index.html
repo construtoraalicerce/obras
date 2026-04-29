@@ -478,7 +478,7 @@
     /* Diário de Obra */
     .diario-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
     .diario-cal-header{font-size:11px;color:#555;text-align:center;font-weight:700;padding:3px 0}
-    .diario-cal-cell{text-align:center;border-radius:7px;padding:6px 2px 5px;cursor:pointer;transition:filter .12s,border-color .12s;font-family:'Barlow Condensed',sans-serif;border:2px solid transparent;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;position:relative;gap:3px}
+    .diario-cal-cell{text-align:center;border-radius:7px;padding:4px 4px 5px;cursor:pointer;transition:filter .12s,border-color .12s;font-family:'Barlow Condensed',sans-serif;border:2px solid transparent;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;gap:4px}
     .diario-cal-cell:hover{filter:brightness(.88);border-color:rgba(0,0,0,.25)}
     .diario-cal-cell.selected{box-shadow:0 0 0 2px #0078d4,0 0 0 4px #fff,0 0 0 6px #0078d4}
     .diario-cal-cell.vazio{background:#f0f2f5;color:#bbb}
@@ -489,9 +489,13 @@
     .diario-cal-cell.impraticavel{background:#E65100;color:#fff}
     .diario-cal-cell.fds-reg{background:#78909C;color:#fff}
     .diario-cal-cell.futuro{opacity:.25;cursor:not-allowed;pointer-events:none}
-    .diario-cel-num{font-size:18px;font-weight:700;line-height:1}
-    .diario-cel-sym{font-size:13px;line-height:1;letter-spacing:3px}
-    .diario-cel-sym.sem-dados{opacity:0;font-size:13px}
+    .diario-cel-num{position:absolute;top:4px;right:6px;font-size:11px;font-weight:700;line-height:1;opacity:.9}
+    .diario-cel-sym{font-size:19px;line-height:1;display:flex;align-items:center;gap:2px}
+    .diario-cel-sym.sem-dados{opacity:0;font-size:19px}
+    .diario-cel-sep{font-size:13px;opacity:.5;margin:0 1px}
+    .diario-cel-bottom{display:flex;gap:5px;align-items:center;justify-content:center}
+    .diario-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7);display:inline-block;flex-shrink:0}
+    .diario-dot-sol{font-size:13px;line-height:1}
     #diario-tooltip{position:fixed;background:#1c2333;color:#e8eef8;border-radius:10px;padding:11px 14px;font-size:12px;line-height:1.65;max-width:250px;box-shadow:0 8px 28px rgba(0,0,0,.4);pointer-events:none;z-index:9999;display:none;border:1px solid rgba(255,255,255,.1)}
     #diario-tooltip .tt-date{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#7ec8f8;margin-bottom:7px;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:6px}
     #diario-tooltip .tt-row{display:flex;align-items:flex-start;gap:5px;font-size:11px;margin-bottom:2px}
@@ -2099,19 +2103,22 @@
         }
         if (futuro) cls += ' futuro';
 
-        // Símbolos de clima
+        // Símbolos de clima (manhã | tarde)
         var symM = ficha&&ficha.ClimaManha ? (ficha.ClimaManha==='claro'?'☀':'🌧') : '';
         var symT = ficha&&ficha.ClimaTarde ? (ficha.ClimaTarde==='claro'?'☀':'🌧') : '';
-        var symHtml = (symM||symT) ? '<span class="diario-cel-sym">'+(symM||'·')+' '+(symT||'·')+'</span>' : '<span class="diario-cel-sym sem-dados">·</span>';
+        var symHtml = (symM||symT)
+          ? '<span class="diario-cel-sym">'+(symM||'·')+'<span class="diario-cel-sep">|</span>'+(symT||'·')+'</span>'
+          : '<span class="diario-cel-sym sem-dados">·|·</span>';
 
-        // Dots de intercorrência
-        var dots = '';
-        if (temEq) dots += '<span style="position:absolute;bottom:2px;right:2px;width:6px;height:6px;border-radius:50%;background:#E65100;border:1px solid rgba(255,255,255,.8)"></span>';
-        if (mat) dots += '<span style="position:absolute;bottom:2px;right:'+(temEq?'10':'2')+'px;width:6px;height:6px;border-radius:50%;background:#F9A825;border:1px solid rgba(255,255,255,.8)"></span>';
-        if (temSol) dots += '<span style="position:absolute;top:1px;right:2px;font-size:7px;line-height:1">📋</span>';
+        // Linha de intercorrências na base
+        var bottomParts = '';
+        if (temEq)  bottomParts += '<span class="diario-dot" style="background:#E65100"></span>';
+        if (mat)    bottomParts += '<span class="diario-dot" style="background:#F9A825"></span>';
+        if (temSol) bottomParts += '<span class="diario-dot-sol">📋</span>';
+        var bottomHtml = bottomParts ? '<div class="diario-cel-bottom">'+bottomParts+'</div>' : '';
 
         var evts = futuro ? '' : ' onclick="abrirFichaDia(\''+dataStr+'\')" onmouseenter="mostrarTooltipDiario(event,\''+dataStr+'\')" onmouseleave="ocultarTooltipDiario()"';
-        html += '<div class="diario-cal-cell '+cls+'"'+evts+'><span class="diario-cel-num">'+dia+'</span>'+symHtml+dots+'</div>';
+        html += '<div class="diario-cal-cell '+cls+'"'+evts+'><span class="diario-cel-num">'+dia+'</span>'+symHtml+bottomHtml+'</div>';
       }
       html += '</div>';
       calUnico.innerHTML = html;
